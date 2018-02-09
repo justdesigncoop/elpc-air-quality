@@ -1,4 +1,4 @@
-# analysis instructions
+# Analysis instructions
 
 1. Install the [Miniconda Python]distribution(https://repo.continuum.io/miniconda/Miniconda2-latest-Windows-x86_64.exe)
 2. Open up a cmd window
