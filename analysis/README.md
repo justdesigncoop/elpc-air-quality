@@ -5,12 +5,15 @@
 3. Navigate to the folder where you saved the attached files (type the following and hit Enter):
 
   `cd C:\path\to\saved\files`
+  
 4. Create the environment:
 
   `conda env create -f environment.yml`
+  
 5. Activate the environment:
 
   `activate elpcjd`
+  
 6. Run elpc-test.py script:
 
   `python elpc-test.py C:\path\to\sessions\folder`
