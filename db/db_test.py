@@ -1,19 +1,45 @@
 import sqlalchemy as sa
 import pandas as pd
 import requests
+import logging
+import sys
 
 if __name__ == '__main__':
+    # generate error log
+    logging.basicConfig(
+        filename='db_test_%s.log' % (pd.Timestamp.now().strftime('%Y%m%d%H%M%S')),
+        filemode='w',
+        format = '%(asctime)s %(levelname)s: %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        level=logging.DEBUG)
+    
+    logging.info('db test started')
+    
+    # get latest session id
+    
     # create engine
-    engine = sa.create_engine('mysql+mysqlconnector://root:dd00ww@home.danwahl.net/elpc_air_quality')
+    try:
+        engine = sa.create_engine('mysql+mysqlconnector://root:dd00ww@home.danwahl.net/elpc_air_quality')
+    except sa.exc.SQLAlchemyError as e:
+        logging.error(e)
+        sys.exit(1)
     
     # get users
-    users = pd.read_sql_query('SELECT * FROM users', engine, index_col='id')
+    try:
+        users = pd.read_sql_query('SELECT * FROM users', engine, index_col='id')
+    except sa.exc.SQLAlchemyError as e:
+        logging.error(e)
+        sys.exit(1)
     
     # iterate through usernames
     for ui, ur in users.iterrows():
         # api quiery for session list
         params = (('q[usernames]', ur['username']),)
-        response = requests.get('http://aircasting.org/api/sessions.json', params=params)
+        try:
+            response = requests.get('http://aircasting.org/api/sessions.json', params=params)
+        except requests.exceptions.RequestException as e:
+            logging.error(e)
+            sys.exit(1)
         
         # sessions dataframe
         sessions = pd.DataFrame(response.json())
@@ -21,7 +47,11 @@ if __name__ == '__main__':
         # streams and measurements processing
         for si, sr in sessions.iterrows():
             # api query for session
-            response = requests.get('http://aircasting.org/api/sessions/%s.json' % (sr['id']))
+            try:
+                response = requests.get('http://aircasting.org/api/sessions/%s.json' % (sr['id']))
+            except requests.exceptions.RequestException as e:
+                logging.error(e)
+                sys.exit(1)
             
             # process session
             session = pd.Series(response.json())
@@ -38,11 +68,42 @@ if __name__ == '__main__':
             
             # update user id if not in users table
             if pd.isnull(ui):
-                pd.read_sql_query('UPDATE users SET id = %d WHERE username = \'%s\'' % (session['user_id'], ur['username']), engine)
+                try:
+                    pd.read_sql_query('UPDATE users SET id = %d WHERE username = \'%s\'' % (session['user_id'], ur['username']), engine)
+                except sa.exc.ResourceClosedError as e:
+                    logging.warning(e)
+                except sa.exc.SQLAlchemyError as e:
+                    logging.error(e)
+                    sys.exit(1)
             
             # insert into sql
-            pd.DataFrame().append(session, ignore_index=True).to_sql('sessions', engine, index=False, if_exists='append')
+            try:
+                pd.DataFrame().append(session, ignore_index=True).to_sql('sessions', engine, index=False, if_exists='append')
+            # duplicate entry            
+            except sa.exc.IntegrityError as e:
+                logging.warning(e)
+            except sa.exc.SQLAlchemyError as e:
+                logging.error(e)
+                sys.exit(1)
                 
+            # process notes
+            if response.json()['notes']:
+                notes = pd.DataFrame(response.json()['notes'])
+                notes['created_at'] = pd.to_datetime(notes['created_at'])
+                notes['updated_at'] = pd.to_datetime(notes['updated_at'])
+                notes['date'] = pd.to_datetime(notes['date'])
+                notes['photo_updated_at'] = pd.to_datetime(notes['photo_updated_at'])     
+                
+                # insert into sql
+                try:
+                    notes.to_sql('notes', engine, index=False, if_exists='append')
+                # duplicate entry
+                except sa.exc.IntegrityError as e:
+                    logging.warning(e)
+                except sa.exc.SQLAlchemyError as e:
+                    logging.error(e)
+                    sys.exit(1)
+            
             # process streams
             streams = pd.DataFrame(response.json()['streams']).transpose()
             streams['session_id'] = sr['id']
@@ -50,7 +111,14 @@ if __name__ == '__main__':
             streams.drop('size', axis=1, inplace=True)
             
             # insert into sql
-            streams.to_sql('streams', engine, index=False, if_exists='append')
+            try:
+                streams.to_sql('streams', engine, index=False, if_exists='append')
+            # duplicate entry
+            except sa.exc.IntegrityError as e:
+                logging.warning(e)
+            except sa.exc.SQLAlchemyError as e:
+                logging.error(e)
+                sys.exit(1)
             
             # iterate through streams
             for s in response.json()['streams']:
@@ -63,7 +131,13 @@ if __name__ == '__main__':
                 measurements['stream_id'] = stream['id']
                 
                 # insert into sql
-                measurements.to_sql('measurements', engine, index='id', if_exists='append')
+                try:
+                    measurements.to_sql('measurements', engine, index='id', if_exists='append')
+                # duplicate entry
+                except sa.exc.IntegrityError as e:
+                    logging.warning(e)
+                except sa.exc.SQLAlchemyError as e:
+                    logging.error(e)
+                    sys.exit(1)
     
-    # get sessions
-    #sessions = pd.read_sql_query('SELECT * FROM sessions', engine, index_col='id', parse_dates=['start_time_local', 'end_time_local'])
+    logging.info('db test finished')

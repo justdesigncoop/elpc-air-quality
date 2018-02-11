@@ -114,7 +114,9 @@ CREATE TABLE notes (
   photo_file_size INT(11),
   photo_updated_at DATE,
   number INT(11),
-  PRIMARY KEY (id, session_id),
+  photo TEXT,
+  photo_thumbnail TEXT,
+  PRIMARY KEY (id),
   INDEX index_notes_on_session_id (session_id),
   CONSTRAINT constrain_notes_on_session_id FOREIGN KEY (session_id)
     REFERENCES sessions(id) ON DELETE CASCADE ON UPDATE RESTRICT
