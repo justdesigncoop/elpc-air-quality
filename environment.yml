@@ -2,3 +2,4 @@ name: elpcjd
 dependencies:
   - pandas
   - mysql
+  - sqlalchemy
