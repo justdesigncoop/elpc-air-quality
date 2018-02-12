@@ -8,6 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
+from django.core import serializers
 
 from .models import Sessions
 from .forms import MapForm
@@ -27,3 +28,10 @@ class MapView(generic.FormView):
 	template_name = 'dashboard/map.html'
 	form_class = MapForm
 	success_url = '/dashboard/'
+
+def get_session(request):
+    session_id = request.GET.get('session_id', None)
+    data = {
+        'session': serializers.serialize("json", Sessions.objects.filter(id=session_id))
+    }
+    return JsonResponse(data)

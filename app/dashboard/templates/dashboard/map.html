@@ -1,4 +1,3 @@
-
 {% extends 'dashboard/base.html' %}
 
 {% load bootstrap4 %}
@@ -8,11 +7,31 @@
 {% endblock %}
 
 {% block content %}
-
     <form role="form" class="form-horizontal" method="post">
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}
         {% buttons submit='OK' reset="Cancel" %}{% endbuttons %}
     </form>
-
 {% endblock %}
+
+
+{% block bootstrap4_extra_script %}
+    <script>
+        $("#id_session").change(function() {
+            //console.log($(this).val());
+            var session_id = $(this).val();
+
+            $.ajax({
+             url: '/dashboard/ajax/get_session/',
+                data: {
+                    'session_id': session_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
