@@ -1,5 +1,8 @@
 name: elpcjd
 dependencies:
+  - python=2.7
   - pandas
-  - mysql
+  - mysql-python
+  - mysqlclient
   - sqlalchemy
+  - django
