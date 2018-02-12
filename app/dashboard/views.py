@@ -4,13 +4,13 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 
 # Create your views here.
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 
 from .models import Sessions
-
+from .forms import MapForm
 
 class IndexView(generic.ListView):
 	template_name = 'dashboard/index.html'
@@ -22,3 +22,8 @@ class IndexView(generic.ListView):
 class SessionView(generic.DetailView):
 	template_name = 'dashboard/session.html'
 	model = Sessions
+
+class MapView(generic.FormView):
+	template_name = 'dashboard/map.html'
+	form_class = MapForm
+	success_url = '/dashboard/'
