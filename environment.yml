@@ -9,3 +9,4 @@ dependencies:
   - sqlalchemy
   - requests
   - django
+  - django-bootstrap4

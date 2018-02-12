@@ -1,1 +1,10 @@
-{{ session }}
+{% extends 'dashboard/base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}session view{% endblock %}
+
+{% block content %}
+	{{ object }}
+{% endblock %}
+
+

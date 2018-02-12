@@ -7,18 +7,18 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import get_object_or_404, render
+from django.views import generic
 
 from .models import Sessions
 
 
-def index(request):
-    latest_session_list = Sessions.objects.order_by('-updated_at')[:5]
-    template = loader.get_template('dashboard/index.html')
-    context = {
-        'latest_session_list': latest_session_list,
-    }
-    return render(request, 'dashboard/index.html', context)
+class IndexView(generic.ListView):
+	template_name = 'dashboard/index.html'
+	context_object_name = 'latest_session_list'
+	
+	def get_queryset(self):
+		return Sessions.objects.order_by('-updated_at')[:5]
 
-def session(request, session_id):
-    session = get_object_or_404(Sessions, pk=session_id)
-    return render(request, 'dashboard/session.html', {'session': session})
+class SessionView(generic.DetailView):
+	template_name = 'dashboard/session.html'
+	model = Sessions

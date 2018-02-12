@@ -18,6 +18,7 @@ class Measurements(models.Model):
         managed = False
         db_table = 'measurements'
         unique_together = (('id', 'stream'),)
+        verbose_name_plural = 'measurements'
 
 
 class Notes(models.Model):
@@ -40,6 +41,7 @@ class Notes(models.Model):
     class Meta:
         managed = False
         db_table = 'notes'
+        verbose_name_plural = 'notes'
 
 
 class Sessions(models.Model):
@@ -73,6 +75,7 @@ class Sessions(models.Model):
     class Meta:
         managed = False
         db_table = 'sessions'
+        verbose_name_plural = 'sessions'
 
 
 class Streams(models.Model):
@@ -99,6 +102,7 @@ class Streams(models.Model):
     class Meta:
         managed = False
         db_table = 'streams'
+        verbose_name_plural = 'streams'
 
 
 class Users(models.Model):
@@ -108,3 +112,4 @@ class Users(models.Model):
     class Meta:
         managed = False
         db_table = 'users'
+        verbose_name_plural = 'users'
