@@ -78,8 +78,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'elpc_air_quality',
-        'USER': 'root',
-        'PASSWORD': 'dd00ww',
+        'USER': 'elpcjd',
+        'PASSWORD': 'Elpc1234',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
