@@ -2,36 +2,118 @@
 
 {% load bootstrap4 %}
 
+{% block bootstrap4_extra_head %}
+     <!-- leaflet css -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+        integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+        crossorigin=""/>
+    <style>
+        #mapid {
+            height: 600px;
+            margin-bottom: 50px;
+        }
+    </style>
+{% endblock %}
+
 {% block title %}
     map view
 {% endblock %}
 
 {% block content %}
-    <form role="form" class="form-horizontal" method="post">
+    <form role="form" id="request" class="form-horizontal""> <!!! method="post" !!!>
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}
         {% buttons submit='OK' reset="Cancel" %}{% endbuttons %}
     </form>
+
+    <div id="mapid">
+    </div>
 {% endblock %}
 
 
 {% block bootstrap4_extra_script %}
-    <script>
-        $("#id_session").change(function() {
-            //console.log($(this).val());
-            var session_id = $(this).val();
+    <!-- leaflet js -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+       integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+       crossorigin="">
+    </script>
 
+    <script>
+        // setup map
+        var mymap = L.map('mapid').setView([41.8781, -87.6298], 13);
+        
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox.streets',
+            accessToken: 'pk.eyJ1IjoiZHJ3YWhsIiwiYSI6ImNqOG9zN25nYTA3dG8ycXJzNGpqbmE3cTgifQ.mNd1sk4ymlt8lvZTwKADOA'
+        }).addTo(mymap);
+        
+        // request callback, get sessions
+        $("#request").on("submit", function(e) {
+            // prevent default form action
+            e.preventDefault();
+            
+            // gather form data
+            var formData = {
+                'username': document.getElementById('id_username').value,
+                'session_id': document.getElementById('id_session').value,
+                'start_time': document.getElementById('id_start_time').value,
+                'end_time': document.getElementById('id_end_time').value,
+            };
+            //console.log(formData);
+            
+            // execute ajax call
             $.ajax({
-             url: '/dashboard/ajax/get_session/',
-                data: {
-                    'session_id': session_id
-                },
+                url: '/dashboard/ajax/get_sessions/',
+                data: formData,
                 dataType: 'json',
-                success: function (data) {
-                    console.log(data);
-                }
+                success: getStreams
             });
         });
+        
+        // get streams
+        function getStreams(data) {
+            var sessions = JSON.parse(data['sessions']);
+            //console.log(sessions);
+            
+            // iterate through measurements, get streams
+            for (i = 0; i < sessions.length; ++i) {
+                // execute ajax call
+                $.ajax({
+                    url: '/dashboard/ajax/get_streams/',
+                    data: {
+                        'session_id': sessions[i]['pk'],
+                    },
+                    dataType: 'json',
+                    success: getMeasurements
+                }); 
+            }
+        }
+        
+        // get measurements
+        function getMeasurements(data) {
+            var streams = JSON.parse(data['streams']);
+            //console.log(streams);
+            
+            // iterate through measurements, get streams
+            for (i = 0; i < streams.length; ++i) {
+                // check for correct sensor
+                if(streams[i]['fields']['sensor_name'] == 'AirBeam-PM') {
+                    // execute ajax call
+                    $.ajax({
+                        url: '/dashboard/ajax/get_measurements/',
+                        data: {
+                            'stream_id': streams[i]['pk'],
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            console.log(JSON.parse(data['measurements']));
+                        }
+                    });
+                }
+            }
+        }
     </script>
 {% endblock %}
 

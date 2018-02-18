@@ -11,6 +11,9 @@ from django.views import generic
 from django.core import serializers
 
 from .models import Sessions
+from .models import Streams
+from .models import Measurements
+
 from .forms import MapForm
 
 class IndexView(generic.ListView):
@@ -29,9 +32,25 @@ class MapView(generic.FormView):
 	form_class = MapForm
 	success_url = '/dashboard/'
 
-def get_session(request):
+def get_sessions(request):
     session_id = request.GET.get('session_id', None)
     data = {
-        'session': serializers.serialize("json", Sessions.objects.filter(id=session_id))
+        'sessions': serializers.serialize("json", Sessions.objects.filter(id=session_id))
     }
     return JsonResponse(data)
+
+def get_streams(request):
+    session_id = request.GET.get('session_id', None)
+    data = {
+        'streams': serializers.serialize("json", Streams.objects.filter(session=session_id))
+    }
+    return JsonResponse(data)
+
+def get_measurements(request):
+    stream_id = request.GET.get('stream_id', None)
+    data = {
+        'measurements': serializers.serialize("json", Measurements.objects.filter(stream=stream_id))
+    }
+    return JsonResponse(data)
+
+
