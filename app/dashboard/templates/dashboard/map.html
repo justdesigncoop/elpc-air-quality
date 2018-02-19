@@ -96,7 +96,7 @@
             var streams = JSON.parse(data['streams']);
             //console.log(streams);
             
-            // iterate through measurements, get streams
+            // iterate through streams, get measurements
             for (i = 0; i < streams.length; ++i) {
                 // check for correct sensor
                 if(streams[i]['fields']['sensor_name'] == 'AirBeam-PM') {
@@ -107,12 +107,38 @@
                             'stream_id': streams[i]['pk'],
                         },
                         dataType: 'json',
-                        success: function(data) {
-                            console.log(JSON.parse(data['measurements']));
-                        }
+                        success: mapMeasurements,
                     });
                 }
             }
+        }
+        
+        // map measurements
+        function mapMeasurements(data) {
+            var measurements = JSON.parse(data['measurements']);
+            //console.log(measurements);
+            
+            // iterate through measurements, maps
+            for (i = 0; i < measurements.length; ++i) {
+                // circle properties
+                var latlng = [measurements[i]['fields']['latitude'], measurements[i]['fields']['longitude']];
+                var intensity = measurements[i]['fields']['value']/150.0;
+                var color = colorMap(intensity);
+                
+                // draw circle
+                var circle = L.circle(latlng, {
+                    stroke: false,
+                    fillColor: color,
+                    fillOpacity: 0.5,
+                    radius: 5
+                }).addTo(mymap);
+             }
+        }
+        
+        // color map
+        function colorMap(value) {
+            var hue = ((1.0 - value)*100).toString(10);
+            return ["hsl(", hue, ", 100%, 50%)"].join("");
         }
     </script>
 {% endblock %}

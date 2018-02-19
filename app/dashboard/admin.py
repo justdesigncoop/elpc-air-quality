@@ -6,9 +6,10 @@ from django.contrib import admin
 # Register your models here.
 from .models import Measurements, Notes, Sessions, Streams, Users
 
-admin.site.register(Measurements)
-admin.site.register(Notes)
-admin.site.register(Sessions)
-admin.site.register(Streams)
-admin.site.register(Users)
+class UserAdmin(admin.ModelAdmin):
+    fields = ['id', 'username']
+    list_display = ['id', 'username']
+
+admin.site.register(Users, UserAdmin)
+
 
