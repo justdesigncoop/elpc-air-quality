@@ -10,9 +10,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.core import serializers
 
-from .models import Sessions
-from .models import Streams
-from .models import Measurements
+from .models import Users, Sessions, Streams, Measurements
 
 from .forms import MapForm
 
@@ -31,6 +29,12 @@ class MapView(generic.FormView):
 	template_name = 'dashboard/map.html'
 	form_class = MapForm
 	success_url = '/dashboard/'
+
+def get_users(request):
+    data = {
+        'users': serializers.serialize("json", Users.objects.filter())
+    }
+    return JsonResponse(data)
 
 def get_sessions(request):
     session_id = request.GET.get('session_id', None)
