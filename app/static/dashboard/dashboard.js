@@ -15,7 +15,8 @@ function getUsers(data, callback) {
   get sessions
  *----------------------------------------------------------------------------*/
 function getSessions(data, callback) {
-    var user_ids = JSON.stringify(data);
+    var user_ids = JSON.stringify(data['user_ids']);
+    var keywords = JSON.stringify(data['keywords']);
     //console.log(user_ids);
     
     // execute ajax call
@@ -23,6 +24,7 @@ function getSessions(data, callback) {
         url: '/dashboard/ajax/get_sessions/',
         data: {
             'user_ids': user_ids,
+            'keywords': keywords,
         },
         dataType: 'json',
         success: callback,
@@ -33,14 +35,14 @@ function getSessions(data, callback) {
   get streams
  *----------------------------------------------------------------------------*/
 function getStreams(data, callback) {
-    var sessions_ids = JSON.stringify(data);
+    var session_ids = JSON.stringify(data['session_ids']);
     //console.log(sessions);
     
     // execute ajax call
     $.ajax({
         url: '/dashboard/ajax/get_streams/',
         data: {
-            'sessions_ids': sessions_ids,
+            'session_ids': session_ids,
         },
         dataType: 'json',
         success: callback,
@@ -51,7 +53,7 @@ function getStreams(data, callback) {
   get measurements
  *----------------------------------------------------------------------------*/
 function getMeasurements(data, callback) {
-    var stream_ids = JSON.stringify(data);
+    var stream_ids = JSON.stringify(data['stream_ids']);
     //console.log(stream_ids);
     
     // execute ajax call

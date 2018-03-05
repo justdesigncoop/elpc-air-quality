@@ -15,6 +15,9 @@ from .models import Users, Sessions, Streams, Measurements
 
 from .forms import MapForm
 
+from functools import reduce
+from operator import or_
+
 import json
 
 class IndexView(generic.ListView):
@@ -41,15 +44,19 @@ def get_users(request):
 
 def get_sessions(request):
     user_ids = json.loads(request.GET.get('user_ids', None))
+    keywords = json.loads(request.GET.get('keywords', None))
+    print keywords
+    keywords_query = [Q(title__icontains=keyword) for keyword in keywords]
+    print keywords_query
     data = {
-        'sessions': serializers.serialize("json", Sessions.objects.filter(user_id__in=user_ids))
+        'sessions': serializers.serialize("json", Sessions.objects.filter(user_id__in=user_ids).filter(reduce(or_, keywords_query)))
     }
     return JsonResponse(data)
 
 def get_streams(request):
-    sessions_ids = json.loads(request.GET.get('sessions_ids', None))
+    session_ids = json.loads(request.GET.get('session_ids', None))
     data = {
-        'streams': serializers.serialize("json", Streams.objects.filter(session__in=sessions_ids))
+        'streams': serializers.serialize("json", Streams.objects.filter(session__in=session_ids))
     }
     return JsonResponse(data)
 

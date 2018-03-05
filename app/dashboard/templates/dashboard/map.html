@@ -10,8 +10,9 @@
         integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
         crossorigin=""/>
     <style>
-        #mapid {
+        #id_map {
             height: 600px;
+            width: 100%;
             margin-bottom: 50px;
         }
     </style>
@@ -22,13 +23,13 @@
 {% endblock %}
 
 {% block content %}
-    <form role="form" id="request" class="form-horizontal""> <!!! method="post" !!!>
+    <form role="form" id="id_request" class="form-horizontal""> <!!! method="post" !!!>
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}
         {% buttons submit='OK' reset="Cancel" %}{% endbuttons %}
     </form>
 
-    <div id="mapid">
+    <div id="id_map">
     </div>
 {% endblock %}
 
@@ -40,37 +41,58 @@
        crossorigin="">
     </script>
     
+    <!-- leaflet easyPrint -->
+    <script src=" https://cdn.rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js">
+    </script>
+   
+    
     <!-- dashboard functions -->
     <script src="{% static 'dashboard/dashboard.js' %}"  type="text/javascript">
     </script>
 
     <script>
         /*----------------------------------------------------------------------------
+          global vars setup
+         *----------------------------------------------------------------------------*/
+        // keywords setup
+        $('#id_keywords').val('');
+        var keywordsTimeout = null;
+        var keywordsList = [''];
+        
+        // user ids list
+        var userIds = [];
+        
+        /*----------------------------------------------------------------------------
           map setup
-         *----------------------------------------------------------------------------*/           
+         *----------------------------------------------------------------------------*/
+        var attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
+        var accessToken = 'pk.eyJ1IjoiZHJ3YWhsIiwiYSI6ImNqOG9zN25nYTA3dG8ycXJzNGpqbmE3cTgifQ.mNd1sk4ymlt8lvZTwKADOA';
+        
+        // tile layers
         var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-            maxZoom: 18,
+            attribution: attribution,
             id: 'mapbox.streets',
-            accessToken: 'pk.eyJ1IjoiZHJ3YWhsIiwiYSI6ImNqOG9zN25nYTA3dG8ycXJzNGpqbmE3cTgifQ.mNd1sk4ymlt8lvZTwKADOA'
+            accessToken: accessToken,
         });
         
         var light = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-            maxZoom: 18,
+            attribution: attribution,
             id: 'mapbox.light',
-            accessToken: 'pk.eyJ1IjoiZHJ3YWhsIiwiYSI6ImNqOG9zN25nYTA3dG8ycXJzNGpqbmE3cTgifQ.mNd1sk4ymlt8lvZTwKADOA'
+            accessToken: accessToken,
         });
         
+        // marker layer(s)
         var markers = L.layerGroup([]);
         
-        var mymap = L.map('mapid', {
+        // map
+        var map = L.map('id_map', {
             center: [41.8781, -87.6298],
             zoom: 13,
             preferCanvas: true,
             layers: [streets, markers],
         });
-                
+        
+        // control layers
         var baseMaps = {
             "Streets": streets,
             "Light": light,
@@ -80,7 +102,14 @@
             "Markers": markers,
         };
         
-        L.control.layers(baseMaps, overlayMaps).addTo(mymap);
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
+        
+        var printPlugin = L.easyPrint({
+      		sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
+      		filename: 'map',
+      		exportOnly: true,
+      		hideControlContainer: true
+		}).addTo(map); 
         
         /*----------------------------------------------------------------------------
           document ready callback
@@ -111,19 +140,24 @@
           users select callback
          *----------------------------------------------------------------------------*/
         $("#id_users").change(function() {            
-            var user_ids = getSelectedOptions("#id_users");
+            userIds = getSelectedOptions("#id_users");
             //console.log(users);
             
             resetSessionSelect();
             
             // gets sessions, populate list
-            getSessions(user_ids, sessionsCallback);
+            getSessions({
+                'user_ids': userIds,
+                'keywords': keywordsList,
+                }, sessionsCallback);
         });
         
         /*----------------------------------------------------------------------------
           all users on change callback
          *----------------------------------------------------------------------------*/
         $("#id_all_users").change(function() {
+            resetSessionSelect();
+            
             // select all users, disable users input
             if(this.checked) {
                 //console.log("checked");
@@ -131,11 +165,14 @@
                 $("#id_users").prop('disabled', true);
                 
                 // get list of options
-                var users = getSelectedOptions("#id_users");
+                userIds = getSelectedOptions("#id_users");
                 //console.log(users);
                 
                 // populate session data for all users
-                getSessions(users, sessionsCallback);
+                getSessions({
+                    'user_ids': userIds,
+                    'keywords': keywordsList,
+                    }, sessionsCallback);
             }
             // enable users input
             else {
@@ -143,9 +180,39 @@
                 $("#id_users option").prop('selected', false);
                 $("#id_users").prop('disabled', false);
             }
-            
-            resetSessionSelect();
         });
+        
+        /*----------------------------------------------------------------------------
+          keywords on input callback
+         *----------------------------------------------------------------------------*/
+        $("#id_keywords").on('input', function(e) {
+            //console.log(e);
+            
+            // clear timeout
+            clearTimeout(keywordsTimeout);
+            
+            // set new timeout
+            keywordsTimeout = setTimeout(keywordsCallback, 500);
+         });
+         
+        /*----------------------------------------------------------------------------
+          keywords timeout callback
+         *----------------------------------------------------------------------------*/
+         function keywordsCallback() {
+            //console.log("keywords callback");
+            resetSessionSelect();
+            
+            // update keywords list
+            var keywords = $("#id_keywords").val();
+            keywordsList = keywords.split(' ');
+            //console.log(keywordsList);
+
+            // gets sessions, populate list
+            getSessions({
+                'user_ids': userIds,
+                'keywords': keywordsList,
+                }, sessionsCallback);
+         }
         
         /*----------------------------------------------------------------------------
           reset session select
@@ -190,14 +257,16 @@
         /*----------------------------------------------------------------------------
           request callback
          *----------------------------------------------------------------------------*/  
-        $("#request").on('submit', function(e) {
+        $("#id_request").on('submit', function(e) {
             // prevent default form action
             e.preventDefault();
             
-            var sessions_ids = getSelectedOptions("#id_sessions");
-            //console.log(sessions_ids);
+            var session_ids = getSelectedOptions("#id_sessions");
+            //console.log(session_ids);
             
-            getStreams(sessions_ids, streamsCallback);
+            getStreams({
+                'session_ids': session_ids,
+                }, streamsCallback);
         });
         
         /*----------------------------------------------------------------------------
@@ -217,7 +286,12 @@
             }
             //console.log(stream_ids);
             
-            getMeasurements(stream_ids, measurementsCallback);
+            // empty markers
+            markers.clearLayers();
+            
+            getMeasurements({
+                'stream_ids': stream_ids,
+                }, measurementsCallback);
         }
         
         /*----------------------------------------------------------------------------
@@ -226,9 +300,6 @@
         function measurementsCallback(data) {
             var measurements = JSON.parse(data['measurements']);
             //console.log(measurements);
-            
-            // empty markers
-            markers.clearLayers();
             
             // iterate through measurements, maps
             for (i = 0; i < measurements.length; ++i) {
@@ -245,8 +316,16 @@
                     radius: 5
                 });
                 
+                // popup text
+                popup = "<table> \
+                    <tr><td>date</td><td>" + measurements[i]['fields']['time'] + "</td></tr> \
+                    <tr><td>value</td><td>" + measurements[i]['fields']['value'] + "</td></tr> \
+                    <tr><td>latitude</td><td>" + measurements[i]['fields']['latitude'] + "</td></tr> \
+                    <tr><td>longitude</td><td>" + measurements[i]['fields']['longitude'] + "</td></tr> \
+                    </table>"
+                
                 // add to marker list
-                markers.addLayer(marker);
+                markers.addLayer(marker.bindPopup(popup));
              }
         }
         
