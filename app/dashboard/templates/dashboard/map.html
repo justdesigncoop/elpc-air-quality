@@ -26,7 +26,7 @@
     <form role="form" id="id_request" class="form-horizontal""> <!!! method="post" !!!>
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}
-        {% buttons submit='OK' reset="Cancel" %}{% endbuttons %}
+        {% buttons submit='Map' reset="Clear" %}{% endbuttons %}
     </form>
 
     <div id="id_map">
@@ -54,13 +54,14 @@
         /*----------------------------------------------------------------------------
           global vars setup
          *----------------------------------------------------------------------------*/
-        // keywords setup
-        $('#id_keywords').val('');
-        var keywordsTimeout = null;
-        var keywordsList = [''];
+        var keywordsTimeout;
+        var keywordsList;
+        resetKeywords();
         
-        // user ids list
-        var userIds = [];
+        var userIds;
+        resetUserSelect();
+        
+        resetSessionSelect();
         
         /*----------------------------------------------------------------------------
           map setup
@@ -122,6 +123,15 @@
             $("#id_all_users").prop('checked', false);
             $("#id_all_sessions").prop('checked', false);
         });
+        
+        /*----------------------------------------------------------------------------
+          reset users select
+         *----------------------------------------------------------------------------*/
+        function resetUserSelect() {
+            $("#id_users option").prop('selected', false);
+            $("#id_users").prop('disabled', false);
+            userIds = [];
+        }
 
         /*----------------------------------------------------------------------------
           users data callback
@@ -177,10 +187,18 @@
             // enable users input
             else {
                 //console.log("unchecked");
-                $("#id_users option").prop('selected', false);
-                $("#id_users").prop('disabled', false);
+                resetUserSelect();
             }
         });
+        
+        /*----------------------------------------------------------------------------
+          reset keywords
+         *----------------------------------------------------------------------------*/
+        function resetKeywords() {
+            $('#id_keywords').val('');
+            keywordsTimeout = null;
+            keywordsList = [''];
+        }
         
         /*----------------------------------------------------------------------------
           keywords on input callback
@@ -255,7 +273,7 @@
         });
         
         /*----------------------------------------------------------------------------
-          request callback
+          submit callback
          *----------------------------------------------------------------------------*/  
         $("#id_request").on('submit', function(e) {
             // prevent default form action
@@ -267,6 +285,19 @@
             getStreams({
                 'session_ids': session_ids,
                 }, streamsCallback);
+        });
+        
+         /*----------------------------------------------------------------------------
+          reset callback
+         *----------------------------------------------------------------------------*/  
+        $("#id_request").on('reset', function(e) {
+            // prevent default form action
+            e.preventDefault();
+            
+            resetUserSelect();
+            resetKeywords();
+            resetSessionSelect();
+            markers.clearLayers();
         });
         
         /*----------------------------------------------------------------------------

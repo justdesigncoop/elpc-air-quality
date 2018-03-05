@@ -45,9 +45,9 @@ def get_users(request):
 def get_sessions(request):
     user_ids = json.loads(request.GET.get('user_ids', None))
     keywords = json.loads(request.GET.get('keywords', None))
-    print keywords
+    
     keywords_query = [Q(title__icontains=keyword) for keyword in keywords]
-    print keywords_query
+    
     data = {
         'sessions': serializers.serialize("json", Sessions.objects.filter(user_id__in=user_ids).filter(reduce(or_, keywords_query)))
     }
