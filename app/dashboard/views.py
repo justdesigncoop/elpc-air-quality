@@ -47,16 +47,16 @@ def get_sessions(request):
     return JsonResponse(data)
 
 def get_streams(request):
-    sessions = json.loads(request.GET.get('sessions', None))
+    sessions_ids = json.loads(request.GET.get('sessions_ids', None))
     data = {
-        'streams': serializers.serialize("json", Streams.objects.filter(session__in=sessions))
+        'streams': serializers.serialize("json", Streams.objects.filter(session__in=sessions_ids))
     }
     return JsonResponse(data)
 
 def get_measurements(request):
-    stream_id = request.GET.get('stream_id', None)
+    stream_ids = json.loads(request.GET.get('stream_ids', None))
     data = {
-        'measurements': serializers.serialize("json", Measurements.objects.filter(stream=stream_id))
+        'measurements': serializers.serialize("json", Measurements.objects.filter(stream__in=stream_ids))
     }
     return JsonResponse(data)
 

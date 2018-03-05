@@ -47,17 +47,40 @@
     <script>
         /*----------------------------------------------------------------------------
           map setup
-         *----------------------------------------------------------------------------*/  
-        var mymap = L.map('mapid', {
-            preferCanvas: true,
-            }).setView([41.8781, -87.6298], 13);
-            
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+         *----------------------------------------------------------------------------*/           
+        var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
             maxZoom: 18,
             id: 'mapbox.streets',
             accessToken: 'pk.eyJ1IjoiZHJ3YWhsIiwiYSI6ImNqOG9zN25nYTA3dG8ycXJzNGpqbmE3cTgifQ.mNd1sk4ymlt8lvZTwKADOA'
-        }).addTo(mymap);
+        });
+        
+        var light = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox.light',
+            accessToken: 'pk.eyJ1IjoiZHJ3YWhsIiwiYSI6ImNqOG9zN25nYTA3dG8ycXJzNGpqbmE3cTgifQ.mNd1sk4ymlt8lvZTwKADOA'
+        });
+        
+        var markers = L.layerGroup([]);
+        
+        var mymap = L.map('mapid', {
+            center: [41.8781, -87.6298],
+            zoom: 13,
+            preferCanvas: true,
+            layers: [streets, markers],
+        });
+                
+        var baseMaps = {
+            "Streets": streets,
+            "Light": light,
+        };
+        
+        var overlayMaps = {
+            "Markers": markers,
+        };
+        
+        L.control.layers(baseMaps, overlayMaps).addTo(mymap);
         
         /*----------------------------------------------------------------------------
           document ready callback
@@ -88,13 +111,13 @@
           users select callback
          *----------------------------------------------------------------------------*/
         $("#id_users").change(function() {            
-            var users = getSelectedOptions("#id_users");
+            var user_ids = getSelectedOptions("#id_users");
             //console.log(users);
             
             resetSessionSelect();
             
             // gets sessions, populate list
-            getSessions(users, sessionsCallback);
+            getSessions(user_ids, sessionsCallback);
         });
         
         /*----------------------------------------------------------------------------
@@ -108,7 +131,8 @@
                 $("#id_users").prop('disabled', true);
                 
                 // get list of options
-                var users = getSelectedOptions("#id_users");console.log(users);
+                var users = getSelectedOptions("#id_users");
+                //console.log(users);
                 
                 // populate session data for all users
                 getSessions(users, sessionsCallback);
@@ -170,24 +194,41 @@
             // prevent default form action
             e.preventDefault();
             
-            var sessions = getSelectedOptions("#id_sessions");
-            console.log(sessions);
+            var sessions_ids = getSelectedOptions("#id_sessions");
+            //console.log(sessions_ids);
             
-            //getStreams(sessions);
+            getStreams(sessions_ids, streamsCallback);
         });
         
         /*----------------------------------------------------------------------------
           streams data callback
          *----------------------------------------------------------------------------*/
         function streamsCallback(data) {
+            var streams = JSON.parse(data['streams']);
+            //console.log(streams);
+            
+            // iterate through streams, get stream ids
+            var stream_ids = [];
+            for (i = 0; i < streams.length; ++i) {
+                // check for air quality sensor
+                if(streams[i]['fields']['sensor_name'] == 'AirBeam-PM') {
+                    stream_ids.push(streams[i]['pk']);
+                }
+            }
+            //console.log(stream_ids);
+            
+            getMeasurements(stream_ids, measurementsCallback);
         }
         
         /*----------------------------------------------------------------------------
           map measurements
          *----------------------------------------------------------------------------*/
-        function mapMeasurements(data) {
+        function measurementsCallback(data) {
             var measurements = JSON.parse(data['measurements']);
             //console.log(measurements);
+            
+            // empty markers
+            markers.clearLayers();
             
             // iterate through measurements, maps
             for (i = 0; i < measurements.length; ++i) {
@@ -196,13 +237,16 @@
                 var intensity = measurements[i]['fields']['value']/150.0;
                 var color = colorMap(intensity);
                 
-                // draw circle
-                var circle = L.circle(latlng, {
+                // draw markers
+                var marker = L.circleMarker(latlng, {
                     stroke: false,
                     fillColor: color,
                     fillOpacity: 0.5,
                     radius: 5
-                }).addTo(mymap);
+                });
+                
+                // add to marker list
+                markers.addLayer(marker);
              }
         }
         

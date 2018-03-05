@@ -6,9 +6,9 @@ from django import forms
 from .models import Sessions, Users
 
 class MapForm(forms.Form):
-    users = forms.MultipleChoiceField(choices=[])
+    users = forms.MultipleChoiceField(choices=[], required=True)
     all_users = forms.BooleanField(required=False)
-    keywords = forms.CharField()
+    keywords = forms.CharField(required=False)
     sessions = forms.MultipleChoiceField(choices=[], required=True)
     all_sessions = forms.BooleanField(required=False)
     #start_time = forms.DateTimeField(required=False)

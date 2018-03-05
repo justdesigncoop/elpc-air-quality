@@ -33,14 +33,14 @@ function getSessions(data, callback) {
   get streams
  *----------------------------------------------------------------------------*/
 function getStreams(data, callback) {
-    var sessions = JSON.stringify(data);
+    var sessions_ids = JSON.stringify(data);
     //console.log(sessions);
     
     // execute ajax call
     $.ajax({
         url: '/dashboard/ajax/get_streams/',
         data: {
-            'sessions': sessions,
+            'sessions_ids': sessions_ids,
         },
         dataType: 'json',
         success: callback,
@@ -51,24 +51,18 @@ function getStreams(data, callback) {
   get measurements
  *----------------------------------------------------------------------------*/
 function getMeasurements(data, callback) {
-    var streams = JSON.parse(data['streams']);
-    //console.log(streams);
+    var stream_ids = JSON.stringify(data);
+    //console.log(stream_ids);
     
-    // iterate through streams, get measurements
-    for (i = 0; i < streams.length; ++i) {
-        // check for correct sensor
-        if(streams[i]['fields']['sensor_name'] == 'AirBeam-PM') {
-            // execute ajax call
-            $.ajax({
-                url: '/dashboard/ajax/get_measurements/',
-                data: {
-                    'stream_id': streams[i]['pk'],
-                },
-                dataType: 'json',
-                success: callback,
-            });
-        }
-    }
+    // execute ajax call
+    $.ajax({
+        url: '/dashboard/ajax/get_measurements/',
+        data: {
+            'stream_ids': stream_ids,
+        },
+        dataType: 'json',
+        success: callback,
+    });
 }
 
 /*----------------------------------------------------------------------------
