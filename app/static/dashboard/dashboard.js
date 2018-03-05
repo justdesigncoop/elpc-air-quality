@@ -1,4 +1,6 @@
-// get users
+/*----------------------------------------------------------------------------
+  get users
+ *----------------------------------------------------------------------------*/
 function getUsers(data, callback) {
     // execute ajax call
     $.ajax({
@@ -9,42 +11,45 @@ function getUsers(data, callback) {
     });
 }
 
-// get sessions
+/*----------------------------------------------------------------------------
+  get sessions
+ *----------------------------------------------------------------------------*/
 function getSessions(data, callback) {
-    //console.log(data);
+    var user_ids = JSON.stringify(data);
+    //console.log(user_ids);
     
-    // iterate through measurements, get streams
-    for (i = 0; i < sessions.length; ++i) {
-        // execute ajax call
-        $.ajax({
-            url: '/dashboard/ajax/get_sessions/',
-            data: data,
-            dataType: 'json',
-            success: getStreams
-        });
-    }
+    // execute ajax call
+    $.ajax({
+        url: '/dashboard/ajax/get_sessions/',
+        data: {
+            'user_ids': user_ids,
+        },
+        dataType: 'json',
+        success: callback,
+    });
 }
 
-// get streams
+/*----------------------------------------------------------------------------
+  get streams
+ *----------------------------------------------------------------------------*/
 function getStreams(data, callback) {
-    var sessions = JSON.parse(data['sessions']);
+    var sessions = JSON.stringify(data);
     //console.log(sessions);
     
-    // iterate through measurements, get streams
-    for (i = 0; i < sessions.length; ++i) {
-        // execute ajax call
-        $.ajax({
-            url: '/dashboard/ajax/get_streams/',
-            data: {
-                'session_id': sessions[i]['pk'],
-            },
-            dataType: 'json',
-            success: callback,
-        }); 
-    }
+    // execute ajax call
+    $.ajax({
+        url: '/dashboard/ajax/get_streams/',
+        data: {
+            'sessions': sessions,
+        },
+        dataType: 'json',
+        success: callback,
+    }); 
 }
 
-// get measurements
+/*----------------------------------------------------------------------------
+  get measurements
+ *----------------------------------------------------------------------------*/
 function getMeasurements(data, callback) {
     var streams = JSON.parse(data['streams']);
     //console.log(streams);
@@ -64,5 +69,21 @@ function getMeasurements(data, callback) {
             });
         }
     }
+}
+
+/*----------------------------------------------------------------------------
+  get selected options
+ *----------------------------------------------------------------------------*/
+function getSelectedOptions(id) {
+    // get list of options as int
+    var options = [];
+    $(id.concat(" option")).each(function() {
+        if(this.selected) {
+            options.push(parseInt($(this).val(), 10));
+        }
+    });
+    //console.log(options);
+    
+    return options;
 }
 
