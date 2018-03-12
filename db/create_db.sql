@@ -189,16 +189,85 @@ CREATE TABLE measurements (
   milliseconds INT(11) DEFAULT 0,
   measured_value FLOAT,
   created_at DATE,
+  ward INT(11),
+  neighborhood INT(11),
+  tract INT(11),
   PRIMARY KEY (id, stream_id),
   INDEX index_measurements_on_latitude (latitude),
   INDEX index_measurements_on_longitude_and_latitude (latitude, longitude),
   INDEX index_measurements_on_longitude (longitude),
   INDEX index_measurements_on_stream_id (stream_id),
   INDEX index_measurements_on_time (time),
+  INDEX index_measurements_on_ward (ward),
+  INDEX index_measurements_on_neighborhood (neighborhood),
+  INDEX index_measurements_on_tract (tract),
   CONSTRAINT constrain_measurements_on_stream_id FOREIGN KEY (stream_id)
-    REFERENCES streams(id) ON DELETE CASCADE ON UPDATE RESTRICT
+    REFERENCES streams(id) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT constrain_measurements_on_ward FOREIGN KEY (ward)
+    REFERENCES wards(ward) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT constrain_measurements_on_neighborhood FOREIGN KEY (neighborhood)
+    REFERENCES neighborhoods(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT constrain_measurements_on_census_tract FOREIGN KEY (tract)
+    REFERENCES census(tract) ON DELETE NO ACTION ON UPDATE NO ACTION
 )
 ENGINE = INNODB
 CHARACTER SET utf8
 COLLATE utf8_general_ci
 ROW_FORMAT = DYNAMIC;
+
+--
+-- Drop table "wards"
+--
+DROP TABLE IF EXISTS wards;
+
+--
+-- Create table "wards"
+--
+CREATE TABLE wards (
+  ward INT(11) NOT NULL,
+  geo LONGTEXT,
+  PRIMARY KEY (ward)
+)
+ENGINE = INNODB
+CHARACTER SET utf8
+COLLATE utf8_general_ci
+ROW_FORMAT = DYNAMIC;
+
+--
+-- Drop table "neighborhoods"
+--
+DROP TABLE IF EXISTS neighborhoods;
+
+--
+-- Create table "neighborhoods"
+--
+CREATE TABLE neighborhoods (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  neighborhood VARCHAR(40),
+  geo LONGTEXT,
+  PRIMARY KEY (id),
+  INDEX index_neighborhoods_on_name (name)
+)
+ENGINE = INNODB
+CHARACTER SET utf8
+COLLATE utf8_general_ci
+ROW_FORMAT = DYNAMIC;
+
+--
+-- Drop table "census"
+--
+DROP TABLE IF EXISTS census;
+
+--
+-- Create table "census"
+--
+CREATE TABLE census (
+  tract BIGINT(11) NOT NULL,
+  geo LONGTEXT,
+  PRIMARY KEY (tract)
+)
+ENGINE = INNODB
+CHARACTER SET utf8
+COLLATE utf8_general_ci
+ROW_FORMAT = DYNAMIC;
+

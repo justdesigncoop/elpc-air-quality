@@ -83,3 +83,25 @@ function getSelectedOptions(id) {
     return options;
 }
 
+/*----------------------------------------------------------------------------
+  color map
+ *----------------------------------------------------------------------------*/
+function colorMap(value) {
+    //var hue = ((1.0 - value)*100).toString(10);
+    //return ['hsl(', hue, ', 100%, 50%)'].join('');
+    
+    // color mapping from AirCasting
+    if(value < 12.0) {
+        return '#2DA641';
+    }
+    else if(value < 35.0) {
+        return '#F9DC2E';
+    }
+    else if(value < 55.0) {
+        return '#F57F22';
+    }
+    else {
+        return '#F4001C';
+    }
+}
+

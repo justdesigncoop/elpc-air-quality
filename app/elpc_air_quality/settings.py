@@ -25,7 +25,7 @@ SECRET_KEY = 'llr^iaxdvd^q#4=n9&%(5tie1jsa1*#e^#++w#0fnbb7ie22wh'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '192.168.1.12', '.danwahl.net']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '192.168.1.12', '.danwahl.net', '.elasticbeanstalk.com']
 
 
 # Application definition
@@ -80,7 +80,15 @@ WSGI_APPLICATION = 'elpc_air_quality.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'rds': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ['RDS_DB_NAME'],
+        'USER': os.environ['RDS_USERNAME'],
+        'PASSWORD': os.environ['RDS_PASSWORD'],
+        'HOST': os.environ['RDS_HOSTNAME'],
+        'PORT': os.environ['RDS_PORT'],
+    },
+    'dev': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'elpc_air_quality',
         'USER': 'elpcjd',
@@ -89,6 +97,9 @@ DATABASES = {
         'PORT': '3306',
     }
 }
+
+default_database = os.environ.get('DJANGO_DATABASE', 'dev')
+DATABASES['default'] = DATABASES[default_database]
 
 
 # Password validation
