@@ -46,7 +46,7 @@
 {% endblock %}
 
 {% block title %}
-    map view
+    mobile sessions view
 {% endblock %}
 
 {% block content %}
@@ -71,9 +71,6 @@
     <!-- leaflet easyPrint -->
     <script src=" https://cdn.rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js">
     </script>
-   
-    <!-- leaflet omnivore -->
-    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
     
     <!-- dashboard functions -->
     <script src="{% static 'dashboard/dashboard.js' %}"  type="text/javascript">
@@ -82,7 +79,7 @@
     <script>
         /*----------------------------------------------------------------------------
           global vars setup
-         *----------------------------------------------------------------------------*/
+         *----------------------------------------------------------------------------*/      
         var keywordsTimeout;
         var keywordsList;
         resetKeywords();
@@ -146,17 +143,16 @@
 
 	    legend.onAdd = function(map) {
 		    var div = L.DomUtil.create('div', 'info legend'),
-			    grades = [0.0, 12.0, 35.0, 55.0],
 			    labels = [],
 			    from, to;
 
-		    for (var i = 0; i < grades.length; i++) {
-			    from = grades[i];
-			    to = grades[i + 1];
+		    for (var i = 0; i < pm_levels.length; i++) {
+			    from = pm_levels[i];
+			    to = pm_levels[i + 1];
 
 			    labels.push(
 				    '<i style="background:' + colorMap(from + 1) + '"></i> ' +
-				    from + (to ? '&ndash;' + to : '+'));
+				    from + (to ? '–' + to : '+'));
 		    }
 
 		    div.innerHTML = labels.join('<br>');
@@ -175,26 +171,7 @@
             // disable checkboxes
             $("#id_all_users").prop('checked', false);
             $("#id_all_sessions").prop('checked', false);
-            
-            // neighborhood test
-            data = []
-            data['neighborhood_ids'] = [1, 2, 3]
-            getNeighborhoods(data, neighborhoodsCallback);
         });
-        
-         /*----------------------------------------------------------------------------
-          neighborhoods data callback
-         *----------------------------------------------------------------------------*/
-        function neighborhoodsCallback(data) {
-            var neighborhoods = JSON.parse(data['neighborhoods'])
-            //console.log(neighborhoods);
-            
-            // draw neighborhoods
-            for (i = 0; i < neighborhoods.length; ++i) {
-                //console.log(neighborhoods[i]['fields']['geo']);
-                omnivore.wkt.parse(neighborhoods[i]['fields']['geo']).addTo(map);
-            }
-        }
         
         /*----------------------------------------------------------------------------
           reset users select
@@ -430,9 +407,7 @@
                 // add to marker list
                 markers.addLayer(marker.bindPopup(popup));
              }
-        }
-        
-        
+        }        
     </script>
 {% endblock %}
 

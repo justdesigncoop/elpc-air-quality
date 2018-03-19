@@ -13,7 +13,7 @@ if __name__ == '__main__':
         datefmt='%Y-%m-%d %H:%M:%S',
         level=logging.DEBUG)
     
-    logging.info('import geo started')
+    logging.info('locate meas started')
     
     # create engine
     try:
@@ -99,3 +99,5 @@ if __name__ == '__main__':
                         logging.error(e)
                         sys.exit(1)
                     break
+    
+    logging.info('locate meas finished')

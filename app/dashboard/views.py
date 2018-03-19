@@ -11,9 +11,9 @@ from django.views import generic
 from django.core import serializers
 from django.db.models import Q
 
-from .models import Users, Sessions, Streams, Measurements
+from .models import Users, Sessions, Streams, Measurements, Neighborhoods, Census, Wards
 
-from .forms import MapForm
+from .forms import MobileSessionsForm, DataValuesForm
 
 from functools import reduce
 from operator import or_
@@ -27,13 +27,23 @@ class IndexView(generic.ListView):
 	def get_queryset(self):
 		return Sessions.objects.order_by('-updated_at')[:5]
 
-class SessionView(generic.DetailView):
-	template_name = 'dashboard/session.html'
-	model = Sessions
+#class SessionView(generic.DetailView):
+#	template_name = 'dashboard/session.html'
+#	model = Sessions
 
-class MapView(generic.FormView):
-	template_name = 'dashboard/map.html'
-	form_class = MapForm
+#class MapView(generic.FormView):
+#	template_name = 'dashboard/map.html'
+#	form_class = MapForm
+#	success_url = '/dashboard/'
+
+class MobileSessionsView(generic.FormView):
+	template_name = 'dashboard/mobile_sessions.html'
+	form_class = MobileSessionsForm
+	success_url = '/dashboard/'
+	
+class DataValuesView(generic.FormView):
+	template_name = 'dashboard/data_values.html'
+	form_class = DataValuesForm
 	success_url = '/dashboard/'
 
 def get_users(request):
@@ -43,28 +53,56 @@ def get_users(request):
     return JsonResponse(data)
 
 def get_sessions(request):
-    user_ids = json.loads(request.GET.get('user_ids', None))
-    keywords = json.loads(request.GET.get('keywords', None))
+    user_ids = json.loads(request.GET.get('user_ids', '[]'))
+    keywords = json.loads(request.GET.get('keywords', '[]'))
     
-    keywords_query = [Q(title__icontains=keyword) for keyword in keywords]
+    sessions = Sessions.objects.filter()
+    
+    if user_ids:
+        sessions = sessions.filter(user_id__in=user_ids)
+    
+    if keywords:
+        keywords_query = [Q(title__icontains=keyword) for keyword in keywords]
+        sessions = sessions.filter(reduce(or_, keywords_query))
     
     data = {
-        'sessions': serializers.serialize("json", Sessions.objects.filter(user_id__in=user_ids).filter(reduce(or_, keywords_query)))
+        'sessions': serializers.serialize("json", sessions)
     }
     return JsonResponse(data)
 
 def get_streams(request):
-    session_ids = json.loads(request.GET.get('session_ids', None))
+    session_ids = json.loads(request.GET.get('session_ids', '[]'))
     data = {
         'streams': serializers.serialize("json", Streams.objects.filter(session__in=session_ids))
     }
     return JsonResponse(data)
 
 def get_measurements(request):
-    stream_ids = json.loads(request.GET.get('stream_ids', None))
+    stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
+    neighborhood_ids = json.loads(request.GET.get('neighborhood_ids', '[]'))
+    
+    measurements = Measurements.objects.filter()
+    
+    if stream_ids:
+        measurements = measurements.filter(stream__in=stream_ids)
+    
+    if neighborhood_ids:
+        measurements = measurements.filter(neighborhood_id__in=neighborhood_ids)
+    
     data = {
-        'measurements': serializers.serialize("json", Measurements.objects.filter(stream__in=stream_ids))
+        'measurements': serializers.serialize("json", measurements)
     }
     return JsonResponse(data)
 
-
+def get_neighborhoods(request):
+    neighborhood_ids = json.loads(request.GET.get('neighborhood_ids', '[]'))
+    
+    neighborhoods = Neighborhoods.objects.filter()
+    
+    if neighborhood_ids:
+        neighborhoods = neighborhoods.filter(id__in=neighborhood_ids)
+    
+    data = {
+        'neighborhoods': serializers.serialize("json", neighborhoods)
+    }
+    return JsonResponse(data)

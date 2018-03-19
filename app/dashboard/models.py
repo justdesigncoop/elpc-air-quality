@@ -13,7 +13,10 @@ class Measurements(models.Model):
     milliseconds = models.IntegerField(blank=True, null=True)
     measured_value = models.FloatField(blank=True, null=True)
     created_at = models.DateField(blank=True, null=True)
-
+    ward = models.ForeignKey('Wards', models.DO_NOTHING, db_column='ward', blank=True, null=True)
+    neighborhood = models.ForeignKey('Neighborhoods', models.DO_NOTHING, blank=True, null=True)
+    tract = models.ForeignKey('Census', models.DO_NOTHING, db_column='tract', blank=True, null=True)
+    
     class Meta:
         managed = False
         db_table = 'measurements'
@@ -113,3 +116,32 @@ class Users(models.Model):
         managed = False
         db_table = 'users'
         verbose_name_plural = 'users'
+
+class Census(models.Model):
+    tract = models.BigIntegerField(primary_key=True)
+    geo = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'census'
+        verbose_name_plural = 'census'
+
+class Neighborhoods(models.Model):
+    id = models.IntegerField(primary_key=True)
+    neighborhood = models.CharField(max_length=40, blank=True, null=True)
+    geo = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'neighborhoods'
+        verbose_name_plural = 'neighborhoods'
+
+class Wards(models.Model):
+    ward = models.IntegerField(primary_key=True)
+    geo = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'wards'
+        verbose_name_plural = 'wards'
+

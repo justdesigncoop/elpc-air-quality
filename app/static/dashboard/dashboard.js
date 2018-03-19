@@ -1,4 +1,9 @@
 /*----------------------------------------------------------------------------
+  global vars
+ *----------------------------------------------------------------------------*/
+var pm_levels = [0.0, 12.0, 35.0, 55.0];
+
+/*----------------------------------------------------------------------------
   get users
  *----------------------------------------------------------------------------*/
 function getUsers(data, callback) {
@@ -54,6 +59,7 @@ function getStreams(data, callback) {
  *----------------------------------------------------------------------------*/
 function getMeasurements(data, callback) {
     var stream_ids = JSON.stringify(data['stream_ids']);
+    var neighborhood_ids = JSON.stringify(data['neighborhood_ids']);
     //console.log(stream_ids);
     
     // execute ajax call
@@ -61,6 +67,7 @@ function getMeasurements(data, callback) {
         url: '/dashboard/ajax/get_measurements/',
         data: {
             'stream_ids': stream_ids,
+            'neighborhood_ids': neighborhood_ids,
         },
         dataType: 'json',
         success: callback,
@@ -91,17 +98,35 @@ function colorMap(value) {
     //return ['hsl(', hue, ', 100%, 50%)'].join('');
     
     // color mapping from AirCasting
-    if(value < 12.0) {
+    if(value < pm_levels[1]) {
         return '#2DA641';
     }
-    else if(value < 35.0) {
+    else if(value < pm_levels[2]) {
         return '#F9DC2E';
     }
-    else if(value < 55.0) {
+    else if(value < pm_levels[3]) {
         return '#F57F22';
     }
     else {
         return '#F4001C';
     }
+}
+
+/*----------------------------------------------------------------------------
+  get neighborhoods
+ *----------------------------------------------------------------------------*/
+function getNeighborhoods(data, callback) {
+    var neighborhood_ids = JSON.stringify(data['neighborhood_ids']);
+    //console.log(neighborhood_ids);
+    
+    // execute ajax call
+    $.ajax({
+        url: '/dashboard/ajax/get_neighborhoods/',
+        data: {
+            'neighborhood_ids': neighborhood_ids,
+        },
+        dataType: 'json',
+        success: callback,
+    });
 }
 

@@ -82,15 +82,22 @@
     <script>
         /*----------------------------------------------------------------------------
           global vars setup
-         *----------------------------------------------------------------------------*/
-        var keywordsTimeout;
-        var keywordsList;
-        resetKeywords();
-        
+         *----------------------------------------------------------------------------*/         
         var userIds;
         resetUserSelect();
         
-        resetSessionSelect();
+        var geo_types = {
+            NONE: 0,
+            CENSUS: 1,
+            NEIGHBORHOODS: 2,
+            WARDS: 3,
+            properties: {
+                0: {name: '', value: 0},
+                1: {name: 'Census', value: 1},
+                2: {name: 'Neighborhoods', value: 2},
+                3: {name: 'Wards', value: 3},
+           }
+        };
         
         /*----------------------------------------------------------------------------
           map setup
@@ -111,15 +118,16 @@
             accessToken: accessToken,
         });
         
-        // marker layer(s)
+        // layer groups
         var markers = L.layerGroup([]);
+        var geo = L.layerGroup([]);
         
         // map
         var map = L.map('id_map', {
             center: [41.8781, -87.6298],
             zoom: 13,
             preferCanvas: true,
-            layers: [streets, markers],
+            layers: [streets, markers, geo],
         });
         
         // control layers
@@ -130,6 +138,7 @@
         
         var overlayMaps = {
             "Markers": markers,
+            "Geo": geo,
         };
         
         L.control.layers(baseMaps, overlayMaps).addTo(map);
@@ -146,17 +155,16 @@
 
 	    legend.onAdd = function(map) {
 		    var div = L.DomUtil.create('div', 'info legend'),
-			    grades = [0.0, 12.0, 35.0, 55.0],
 			    labels = [],
 			    from, to;
 
-		    for (var i = 0; i < grades.length; i++) {
-			    from = grades[i];
-			    to = grades[i + 1];
+		    for (var i = 0; i < pm_levels.length; i++) {
+			    from = pm_levels[i];
+			    to = pm_levels[i + 1];
 
 			    labels.push(
 				    '<i style="background:' + colorMap(from + 1) + '"></i> ' +
-				    from + (to ? '&ndash;' + to : '+'));
+				    from + (to ? '–' + to : '+'));
 		    }
 
 		    div.innerHTML = labels.join('<br>');
@@ -170,31 +178,23 @@
          *----------------------------------------------------------------------------*/   
         $(document).ready(function() {
             //console.log("ready");
-            getUsers(null, usersCallback);
+            getUsers([], usersCallback);
             
             // disable checkboxes
             $("#id_all_users").prop('checked', false);
-            $("#id_all_sessions").prop('checked', false);
             
-            // neighborhood test
-            data = []
-            data['neighborhood_ids'] = [1, 2, 3]
-            getNeighborhoods(data, neighborhoodsCallback);
-        });
-        
-         /*----------------------------------------------------------------------------
-          neighborhoods data callback
-         *----------------------------------------------------------------------------*/
-        function neighborhoodsCallback(data) {
-            var neighborhoods = JSON.parse(data['neighborhoods'])
-            //console.log(neighborhoods);
-            
-            // draw neighborhoods
-            for (i = 0; i < neighborhoods.length; ++i) {
-                //console.log(neighborhoods[i]['fields']['geo']);
-                omnivore.wkt.parse(neighborhoods[i]['fields']['geo']).addTo(map);
+            // populate geo types select
+            for(var key in geo_types.properties) {
+                $("#id_geo_type").append($("<option />").val(geo_types.properties[key].value).text(geo_types.properties[key].name));
             }
-        }
+            
+            // populate pm level select
+            for(i = 0; i < pm_levels.length; ++i) {
+                from = pm_levels[i];
+			    to = pm_levels[i + 1];
+                $("#id_pm_level").append($("<option />").val(i).text(from + (to ? '–' + to : '+') + ' µg/m³'));
+            }
+        });
         
         /*----------------------------------------------------------------------------
           reset users select
@@ -224,21 +224,12 @@
         $("#id_users").change(function() {            
             userIds = getSelectedOptions("#id_users");
             //console.log(users);
-            
-            resetSessionSelect();
-            
-            // gets sessions, populate list
-            getSessions({
-                'user_ids': userIds,
-                'keywords': keywordsList,
-                }, sessionsCallback);
         });
         
         /*----------------------------------------------------------------------------
           all users on change callback
          *----------------------------------------------------------------------------*/
         $("#id_all_users").change(function() {
-            resetSessionSelect();
             
             // select all users, disable users input
             if(this.checked) {
@@ -248,13 +239,7 @@
                 
                 // get list of options
                 userIds = getSelectedOptions("#id_users");
-                //console.log(users);
-                
-                // populate session data for all users
-                getSessions({
-                    'user_ids': userIds,
-                    'keywords': keywordsList,
-                    }, sessionsCallback);
+                //console.log(userIds);
             }
             // enable users input
             else {
@@ -264,85 +249,63 @@
         });
         
         /*----------------------------------------------------------------------------
-          reset keywords
+          geo type select callback
          *----------------------------------------------------------------------------*/
-        function resetKeywords() {
-            $('#id_keywords').val('');
-            keywordsTimeout = null;
-            keywordsList = [''];
-        }
-        
-        /*----------------------------------------------------------------------------
-          keywords on input callback
-         *----------------------------------------------------------------------------*/
-        $("#id_keywords").on('input', function(e) {
-            //console.log(e);
+        $("#id_geo_type").change(function() {            
+            var geo_type = parseInt($('#id_geo_type').val(), 10);
+            //console.log(geo_type);
             
-            // clear timeout
-            clearTimeout(keywordsTimeout);
+            // check geo type
+            switch(geo_type) {
+                case geo_types.CENSUS:
+                    
+                    break;
+                case geo_types.NEIGHBORHOODS:
+                    // neighborhood test
+                    getNeighborhoods([], neighborhoodsCallback);
+                    break;
+                case geo_types.WARDS:
+                    break;
+                default:
+                    //console.log('default');
+                    break;
+            }
             
-            // set new timeout
-            keywordsTimeout = setTimeout(keywordsCallback, 500);
-         });
-         
-        /*----------------------------------------------------------------------------
-          keywords timeout callback
-         *----------------------------------------------------------------------------*/
-         function keywordsCallback() {
-            //console.log("keywords callback");
-            resetSessionSelect();
-            
-            // update keywords list
-            var keywords = $("#id_keywords").val();
-            keywordsList = keywords.split(' ');
-            //console.log(keywordsList);
-
             // gets sessions, populate list
-            getSessions({
-                'user_ids': userIds,
-                'keywords': keywordsList,
-                }, sessionsCallback);
-         }
-        
-        /*----------------------------------------------------------------------------
-          reset session select
-         *----------------------------------------------------------------------------*/
-        function resetSessionSelect() {
-            $("#id_sessions").empty();
-            $("#id_sessions").prop('disabled', false);
-            $("#id_all_sessions").prop('checked', false);
-        }
-        
-        /*----------------------------------------------------------------------------
-          sessions data callback
-         *----------------------------------------------------------------------------*/
-        function sessionsCallback(data) {
-            var sessions = JSON.parse(data['sessions'])
-            //console.log(sessions);
-            
-            // populate user select
-            for (i = 0; i < sessions.length; ++i) {
-                $("#id_sessions").append($("<option />").val(sessions[i]['pk']).text(sessions[i]['fields']['title']));
-            }
-        }
-        
-        /*----------------------------------------------------------------------------
-          all sessions on change callback
-         *----------------------------------------------------------------------------*/
-        $("#id_all_sessions").change(function() {
-            // disable sessions input
-            if(this.checked) {
-                //console.log("checked");
-                $("#id_sessions option").prop('selected', true);
-                $("#id_sessions").prop('disabled', true);
-            }
-            // enable sessions input
-            else {
-                //console.log("unchecked");
-                $("#id_sessions option").prop('selected', false);
-                $("#id_sessions").prop('disabled', false);
-            }            
+            //getSessions({
+            //    'user_ids': userIds,
+            //    'keywords': keywordsList,
+            //    }, sessionsCallback);
         });
+        
+        /*----------------------------------------------------------------------------
+          neighborhoods data callback
+         *----------------------------------------------------------------------------*/
+        function neighborhoodsCallback(data) {
+            var neighborhoods = JSON.parse(data['neighborhoods'])
+            //console.log(neighborhoods);
+            
+            // add to list, draw neighborhoods
+            for (i = 0; i < neighborhoods.length; ++i) {
+                // add to geo boundaries list
+                $("#id_geo_boundaries").append($("<option />").val(neighborhoods[i]['pk']).text(neighborhoods[i]['fields']['neighborhood']));
+                
+                //console.log(neighborhoods[i]['fields']['geo']);
+                multi_polygon = omnivore.wkt.parse(neighborhoods[i]['fields']['geo']);
+                
+                //multi_polygon.on('click', function(e) {
+                //    console.log(e);
+                //});
+                
+                // popup text
+                popup = "<table> \
+                    <tr><td>id</td><td>" + neighborhoods[i]['pk'] + "</td></tr> \
+                    <tr><td>name</td><td>" + neighborhoods[i]['fields']['neighborhood'] + "</td></tr> \
+                    </table>"
+                
+                geo.addLayer(multi_polygon.bindPopup(popup));
+            }
+        }
         
         /*----------------------------------------------------------------------------
           submit callback
@@ -351,12 +314,10 @@
             // prevent default form action
             e.preventDefault();
             
-            var session_ids = getSelectedOptions("#id_sessions");
-            //console.log(session_ids);
-            
-            getStreams({
-                'session_ids': session_ids,
-                }, streamsCallback);
+            // gets sessions, populate list
+            getSessions({
+                'user_ids': userIds,
+                }, sessionsCallback);
         });
         
          /*----------------------------------------------------------------------------
@@ -367,10 +328,28 @@
             e.preventDefault();
             
             resetUserSelect();
-            resetKeywords();
-            resetSessionSelect();
             markers.clearLayers();
+            geo.clearLayers();
         });
+        
+        /*----------------------------------------------------------------------------
+          sessions data callback
+         *----------------------------------------------------------------------------*/
+        function sessionsCallback(data) {
+            var sessions = JSON.parse(data['sessions'])
+            //console.log(sessions);
+            
+            // iterate through sessions, get session ids
+            var session_ids = [];
+            for(i = 0; i < sessions.length; ++i) {
+                session_ids.push(sessions[i]['pk']);
+            }
+            
+            // get streams with session ids       
+            getStreams({
+                'session_ids': session_ids,
+                }, streamsCallback);
+        }
         
         /*----------------------------------------------------------------------------
           streams data callback
@@ -381,7 +360,7 @@
             
             // iterate through streams, get stream ids
             var stream_ids = [];
-            for (i = 0; i < streams.length; ++i) {
+            for(i = 0; i < streams.length; ++i) {
                 // check for air quality sensor
                 if(streams[i]['fields']['sensor_name'] == 'AirBeam-PM') {
                     stream_ids.push(streams[i]['pk']);
@@ -392,8 +371,16 @@
             // empty markers
             markers.clearLayers();
             
+            // get geo type and boundaries
+            var geo_type = parseInt($('#id_geo_type').val(), 10);
+            var geo_boundaries = getSelectedOptions("#id_geo_boundaries");
+            
+            //console.log(geo_types.properties[geo_type].name)
+            //console.log(geo_boundaries);
+            
             getMeasurements({
                 'stream_ids': stream_ids,
+                'neighborhood_ids': geo_boundaries,
                 }, measurementsCallback);
         }
         
@@ -405,7 +392,7 @@
             //console.log(measurements);
             
             // iterate through measurements, maps
-            for (i = 0; i < measurements.length; ++i) {
+            for(i = 0; i < measurements.length; ++i) {
                 // circle properties
                 var latlng = [measurements[i]['fields']['latitude'], measurements[i]['fields']['longitude']];
                 //var intensity = measurements[i]['fields']['value']/150.0;

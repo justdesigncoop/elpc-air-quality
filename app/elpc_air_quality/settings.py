@@ -80,6 +80,7 @@ WSGI_APPLICATION = 'elpc_air_quality.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
+    'default': {},
     'rds': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ['RDS_DB_NAME'],

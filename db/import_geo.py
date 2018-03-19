@@ -67,5 +67,5 @@ if __name__ == '__main__':
         logging.error(e)
         sys.exit(1)
 
+    logging.info('import geo finished')
     
-        
