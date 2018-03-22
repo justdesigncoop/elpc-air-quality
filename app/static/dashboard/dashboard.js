@@ -3,6 +3,19 @@
  *----------------------------------------------------------------------------*/
 var pm_levels = [0.0, 12.0, 35.0, 55.0];
 
+var geo_types = {
+    NONE: 0,
+    CENSUS: 1,
+    NEIGHBORHOODS: 2,
+    WARDS: 3,
+    properties: {
+        0: {value: 0, name: '', column: '', ret: '', cb: null},
+        1: {value: 1, name: 'Census', column: 'tract', ret: 'census', cb: getCensus},
+        2: {value: 2, name: 'Neighborhoods', column: 'neighborhood', ret: 'neighborhoods', cb: getNeighborhoods},
+        3: {value: 3, name: 'Wards', column: 'ward', ret: 'wards', cb: getWards},
+   }
+};
+
 /*----------------------------------------------------------------------------
   get users
  *----------------------------------------------------------------------------*/
@@ -130,3 +143,58 @@ function getNeighborhoods(data, callback) {
     });
 }
 
+/*----------------------------------------------------------------------------
+  get census
+ *----------------------------------------------------------------------------*/
+function getCensus(data, callback) {
+    var tracts = JSON.stringify(data['tracts']);
+    //console.log(tracts);
+    
+    // execute ajax call
+    $.ajax({
+        url: '/dashboard/ajax/get_census/',
+        data: {
+            'tracts': tracts,
+        },
+        dataType: 'json',
+        success: callback,
+    });
+}
+
+/*----------------------------------------------------------------------------
+  get wards
+ *----------------------------------------------------------------------------*/
+function getWards(data, callback) {
+    var wards = JSON.stringify(data['wards']);
+    //console.log(wards);
+    
+    // execute ajax call
+    $.ajax({
+        url: '/dashboard/ajax/get_wards/',
+        data: {
+            'wards': wards,
+        },
+        dataType: 'json',
+        success: callback,
+    });
+}
+
+/*----------------------------------------------------------------------------
+  get wards
+ *----------------------------------------------------------------------------*/
+function getAverages(data, callback) {
+    var stream_ids = JSON.stringify(data['stream_ids']);
+    var geo_type = JSON.stringify(data['geo_type']);
+    //console.log(wards);
+    
+    // execute ajax call
+    $.ajax({
+        url: '/dashboard/ajax/get_averages/',
+        data: {
+            'stream_ids': stream_ids,
+            'geo_type': geo_type,
+        },
+        dataType: 'json',
+        success: callback,
+    });
+}

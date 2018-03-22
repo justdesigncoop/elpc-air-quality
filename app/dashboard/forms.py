@@ -23,6 +23,11 @@ class DataValuesForm(forms.Form):
     geo_type = forms.ChoiceField(required=False)
     geo_boundaries = forms.MultipleChoiceField(choices=[], required=False)
     
+class DataAveragesForm(forms.Form):
+    start_time = forms.DateTimeField(required=False)
+    end_time = forms.DateTimeField(required=False)
+    geo_type = forms.ChoiceField(required=False)
+    
 '''
 class MapForm(forms.Form):
     users = forms.MultipleChoiceField(choices=[], required=True)

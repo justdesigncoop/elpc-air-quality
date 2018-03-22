@@ -86,19 +86,6 @@
         var userIds;
         resetUserSelect();
         
-        var geo_types = {
-            NONE: 0,
-            CENSUS: 1,
-            NEIGHBORHOODS: 2,
-            WARDS: 3,
-            properties: {
-                0: {name: '', value: 0},
-                1: {name: 'Census', value: 1},
-                2: {name: 'Neighborhoods', value: 2},
-                3: {name: 'Wards', value: 3},
-           }
-        };
-        
         /*----------------------------------------------------------------------------
           map setup
          *----------------------------------------------------------------------------*/
@@ -120,14 +107,14 @@
         
         // layer groups
         var markers = L.layerGroup([]);
-        var geo = L.layerGroup([]);
+        //var geo = L.layerGroup([]);
         
         // map
         var map = L.map('id_map', {
             center: [41.8781, -87.6298],
             zoom: 13,
             preferCanvas: true,
-            layers: [streets, markers, geo],
+            layers: [streets, markers],
         });
         
         // control layers
@@ -138,7 +125,6 @@
         
         var overlayMaps = {
             "Markers": markers,
-            "Geo": geo,
         };
         
         L.control.layers(baseMaps, overlayMaps).addTo(map);
@@ -270,12 +256,6 @@
                     //console.log('default');
                     break;
             }
-            
-            // gets sessions, populate list
-            //getSessions({
-            //    'user_ids': userIds,
-            //    'keywords': keywordsList,
-            //    }, sessionsCallback);
         });
         
         /*----------------------------------------------------------------------------
@@ -291,19 +271,19 @@
                 $("#id_geo_boundaries").append($("<option />").val(neighborhoods[i]['pk']).text(neighborhoods[i]['fields']['neighborhood']));
                 
                 //console.log(neighborhoods[i]['fields']['geo']);
-                multi_polygon = omnivore.wkt.parse(neighborhoods[i]['fields']['geo']);
+                //multi_polygon = omnivore.wkt.parse(neighborhoods[i]['fields']['geo']);
                 
                 //multi_polygon.on('click', function(e) {
                 //    console.log(e);
                 //});
                 
                 // popup text
-                popup = "<table> \
-                    <tr><td>id</td><td>" + neighborhoods[i]['pk'] + "</td></tr> \
-                    <tr><td>name</td><td>" + neighborhoods[i]['fields']['neighborhood'] + "</td></tr> \
-                    </table>"
+                //popup = "<table> \
+                //    <tr><td>id</td><td>" + neighborhoods[i]['pk'] + "</td></tr> \
+                //    <tr><td>name</td><td>" + neighborhoods[i]['fields']['neighborhood'] + "</td></tr> \
+                //    </table>"
                 
-                geo.addLayer(multi_polygon.bindPopup(popup));
+                //geo.addLayer(multi_polygon.bindPopup(popup));
             }
         }
         
@@ -418,8 +398,6 @@
                 markers.addLayer(marker.bindPopup(popup));
              }
         }
-        
-        
     </script>
 {% endblock %}
 
