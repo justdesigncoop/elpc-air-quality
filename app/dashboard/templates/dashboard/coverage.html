@@ -75,6 +75,10 @@
     <!-- leaflet omnivore -->
     <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
     
+    <!-- leaflet spin -->
+    <script src="https://cdn.rawgit.com/makinacorpus/Leaflet.Spin/gh-pages/spin/spin.js" charset="utf-8"></script>
+    <script src="https://cdn.rawgit.com/makinacorpus/Leaflet.Spin/gh-pages/leaflet.spin.min.js" charset="utf-8"></script>
+    
     <!-- dashboard functions -->
     <script src="{% static 'dashboard/dashboard.js' %}"  type="text/javascript">
     </script>
@@ -239,6 +243,8 @@
                 'user_ids': user_ids,
                 }, sessionsCallback);
             
+            // start spin
+            map.spin(true);
         });
         
          /*----------------------------------------------------------------------------
@@ -364,6 +370,9 @@
                 
                 geo.addLayer(multi_polygon.bindPopup(popup));
             }
+            
+            // stop spin
+            map.spin(false);
         }
         
     </script>

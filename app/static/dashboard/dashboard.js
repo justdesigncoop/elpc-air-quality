@@ -6,6 +6,7 @@ var pmLevels = [0.0, 12.0, 35.0, 55.0];
 var geoTypes = {
     NONE: 0,
     CENSUS: 1,
+    NEIGHBORHOODS: 2,
     WARDS: 3,
     properties: {
         0: {value: 0, name: '', column: '', ret: '', cb: null},
@@ -15,6 +16,7 @@ var geoTypes = {
    }
 };
 
+// https://coolors.co/2da641-f9dc2e-f57f22-f4001c-1616e5
 var coverageColor = '#1616E5';
 
 /*----------------------------------------------------------------------------
