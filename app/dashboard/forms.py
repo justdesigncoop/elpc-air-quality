@@ -26,7 +26,12 @@ class DataValuesForm(forms.Form):
 class DataAveragesForm(forms.Form):
     start_time = forms.DateTimeField(required=False)
     end_time = forms.DateTimeField(required=False)
-    geo_type = forms.ChoiceField(required=False)
+    geo_type = forms.ChoiceField(required=True)
+
+class CoverageForm(forms.Form):
+    users = forms.MultipleChoiceField(choices=[], required=True)
+    all_users = forms.BooleanField(required=False)
+    geo_type = forms.ChoiceField(required=True)
     
 '''
 class MapForm(forms.Form):

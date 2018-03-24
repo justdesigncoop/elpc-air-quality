@@ -9,6 +9,7 @@ urlpatterns = [
 	url(r'^mobile_sessions/$', views.MobileSessionsView.as_view(), name='mobile_sessions'),
 	url(r'^data_values/$', views.DataValuesView.as_view(), name='data_values'),
 	url(r'^data_averages/$', views.DataAveragesView.as_view(), name='data_averages'),
+	url(r'^coverage/$', views.CoverageView.as_view(), name='coverage'),
 	url(r'^ajax/get_users/$', views.get_users, name='get_users'),
     url(r'^ajax/get_sessions/$', views.get_sessions, name='get_sessions'),
     url(r'^ajax/get_streams/$', views.get_streams, name='get_streams'),
@@ -16,5 +17,6 @@ urlpatterns = [
     url(r'^ajax/get_census/$', views.get_census, name='get_census'),
     url(r'^ajax/get_neighborhoods/$', views.get_neighborhoods, name='get_neighborhoods'),
     url(r'^ajax/get_wards/$', views.get_wards, name='get_wards'),
-    url(r'^ajax/get_averages/$', views.get_averages, name='get_averages')
+    url(r'^ajax/get_averages/$', views.get_averages, name='get_averages'),
+    url(r'^ajax/get_counts/$', views.get_counts, name='get_counts')
 ]

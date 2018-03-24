@@ -1,12 +1,11 @@
 /*----------------------------------------------------------------------------
   global vars
  *----------------------------------------------------------------------------*/
-var pm_levels = [0.0, 12.0, 35.0, 55.0];
+var pmLevels = [0.0, 12.0, 35.0, 55.0];
 
-var geo_types = {
+var geoTypes = {
     NONE: 0,
     CENSUS: 1,
-    NEIGHBORHOODS: 2,
     WARDS: 3,
     properties: {
         0: {value: 0, name: '', column: '', ret: '', cb: null},
@@ -15,6 +14,8 @@ var geo_types = {
         3: {value: 3, name: 'Wards', column: 'ward', ret: 'wards', cb: getWards},
    }
 };
+
+var coverageColor = '#1616E5';
 
 /*----------------------------------------------------------------------------
   get users
@@ -72,7 +73,8 @@ function getStreams(data, callback) {
  *----------------------------------------------------------------------------*/
 function getMeasurements(data, callback) {
     var stream_ids = JSON.stringify(data['stream_ids']);
-    var neighborhood_ids = JSON.stringify(data['neighborhood_ids']);
+    var geo_type = JSON.stringify(data['geo_type']);
+    var geo_boundaries = JSON.stringify(data['geo_boundaries']);
     //console.log(stream_ids);
     
     // execute ajax call
@@ -80,7 +82,8 @@ function getMeasurements(data, callback) {
         url: '/dashboard/ajax/get_measurements/',
         data: {
             'stream_ids': stream_ids,
-            'neighborhood_ids': neighborhood_ids,
+            'geo_type': geo_type,
+            'geo_boundaries': geo_boundaries,
         },
         dataType: 'json',
         success: callback,
@@ -111,13 +114,13 @@ function colorMap(value) {
     //return ['hsl(', hue, ', 100%, 50%)'].join('');
     
     // color mapping from AirCasting
-    if(value < pm_levels[1]) {
+    if(value < pmLevels[1]) {
         return '#2DA641';
     }
-    else if(value < pm_levels[2]) {
+    else if(value < pmLevels[2]) {
         return '#F9DC2E';
     }
-    else if(value < pm_levels[3]) {
+    else if(value < pmLevels[3]) {
         return '#F57F22';
     }
     else {
@@ -180,16 +183,34 @@ function getWards(data, callback) {
 }
 
 /*----------------------------------------------------------------------------
-  get wards
+  get averages
  *----------------------------------------------------------------------------*/
 function getAverages(data, callback) {
     var stream_ids = JSON.stringify(data['stream_ids']);
     var geo_type = JSON.stringify(data['geo_type']);
-    //console.log(wards);
     
     // execute ajax call
     $.ajax({
         url: '/dashboard/ajax/get_averages/',
+        data: {
+            'stream_ids': stream_ids,
+            'geo_type': geo_type,
+        },
+        dataType: 'json',
+        success: callback,
+    });
+}
+
+/*----------------------------------------------------------------------------
+  get counts
+ *----------------------------------------------------------------------------*/
+function getCounts(data, callback) {
+    var stream_ids = JSON.stringify(data['stream_ids']);
+    var geo_type = JSON.stringify(data['geo_type']);
+    
+    // execute ajax call
+    $.ajax({
+        url: '/dashboard/ajax/get_counts/',
         data: {
             'stream_ids': stream_ids,
             'geo_type': geo_type,

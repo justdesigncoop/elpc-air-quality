@@ -9,11 +9,11 @@ from django.template import loader
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.core import serializers
-from django.db.models import Q, Avg
+from django.db.models import Q, Avg, Count
 
 from .models import Users, Sessions, Streams, Measurements, Neighborhoods, Census, Wards
 
-from .forms import MobileSessionsForm, DataValuesForm, DataAveragesForm
+from .forms import MobileSessionsForm, DataValuesForm, DataAveragesForm, CoverageForm
 
 from functools import reduce
 from operator import or_
@@ -49,6 +49,11 @@ class DataValuesView(generic.FormView):
 class DataAveragesView(generic.FormView):
 	template_name = 'dashboard/data_averages.html'
 	form_class = DataAveragesForm
+	success_url = '/dashboard/'
+
+class CoverageView(generic.FormView):
+	template_name = 'dashboard/coverage.html'
+	form_class = CoverageForm
 	success_url = '/dashboard/'
 
 def get_users(request):
@@ -97,16 +102,21 @@ def get_streams(request):
 
 def get_measurements(request):
     stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
-    neighborhood_ids = json.loads(request.GET.get('neighborhood_ids', '[]'))
+    geo_type = json.loads(request.GET.get('geo_type', '[]'))
+    geo_boundaries = json.loads(request.GET.get('geo_boundaries', '[]'))
     
     measurements = Measurements.objects.all()
     
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
     
-    if neighborhood_ids:
-        measurements = measurements.filter(neighborhood_id__in=neighborhood_ids)
-    
+    if geo_type == 'Census':
+        measurements = measurements.filter(tract__in=geo_boundaries)
+    elif geo_type == 'Neighborhoods':
+        measurements = measurements.filter(neighborhood_id__in=geo_boundaries)
+    elif geo_type == 'Wards':
+        measurements = measurements.filter(ward__in=geo_boundaries)
+        
     data = {
         'measurements': serializers.serialize("json", measurements)
     }
@@ -185,3 +195,36 @@ def parse_averages(name, measurements):
 
     return averages
 
+def get_counts(request):
+    stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
+    geo_type = json.loads(request.GET.get('geo_type', '[]'))
+    
+    measurements = Measurements.objects.all()
+    
+    if stream_ids:
+        measurements = measurements.filter(stream__in=stream_ids)
+    
+    counts = None
+    
+    if geo_type == 'Census':
+        counts = parse_counts('tract', measurements)
+    elif geo_type == 'Neighborhoods':
+        counts = parse_counts('neighborhood_id', measurements)
+    elif geo_type == 'Wards':
+        counts = parse_counts('ward', measurements)
+    
+    data = {
+        'counts': json.dumps(counts, cls=serializers.json.DjangoJSONEncoder)
+    }
+    return JsonResponse(data)
+
+def parse_counts(name, measurements):
+    data = measurements.values(name).annotate(counts=Count('value'))
+    
+    counts = {}
+    for d in list(data):
+        n = d.pop(name)
+        if n:
+            counts[n] = d['counts']
+
+    return counts

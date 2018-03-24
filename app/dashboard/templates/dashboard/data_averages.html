@@ -83,7 +83,7 @@
         /*----------------------------------------------------------------------------
           global vars setup
          *----------------------------------------------------------------------------*/         
-        var geoType = geo_types.NONE;
+        var geoType = geoTypes.NONE;
         var averages = []
         
         /*----------------------------------------------------------------------------
@@ -143,9 +143,9 @@
 			    labels = [],
 			    from, to;
 
-		    for (var i = 0; i < pm_levels.length; i++) {
-			    from = pm_levels[i];
-			    to = pm_levels[i + 1];
+		    for (var i = 0; i < pmLevels.length; i++) {
+			    from = pmLevels[i];
+			    to = pmLevels[i + 1];
 
 			    labels.push(
 				    '<i style="background:' + colorMap(from + 1) + '"></i> ' +
@@ -163,10 +163,80 @@
          *----------------------------------------------------------------------------*/   
         $(document).ready(function() {
             // populate geo types select
-            for(var key in geo_types.properties) {
-                $("#id_geo_type").append($("<option />").val(geo_types.properties[key].value).text(geo_types.properties[key].name));
+            for(var key in geoTypes.properties) {
+                if(key == geoTypes.NONE) {
+                    continue;
+                }
+                else {
+                    $("#id_geo_type").append($("<option />").val(geoTypes.properties[key].value).text(geoTypes.properties[key].name));
+                }
             }
+        });  
+        
+        /*----------------------------------------------------------------------------
+          submit callback
+         *----------------------------------------------------------------------------*/ 
+        $("#id_request").on('submit', function(e) {
+            // prevent default form action
+            e.preventDefault();
+            
+            geoType = parseInt($('#id_geo_type').val(), 10);
+            //console.log(geoType);
+            
+            // get all streams     
+            getStreams({
+                'session_ids': [],
+                }, streamsCallback);
         });
+        
+        /*----------------------------------------------------------------------------
+          reset callback
+         *----------------------------------------------------------------------------*/  
+        $("#id_request").on('reset', function(e) {
+            // prevent default form action
+            e.preventDefault();
+            
+            geoType = geoTypes.NONE;
+            
+            geo.clearLayers();
+        });
+        
+        /*----------------------------------------------------------------------------
+          streams data callback
+         *----------------------------------------------------------------------------*/
+        function streamsCallback(data) {
+            var streams = JSON.parse(data['streams']);
+            //console.log(streams);
+            
+            // iterate through streams, get stream ids
+            var stream_ids = [];
+            for(i = 0; i < streams.length; ++i) {
+                // check for air quality sensor
+                if(streams[i]['fields']['sensor_name'] == 'AirBeam-PM') {
+                    stream_ids.push(streams[i]['pk']);
+                }
+            }
+            
+            // get averages
+            getAverages({
+                'stream_ids': stream_ids,
+                'geo_type': geoTypes.properties[geoType].name,
+                }, averagesCallback);
+        }
+        
+        /*----------------------------------------------------------------------------
+          averages data callback
+         *----------------------------------------------------------------------------*/
+        function averagesCallback(data) {
+            averages = JSON.parse(data['averages']);
+            //console.log(averages);
+            
+            // geo type callback
+            var cb = geoTypes.properties[geoType].cb
+            if(cb) {
+                cb([], geoCallback);
+            }
+        }
         
         /*----------------------------------------------------------------------------
           geo type select callback
@@ -175,11 +245,11 @@
         });
         
         /*----------------------------------------------------------------------------
-          neighborhoods data callback
+          geo data callback
          *----------------------------------------------------------------------------*/
         function geoCallback(data) {
             // check geo type
-            var ret = geo_types.properties[geoType].ret;
+            var ret = geoTypes.properties[geoType].ret;
             var geo_data = JSON.parse(data[ret]);
             //console.log(geo_data);
             
@@ -221,71 +291,6 @@
                     </table>"
                 
                 geo.addLayer(multi_polygon.bindPopup(popup));
-            }
-        }
-        
-        /*----------------------------------------------------------------------------
-          submit callback
-         *----------------------------------------------------------------------------*/ 
-        $("#id_request").on('submit', function(e) {
-            // prevent default form action
-            e.preventDefault();
-            
-            geoType = parseInt($('#id_geo_type').val(), 10);
-            //console.log(geoType);
-            
-            // get all streams     
-            getStreams({
-                'session_ids': [],
-                }, streamsCallback);
-        });
-        
-        /*----------------------------------------------------------------------------
-          streams data callback
-         *----------------------------------------------------------------------------*/
-        function streamsCallback(data) {
-            var streams = JSON.parse(data['streams']);
-            console.log(streams);
-            
-            // iterate through streams, get stream ids
-            var stream_ids = [];
-            for(i = 0; i < streams.length; ++i) {
-                // check for air quality sensor
-                if(streams[i]['fields']['sensor_name'] == 'AirBeam-PM') {
-                    stream_ids.push(streams[i]['pk']);
-                }
-            }
-            
-            // get averages
-            getAverages({
-                'stream_ids': stream_ids,
-                'geo_type': geo_types.properties[geoType].name,
-                }, averagesCallback);
-        }
-        
-         /*----------------------------------------------------------------------------
-          reset callback
-         *----------------------------------------------------------------------------*/  
-        $("#id_request").on('reset', function(e) {
-            // prevent default form action
-            e.preventDefault();
-            
-            geoType = geo_types.NONE;
-            
-            geo.clearLayers();
-        });
-        
-        /*----------------------------------------------------------------------------
-          averages data callback
-         *----------------------------------------------------------------------------*/
-        function averagesCallback(data) {
-            averages = JSON.parse(data['averages']);
-            //console.log(averages);
-            
-            // geo type callback
-            cb = geo_types.properties[geoType].cb
-            if(cb) {
-                cb([], geoCallback);
             }
         }
     </script>
