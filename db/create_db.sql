@@ -166,6 +166,62 @@ COLLATE utf8_general_ci
 ROW_FORMAT = DYNAMIC;
 
 --
+-- Drop table "wards"
+--
+DROP TABLE IF EXISTS wards;
+
+--
+-- Create table "wards"
+--
+CREATE TABLE wards (
+  ward INT(11) NOT NULL,
+  geo LONGTEXT,
+  PRIMARY KEY (ward)
+)
+ENGINE = INNODB
+CHARACTER SET utf8
+COLLATE utf8_general_ci
+ROW_FORMAT = DYNAMIC;
+
+--
+-- Drop table "neighborhoods"
+--
+DROP TABLE IF EXISTS neighborhoods;
+
+--
+-- Create table "neighborhoods"
+--
+CREATE TABLE neighborhoods (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  neighborhood VARCHAR(40),
+  geo LONGTEXT,
+  PRIMARY KEY (id),
+  INDEX index_neighborhoods_on_neighborhood (neighborhood)
+)
+ENGINE = INNODB
+CHARACTER SET utf8
+COLLATE utf8_general_ci
+ROW_FORMAT = DYNAMIC;
+
+--
+-- Drop table "census"
+--
+DROP TABLE IF EXISTS census;
+
+--
+-- Create table "census"
+--
+CREATE TABLE census (
+  tract BIGINT(11) NOT NULL,
+  geo LONGTEXT,
+  PRIMARY KEY (tract)
+)
+ENGINE = INNODB
+CHARACTER SET utf8
+COLLATE utf8_general_ci
+ROW_FORMAT = DYNAMIC;
+
+--
 -- Drop table "measurements"
 --
 DROP TABLE IF EXISTS measurements;
@@ -209,60 +265,3 @@ ENGINE = INNODB
 CHARACTER SET utf8
 COLLATE utf8_general_ci
 ROW_FORMAT = DYNAMIC;
-
---
--- Drop table "wards"
---
-DROP TABLE IF EXISTS wards;
-
---
--- Create table "wards"
---
-CREATE TABLE wards (
-  ward INT(11) NOT NULL,
-  geo LONGTEXT,
-  PRIMARY KEY (ward)
-)
-ENGINE = INNODB
-CHARACTER SET utf8
-COLLATE utf8_general_ci
-ROW_FORMAT = DYNAMIC;
-
---
--- Drop table "neighborhoods"
---
-DROP TABLE IF EXISTS neighborhoods;
-
---
--- Create table "neighborhoods"
---
-CREATE TABLE neighborhoods (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  neighborhood VARCHAR(40),
-  geo LONGTEXT,
-  PRIMARY KEY (id),
-  INDEX index_neighborhoods_on_name (name)
-)
-ENGINE = INNODB
-CHARACTER SET utf8
-COLLATE utf8_general_ci
-ROW_FORMAT = DYNAMIC;
-
---
--- Drop table "census"
---
-DROP TABLE IF EXISTS census;
-
---
--- Create table "census"
---
-CREATE TABLE census (
-  tract BIGINT(11) NOT NULL,
-  geo LONGTEXT,
-  PRIMARY KEY (tract)
-)
-ENGINE = INNODB
-CHARACTER SET utf8
-COLLATE utf8_general_ci
-ROW_FORMAT = DYNAMIC;
-
