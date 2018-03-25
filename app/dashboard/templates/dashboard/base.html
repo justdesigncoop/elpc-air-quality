@@ -1,0 +1,35 @@
+{% extends 'dashboard/bootstrap.html' %}
+
+{% load bootstrap4 %}
+
+{% block bootstrap4_content %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'index' %}">Air Quality Chicago</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'mobile_sessions' %}">Mobile Sessions</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'data_values' %}">Data Values</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'data_averages' %}">Data Averages</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'coverage' %}">Coverage</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 20px;">
+        {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
+
+        {% block content %}(no content){% endblock %}
+    </div>
+
+{% endblock %}
