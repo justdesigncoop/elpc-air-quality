@@ -42,4 +42,5 @@ git clone https://github.com/justdesigncoop/elpc-air-quality.git
 
 ```
 cd elpc-air-quality/db
+mysql -u root -p < create_db.sql
 ```

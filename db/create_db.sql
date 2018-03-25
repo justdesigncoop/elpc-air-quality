@@ -242,7 +242,7 @@ CREATE TABLE measurements (
   created_at DATE,
   ward INT(11),
   neighborhood INT(11),
-  tract INT(11),
+  tract BIGINT(11),
   PRIMARY KEY (id, stream_id),
   INDEX index_measurements_on_latitude (latitude),
   INDEX index_measurements_on_longitude_and_latitude (latitude, longitude),
