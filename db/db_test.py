@@ -15,11 +15,9 @@ if __name__ == '__main__':
     
     logging.info('db test started')
     
-    # get latest session id
-    
     # create engine
     try:
-        engine = sa.create_engine('mysql+mysqlconnector://root:dd00ww@home.danwahl.net/elpc_air_quality')
+        engine = sa.create_engine('mysql+mysqlconnector://elpcjd:Elpc1234@home.danwahl.net/elpc_air_quality')
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
@@ -30,25 +28,34 @@ if __name__ == '__main__':
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
-    
+        
     # iterate through usernames
     for ui, ur in users.iterrows():
+        # check for user's last session (so we don't double process)
+        last_session = 0
+        if(~pd.isnull(ui)):
+            # get latest session id from db
+            last_session = pd.read_sql_query('SELECT MAX(id) as last_session FROM sessions WHERE user_id = %d' % (ui), engine).values[0, 0]
+    
         # api quiery for session list
         params = (('q[usernames]', ur['username']),)
         try:
             response = requests.get('http://aircasting.org/api/sessions.json', params=params)
+            response.raise_for_status()
         except requests.exceptions.RequestException as e:
             logging.error(e)
             sys.exit(1)
         
-        # sessions dataframe
+        # sessions dataframe, remove old sessions before processing
         sessions = pd.DataFrame(response.json())
+        sessions = sessions[sessions['id'] > last_session]
         
         # streams and measurements processing
         for si, sr in sessions.iterrows():
             # api query for session
             try:
                 response = requests.get('http://aircasting.org/api/sessions/%s.json' % (sr['id']))
+                response.raise_for_status()
             except requests.exceptions.RequestException as e:
                 logging.error(e)
                 sys.exit(1)
@@ -70,6 +77,7 @@ if __name__ == '__main__':
             if pd.isnull(ui):
                 try:
                     pd.read_sql_query('UPDATE users SET id = %d WHERE username = \'%s\'' % (session['user_id'], ur['username']), engine)
+                    response.raise_for_status()
                 except sa.exc.ResourceClosedError as e:
                     logging.warning(e)
                 except sa.exc.SQLAlchemyError as e:

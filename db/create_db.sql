@@ -4,11 +4,6 @@
 SET NAMES 'utf8';
 
 --
--- Drop database "elpc_air_quality"
---
-DROP DATABASE IF EXISTS elpc_air_quality;
-
---
 -- Create database "elpc_air_quality"
 --
 CREATE DATABASE IF NOT EXISTS elpc_air_quality
