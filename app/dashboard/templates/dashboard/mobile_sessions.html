@@ -53,7 +53,7 @@
     <form role="form" id="id_request" class="form-horizontal""> <!!! method="post" !!!>
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}
-        {% buttons submit='Map' reset="Clear" %}{% endbuttons %}
+        {% buttons submit="Map" reset="Clear" %}{% endbuttons %}
     </form>
 
     <div id="id_map">

@@ -53,7 +53,11 @@
     <form role="form" id="id_request" class="form-horizontal""> <!!! method="post" !!!>
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}
-        {% buttons submit='Map' reset="Clear" %}{% endbuttons %}
+        {% buttons %}
+            <button type="submit" id="id_submit" class="btn btn-primary">Map</button>
+            <button type="reset" id="id_reset" class="btn btn-primary">Clear</button>
+            <button type="button" id="id_download" class="btn btn-primary">Download</button>
+        {% endbuttons %}
     </form>
 
     <div id="id_map">
@@ -79,6 +83,9 @@
     <script src="https://cdn.rawgit.com/makinacorpus/Leaflet.Spin/gh-pages/spin/spin.js" charset="utf-8"></script>
     <script src="https://cdn.rawgit.com/makinacorpus/Leaflet.Spin/gh-pages/leaflet.spin.min.js" charset="utf-8"></script>
     
+    <!-- json2csv -->
+    <script src="https://cdn.rawgit.com/bsusensjackson/json2csv/fc8dad15/json2csv.min.js" charset="utf-8"></script>
+    
     <!-- dashboard functions -->
     <script src="{% static 'dashboard/dashboard.js' %}"  type="text/javascript">
     </script>
@@ -88,7 +95,10 @@
           global vars setup
          *----------------------------------------------------------------------------*/         
         var geoType = geoTypes.NONE;
-        var averages = []
+        
+        var averages = [];
+        
+        var csvData = [];
         
         /*----------------------------------------------------------------------------
           map setup
@@ -166,6 +176,9 @@
           document ready callback
          *----------------------------------------------------------------------------*/   
         $(document).ready(function() {
+            // disable download button
+            $("#id_download").prop("disabled", true);
+            
             // populate geo types select
             for(var key in geoTypes.properties) {
                 if(key == geoTypes.NONE) {
@@ -206,6 +219,19 @@
             geoType = geoTypes.NONE;
             
             geo.clearLayers();
+            
+            // disable download button
+            $("#id_download").prop("disabled", true)
+        });
+        
+        /*----------------------------------------------------------------------------
+          download callback
+         *----------------------------------------------------------------------------*/  
+        $("#id_download").on('click', function(e) {            
+            //console.log("download");
+            
+            // convert to csv and download
+            csvConverter.convert(csvData);
         });
         
         /*----------------------------------------------------------------------------
@@ -276,6 +302,9 @@
                 if(value != undefined) {
                     color = colorMap(value);
                     opacity = 0.7
+                    
+                    // add to csv data
+                    csvData.push({'id': pk, 'value': value});
                 }
                 
                 var multi_polygon = omnivore.wkt.parse(geo_data[i]['fields']['geo']);
@@ -288,10 +317,6 @@
                     opacity: 1.0,
                 });
                 
-                //multi_polygon.on('click', function(e) {
-                //    console.log(e);
-                //});
-                
                 // popup text
                 popup = "<table> \
                     <tr><td>pm</td><td>" + value + "</td></tr> \
@@ -302,6 +327,9 @@
             
             // stop spin
             map.spin(false);
+            
+            // enable download button
+            $("#id_download").prop("disabled", false)
         }
     </script>
 {% endblock %}
