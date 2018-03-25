@@ -53,7 +53,11 @@
     <form role="form" id="id_request" class="form-horizontal""> <!!! method="post" !!!>
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}
-        {% buttons submit="Map" reset="Clear" %}{% endbuttons %}
+        {% buttons %}
+            <button type="submit" id="id_submit" class="btn btn-primary">Map</button>
+            <button type="reset" id="id_reset" class="btn btn-primary">Clear</button>
+            <button type="button" id="id_download" class="btn btn-primary">Download</button>
+        {% endbuttons %}
     </form>
 
     <div id="id_map">
@@ -76,6 +80,9 @@
     <script src="https://cdn.rawgit.com/makinacorpus/Leaflet.Spin/gh-pages/spin/spin.js" charset="utf-8"></script>
     <script src="https://cdn.rawgit.com/makinacorpus/Leaflet.Spin/gh-pages/leaflet.spin.min.js" charset="utf-8"></script>
     
+    <!-- json2csv -->
+    <script src="https://cdn.rawgit.com/bsusensjackson/json2csv/fc8dad15/json2csv.min.js" charset="utf-8"></script>
+    
     <!-- dashboard functions -->
     <script src="{% static 'dashboard/dashboard.js' %}"  type="text/javascript">
     </script>
@@ -92,6 +99,8 @@
         resetUserSelect();
         
         resetSessionSelect();
+        
+        var csvData = [];
         
         /*----------------------------------------------------------------------------
           map setup
@@ -175,6 +184,9 @@
             // disable checkboxes
             $("#id_all_users").prop('checked', false);
             $("#id_all_sessions").prop('checked', false);
+            
+            // disable download button
+            $("#id_download").prop("disabled", true)
         });
         
         /*----------------------------------------------------------------------------
@@ -354,6 +366,19 @@
             resetKeywords();
             resetSessionSelect();
             markers.clearLayers();
+            
+            // disable download button
+            $("#id_download").prop("disabled", true)
+        });
+        
+        /*----------------------------------------------------------------------------
+          download callback
+         *----------------------------------------------------------------------------*/  
+        $("#id_download").on('click', function(e) {            
+            //console.log("download");
+            
+            // convert to csv and download
+            csvConverter.convert(csvData);
         });
         
         /*----------------------------------------------------------------------------
@@ -395,6 +420,15 @@
                 //var intensity = measurements[i]['fields']['value']/150.0;
                 var color = colorMap(measurements[i]['fields']['value']);
                 
+                // add to csv data
+                csvData.push({
+                    'id': measurements[i]['pk'],
+                    'time': measurements[i]['fields']['time'],
+                    'value': measurements[i]['fields']['value'],
+                    'lat': measurements[i]['fields']['latitude'],
+                    'lng': measurements[i]['fields']['longitude'],
+                    });
+                
                 // draw markers
                 var marker = L.circleMarker(latlng, {
                     stroke: false,
@@ -417,6 +451,9 @@
              
              // stop spin
              map.spin(false);
+             
+            // enable download button
+            $("#id_download").prop("disabled", false)
         }        
     </script>
 {% endblock %}

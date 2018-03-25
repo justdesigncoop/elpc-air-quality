@@ -184,6 +184,9 @@
             $("#id_all_users").prop('checked', false);
             $("#id_all_sessions").prop('checked', false);
             
+            // disable download button
+            $("#id_download").prop("disabled", true)
+            
             // populate geo types
             for(var key in geoTypes.properties) {
                 if(key == geoTypes.NONE) {
@@ -265,6 +268,9 @@
             e.preventDefault();
             
             geo.clearLayers();
+            
+            // disable download button
+            $("#id_download").prop("disabled", true)
         });
         
         /*----------------------------------------------------------------------------
@@ -392,6 +398,9 @@
             
             // stop spin
             map.spin(false);
+            
+            // enable download button
+            $("#id_download").prop("disabled", false)
         }
         
     </script>
