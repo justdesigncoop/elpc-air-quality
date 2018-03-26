@@ -79,10 +79,39 @@ python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 ```
 
+10. Add the following to /etc/apache2/apache2.conf:
+
+```
+# Alias /robots.txt /path/to/mysite.com/static/robots.txt
+# Alias /favicon.ico /path/to/mysite.com/static/favicon.ico
+
+# Alias /media/ /path/to/mysite.com/media/
+Alias /static/ /var/www/static/
+
+<Directory /var/www/static>
+  Require all granted
+</Directory>
+
+# <Directory /path/to/mysite.com/media>
+#   Require all granted
+# </Directory>
+
+WSGIScriptAlias / /home/elpcjd/elpc-air-quality/app/elpc_air_quality/wsgi.py
+WSGIPythonHome /home/elpcjd/.virtualenvs/elpcjd
+WSGIPythonPath /home/elpcjd/elpc-air-quality/app
+
+<Directory /home/elpcjd/elpc-air-quality/app/elpc_air_quality>
+  <Files wsgi.py>
+    Require all granted
+  </Files>
+</Directory>
+```
+
 8. Deploy Django app
 
 ```
 apt install apache2 libapache2-mod-wsgi phpmyadmin
 python manage.py collectstatic
 python manage.py createsuperuser
+/etc/init.d/apache2 restart
 ```
