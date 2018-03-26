@@ -61,12 +61,11 @@ conda update -n base conda
 conda env create -f environment.yml
 ```
 
-7. Preapre and run Django app
+7. Preapre and test Django app:
 
 ```
 source activate elpcjd
 cd app
-source env.sh
 python manage.py migrate
-
+python manage.py runserver 0.0.0.0:8000
 ```
