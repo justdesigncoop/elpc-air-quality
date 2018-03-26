@@ -25,7 +25,7 @@ SECRET_KEY = 'llr^iaxdvd^q#4=n9&%(5tie1jsa1*#e^#++w#0fnbb7ie22wh'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '192.168.1.12', '.danwahl.net', '.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '192.168.1.12', '.danwahl.net', '.airqualitychicago.org']
 
 
 # Application definition
@@ -78,9 +78,7 @@ WSGI_APPLICATION = 'elpc_air_quality.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-DATABASES = {
-    'default': {},
+'''
     'rds': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ['RDS_DB_NAME'],
@@ -89,6 +87,9 @@ DATABASES = {
         'HOST': os.environ['RDS_HOSTNAME'],
         'PORT': os.environ['RDS_PORT'],
     },
+'''
+DATABASES = {
+    'default': {},
     'dev': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'elpc_air_quality',
@@ -100,8 +101,8 @@ DATABASES = {
 }
 
 default_database = os.environ.get('DJANGO_DATABASE', 'dev')
-DATABASES['default'] = DATABASES[default_database]
-
+#DATABASES['default'] = DATABASES[default_database]
+DATABASES['default'] = DATABASES['dev']
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
