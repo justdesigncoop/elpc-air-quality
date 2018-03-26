@@ -83,5 +83,6 @@ python manage.py runserver 0.0.0.0:8000
 
 ```
 apt install apache2 libapache2-mod-wsgi phpmyadmin
-
+python manage.py collectstatic
+python manage.py createsuperuser
 ```
