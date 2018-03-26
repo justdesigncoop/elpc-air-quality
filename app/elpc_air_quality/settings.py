@@ -97,7 +97,7 @@ DATABASES = {
         'PASSWORD': 'Elpc1234',
         'HOST': '127.0.0.1',
         'PORT': '3306',
-    }
+    },
     'dev': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'elpc_air_quality',
