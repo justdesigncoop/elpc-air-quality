@@ -90,7 +90,7 @@ WSGI_APPLICATION = 'elpc_air_quality.wsgi.application'
 '''
 DATABASES = {
     'default': {},
-    'dev': {
+    'mt': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'elpc_air_quality',
         'USER': 'elpcjd',
@@ -98,11 +98,19 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
+    'dev': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'elpc_air_quality',
+        'USER': 'elpcjd',
+        'PASSWORD': 'Elpc1234',
+        'HOST': 'home.danwahl.net',
+        'PORT': '3306',
+    }
 }
 
-default_database = os.environ.get('DJANGO_DATABASE', 'dev')
-#DATABASES['default'] = DATABASES[default_database]
-DATABASES['default'] = DATABASES['dev']
+default_database = os.environ.get('DJANGO_DATABASE', 'mt')
+DATABASES['default'] = DATABASES[default_database]
+#DATABASES['default'] = DATABASES['dev']
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

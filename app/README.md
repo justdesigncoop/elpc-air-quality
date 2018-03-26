@@ -1,5 +1,12 @@
 # App installation instructions
 
+0. Add user if necessary:
+
+```
+adduser elpcjd
+usermod -aG sudo,adm elpcjd
+```
+
 1. Update and upgrade the system:
 
 ```
@@ -19,7 +26,7 @@ apt install git curl software-properties-common build-essential
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
 add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://nyc2.mirrors.digitalocean.com/mariadb/repo/10.2/ubuntu xenial main'
 apt update
-apt install mariadb-server libmysqlclient-dev phpmyadmin
+apt install mariadb-server libmysqlclient-dev
 ```
 
 4. Download and [install](https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-16-04) [Miniconda2](https://conda.io/docs/user-guide/install/index.html):
@@ -53,19 +60,28 @@ FLUSH PRIVILEGES;
 exit
 ```
 
-6. Create and source conda environment:
+6. Create virtual environment:
 
 ```
-cd ..
-conda update -n base conda
-conda env create -f environment.yml
+apt install python-pip
+pip install --upgrade pip
+pip install virtualenv virtualenvwrapper
+source /usr/local/bin/virtualenvwrapper.sh
+pip install -r requirements.txt
 ```
 
 7. Preapre and test Django app:
 
 ```
-source activate elpcjd
+workon elpcjd
 cd app
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
+```
+
+8. Deploy Django app
+
+```
+apt install apache2 libapache2-mod-wsgi phpmyadmin
+
 ```
