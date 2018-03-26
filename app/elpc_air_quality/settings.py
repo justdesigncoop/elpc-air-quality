@@ -25,7 +25,7 @@ SECRET_KEY = 'llr^iaxdvd^q#4=n9&%(5tie1jsa1*#e^#++w#0fnbb7ie22wh'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '192.168.1.12', '.danwahl.net', '205.186.128.119 ', '.airqualitychicago.org']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '192.168.1.12', '.danwahl.net', '205.186.128.119', '.airqualitychicago.org']
 
 
 # Application definition
