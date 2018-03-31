@@ -113,7 +113,7 @@ def get_measurements(request):
     if geo_type == 'Census':
         measurements = measurements.filter(tract__in=geo_boundaries)
     elif geo_type == 'Neighborhoods':
-        measurements = measurements.filter(neighborhood_id__in=geo_boundaries)
+        measurements = measurements.filter(neighborhood__in=geo_boundaries)
     elif geo_type == 'Wards':
         measurements = measurements.filter(ward__in=geo_boundaries)
         
@@ -175,7 +175,7 @@ def get_averages(request):
     if geo_type == 'Census':
         averages = parse_averages('tract', measurements)
     elif geo_type == 'Neighborhoods':
-        averages = parse_averages('neighborhood_id', measurements)
+        averages = parse_averages('neighborhood', measurements)
     elif geo_type == 'Wards':
         averages = parse_averages('ward', measurements)
     
@@ -209,7 +209,7 @@ def get_counts(request):
     if geo_type == 'Census':
         counts = parse_counts('tract', measurements)
     elif geo_type == 'Neighborhoods':
-        counts = parse_counts('neighborhood_id', measurements)
+        counts = parse_counts('neighborhood', measurements)
     elif geo_type == 'Wards':
         counts = parse_counts('ward', measurements)
     
