@@ -33,9 +33,10 @@ if __name__ == '__main__':
     for ui, ur in users.iterrows():
         # check for user's last session (so we don't double process)
         last_session = 0
-        if(~pd.isnull(ui)):
+        if pd.notnull(ui):
             # get latest session id from db
-            last_session = pd.read_sql_query('SELECT MAX(id) as last_session FROM sessions WHERE user_id = %d' % (ui), engine).values[0, 0]
+            last_session = pd.read_sql_query('SELECT MAX(id) as last_session FROM sessions WHERE user_id = %d' % (int(ui)), engine).values[0, 0]
+            logging.info('starting user %s at session %d' % (ur['username'], last_session))
     
         # api quiery for session list
         params = (('q[usernames]', ur['username']),)
@@ -79,7 +80,8 @@ if __name__ == '__main__':
                     pd.read_sql_query('UPDATE users SET id = %d WHERE username = \'%s\'' % (session['user_id'], ur['username']), engine)
                     response.raise_for_status()
                 except sa.exc.ResourceClosedError as e:
-                    logging.warning(e)
+                    #logging.warning(e)
+                    pass
                 except sa.exc.SQLAlchemyError as e:
                     logging.error(e)
                     sys.exit(1)

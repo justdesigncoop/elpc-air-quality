@@ -17,15 +17,15 @@ class MobileSessionsForm(forms.Form):
 class DataValuesForm(forms.Form):
     users = forms.MultipleChoiceField(choices=[], required=True)
     all_users = forms.BooleanField(required=False)
-    start_time = forms.DateTimeField(required=False)
-    end_time = forms.DateTimeField(required=False)
-    pm_level = forms.MultipleChoiceField(choices=[], required=False)
+    #start_time = forms.DateTimeField(required=False)
+    #end_time = forms.DateTimeField(required=False)
+    #pm_level = forms.MultipleChoiceField(choices=[], required=False)
     geo_type = forms.ChoiceField(required=False)
     geo_boundaries = forms.MultipleChoiceField(choices=[], required=False)
     
 class DataAveragesForm(forms.Form):
-    start_time = forms.DateTimeField(required=False)
-    end_time = forms.DateTimeField(required=False)
+    #start_time = forms.DateTimeField(required=False)
+    #end_time = forms.DateTimeField(required=False)
     geo_type = forms.ChoiceField(required=True)
 
 class CoverageForm(forms.Form):

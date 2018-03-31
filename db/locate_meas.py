@@ -2,12 +2,12 @@ import sqlalchemy as sa
 import pandas as pd
 import logging
 import sys
-import shapely
+import shapely.wkt
 
 if __name__ == '__main__':
     # generate error log
     logging.basicConfig(
-        filename='db_test_%s.log' % (pd.Timestamp.now().strftime('%Y%m%d%H%M%S')),
+        filename='locate_meas_%s.log' % (pd.Timestamp.now().strftime('%Y%m%d%H%M%S')),
         filemode='w',
         format = '%(asctime)s %(levelname)s: %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
@@ -48,56 +48,72 @@ if __name__ == '__main__':
     neighborhoods['g'] = neighborhoods['geo'].apply(shapely.wkt.loads)
     wards['g'] = wards['geo'].apply(shapely.wkt.loads)
     
-    # get measurements
+    # get reaining measurements
     try:
-        measurements = pd.read_sql_query('SELECT * FROM measurements', engine, index_col='id')
+        measurements = pd.read_sql_query('SELECT * FROM measurements WHERE (tract IS NULL OR neighborhood_id IS NULL OR ward IS NULL)', engine, index_col='id')
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
     
     # iterate through measurements
+    logging.info('found %d measurements to locate' % len(measurements))
     for im, rm in measurements.iterrows():
         #p = shapely.geometry.Point(-87.61, 41.81)
         p = shapely.geometry.Point(rm['longitude'], rm['latitude'])
-        #print p
+        #print rm
+        
+        # TODO make a locate_meas function instead of enumerating geo features
         
         # check census
-        if not rm['tract']:
+        if pd.isnull(rm['tract']):
             for ig, rg in census.iterrows():      
                 if p.within(rg['g']):
                     try:
                         pd.read_sql_query('UPDATE measurements SET tract = %d WHERE id = %d and stream_id = %d' % (ig, im, rm['stream_id']), engine)
                     except sa.exc.ResourceClosedError as e:
-                        logging.warning(e)
+                        #logging.warning(e)
+                        pass
                     except sa.exc.SQLAlchemyError as e:
                         logging.error(e)
                         sys.exit(1)
                     break
         
         # check neighborhoods
-        if not rm['neighborhood_id']:
+        if pd.isnull(rm['neighborhood_id']):
             for ig, rg in neighborhoods.iterrows():      
                 if p.within(rg['g']):
                     try:
                         pd.read_sql_query('UPDATE measurements SET neighborhood_id = %d WHERE id = %d and stream_id = %d' % (ig, im, rm['stream_id']), engine)
                     except sa.exc.ResourceClosedError as e:
-                        logging.warning(e)
+                        #logging.warning(e)
+                        pass
                     except sa.exc.SQLAlchemyError as e:
                         logging.error(e)
                         sys.exit(1)
                     break
         
         # check wards
-        if not rm['ward']:
+        if pd.isnull(rm['ward']):
             for ig, rg in wards.iterrows():      
                 if p.within(rg['g']):
                     try:
                         pd.read_sql_query('UPDATE measurements SET ward = %d WHERE id = %d and stream_id = %d' % (ig, im, rm['stream_id']), engine)
                     except sa.exc.ResourceClosedError as e:
-                        logging.warning(e)
+                        #logging.warning(e)
+                        pass
                     except sa.exc.SQLAlchemyError as e:
                         logging.error(e)
                         sys.exit(1)
                     break
+    
+    # delete rows that have no valid neighborhood, tract, or census
+    try:
+        pd.read_sql_query('DELETE FROM measurements WHERE (tract IS NULL AND neighborhood_id IS NULL AND ward IS NULL)', engine, index_col='id')
+    except sa.exc.ResourceClosedError as e:
+        #logging.warning(e)
+        pass
+    except sa.exc.SQLAlchemyError as e:
+        logging.error(e)
+        sys.exit(1)
     
     logging.info('locate meas finished')

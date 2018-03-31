@@ -67,6 +67,7 @@ apt install python-pip
 pip install --upgrade pip
 pip install virtualenv virtualenvwrapper
 source /usr/local/bin/virtualenvwrapper.sh
+mkvirtualenv elpcjd
 pip install -r requirements.txt
 ```
 
