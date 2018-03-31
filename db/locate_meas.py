@@ -50,7 +50,7 @@ if __name__ == '__main__':
     
     # get reaining measurements
     try:
-        measurements = pd.read_sql_query('SELECT * FROM measurements WHERE (tract IS NULL OR neighborhood_id IS NULL OR ward IS NULL)', engine, index_col='id')
+        measurements = pd.read_sql_query('SELECT * FROM measurements WHERE (tract IS NULL OR neighborhood IS NULL OR ward IS NULL)', engine, index_col='id')
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
@@ -79,11 +79,11 @@ if __name__ == '__main__':
                     break
         
         # check neighborhoods
-        if pd.isnull(rm['neighborhood_id']):
+        if pd.isnull(rm['neighborhood']):
             for ig, rg in neighborhoods.iterrows():      
                 if p.within(rg['g']):
                     try:
-                        pd.read_sql_query('UPDATE measurements SET neighborhood_id = %d WHERE id = %d and stream_id = %d' % (ig, im, rm['stream_id']), engine)
+                        pd.read_sql_query('UPDATE measurements SET neighborhood = %d WHERE id = %d and stream_id = %d' % (ig, im, rm['stream_id']), engine)
                     except sa.exc.ResourceClosedError as e:
                         #logging.warning(e)
                         pass
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     
     # delete rows that have no valid neighborhood, tract, or census
     try:
-        pd.read_sql_query('DELETE FROM measurements WHERE (tract IS NULL AND neighborhood_id IS NULL AND ward IS NULL)', engine, index_col='id')
+        pd.read_sql_query('DELETE FROM measurements WHERE (tract IS NULL AND neighborhood IS NULL AND ward IS NULL)', engine, index_col='id')
     except sa.exc.ResourceClosedError as e:
         #logging.warning(e)
         pass
