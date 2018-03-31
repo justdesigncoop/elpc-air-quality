@@ -20,7 +20,7 @@ if __name__ == '__main__':
     
     # create engine
     try:
-        engine = sa.create_engine('mysql+mysqlconnector://elpcjd:Elpc1234@home.danwahl.net/elpc_air_quality')
+        engine = sa.create_engine('mysql+mysqlconnector://elpcjd:Elpc1234@127.0.0.1/elpc_air_quality')
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
