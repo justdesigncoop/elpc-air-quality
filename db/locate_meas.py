@@ -50,7 +50,7 @@ if __name__ == '__main__':
     
     # get reaining measurements
     try:
-        measurements = pd.read_sql_query('SELECT * FROM measurements WHERE (tract IS NULL OR neighborhood IS NULL OR ward IS NULL)', engine, index_col='id')
+        measurements = pd.read_sql_query('SELECT * FROM measurements WHERE (tract IS NULL AND neighborhood IS NULL AND ward IS NULL)', engine, index_col='id')
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)

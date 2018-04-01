@@ -17,7 +17,7 @@ apt upgrade
 2. Install the following software packages:
 
 ```
-apt install git curl software-properties-common build-essential
+apt install git curl software-properties-common build-essential nano
 ```
 
 3. Install [MariaDB 10.2](https://downloads.mariadb.org/mariadb/repositories):
@@ -108,11 +108,19 @@ WSGIPythonPath /home/elpcjd/elpc-air-quality/app
 </Directory>
 ```
 
-8. Deploy Django app
+8. Deploy Django app:
 
 ```
 apt install apache2 libapache2-mod-wsgi phpmyadmin
 python manage.py collectstatic
 python manage.py createsuperuser
 /etc/init.d/apache2 restart
+```
+
+9. Change to correct time zone:
+
+```
+rm /etc/localtime
+ln -s /usr/share/zoneinfo/America/Chicago /etc/localtime
+w
 ```
