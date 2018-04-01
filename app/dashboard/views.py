@@ -104,8 +104,12 @@ def get_measurements(request):
     stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
     geo_type = json.loads(request.GET.get('geo_type', '[]'))
     geo_boundaries = json.loads(request.GET.get('geo_boundaries', '[]'))
+    sample_size = json.loads(request.GET.get('sample_size', '[]'))
     
-    measurements = Measurements.objects.all()
+    if sample_size:
+        measurements = Measurements.objects.raw('SELECT * FROM measurements where RAND() <= %f' % (sample_size))
+    else:
+        measurements = Measurements.objects.all()
     
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)

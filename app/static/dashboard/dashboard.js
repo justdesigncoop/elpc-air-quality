@@ -77,6 +77,7 @@ function getMeasurements(data, callback) {
     var stream_ids = JSON.stringify(data['stream_ids']);
     var geo_type = JSON.stringify(data['geo_type']);
     var geo_boundaries = JSON.stringify(data['geo_boundaries']);
+    var sample_size = JSON.stringify(data['sample_size']);
     //console.log(stream_ids);
     
     // execute ajax call
@@ -86,6 +87,7 @@ function getMeasurements(data, callback) {
             'stream_ids': stream_ids,
             'geo_type': geo_type,
             'geo_boundaries': geo_boundaries,
+            'sample_size': sample_size,
         },
         dataType: 'json',
         success: callback,

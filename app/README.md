@@ -71,6 +71,14 @@ mkvirtualenv elpcjd
 pip install -r requirements.txt
 ```
 
+Add the following to the end of ~/.bashrc:
+
+```
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME
+source /usr/local/bin/virtualenvwrapper.sh
+```
+
 7. Preapre and test Django app:
 
 ```
