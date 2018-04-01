@@ -26,10 +26,16 @@
         </div>
     </nav>
 
-    <div class="container" style="padding-top: 20px;">
+    <div class="container">
         {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
 
         {% block content %}(no content){% endblock %}
     </div>
-
+    
+    <footer class="footer">
+      <div class="container">
+        <span class="text-muted">Place sticky footer content here.</span>
+      </div>
+    </footer
+    
 {% endblock %}

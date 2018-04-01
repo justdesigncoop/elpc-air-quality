@@ -1,10 +1,108 @@
 {% extends 'dashboard/base.html' %}
 {% load bootstrap4 %}
 
+{% load static %}
+
+{% block bootstrap4_extra_head %}    
+    <!-- dashboard css -->
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+{% endblock %}
+
 {% block title %}Air Quality Chicago{% endblock %}
 
 {% block content %}
-    
-{% endblock %}
+    <h3>Background</h3>
+    <p>The Environmental Law & Policy Center (ELPC) and community partners have long been interested in air pollution-related public health issues and their disproportionate effects across Chicago’s neighborhoods. Our goal is improving air quality in the areas most threatened by PM2.5 pollution.</p>
+     
+    <p>Chicago is a major transportation and economic hub with high concentrations of trains, trucks, and heavy construction equipment. Many of these vehicles pollute the air with harmful particulates (PM2.5) within and around the highways, corridors, rail yards, intermodal facilities, and construction sites where they operate.</p>
+     
+    <p>Chicago also has very high children’s asthma rates, with some neighborhoods seeing one in every three children affected. Asthma hospitalization rates in Chicago are twice the national rate. COPD and other respiratory illnesses and heart problems are also rampant. [1]</p>
+     
+    <h3>Understanding PM2.5</h3>
+    <p>Particulate matter 2.5 (PM 2.5) is a highly toxic air contaminant composed of a mixture of fine carbon soot particles and gases from a variety of sources such as power plants, idling motor vehicles, construction sites, airplanes, wood burning, fires, and dust.</p>
+     
+    <p>PM2.5 can affect multiple systems in the human body because they penetrate the body’s natural defenses and can become lodged in the lungs or enter the bloodstream. This attributes to a wide variety of health problems including:  coughs, headaches, lightheadedness, nausea, aggravated allergies, asthma, chronic obstructive pulmonary disease (COPD), and other serious illnesses. [2]</p>
+     
+    <p>The Environmental Protection Agency (EPA) classifies levels of PM2.5 with a scale of colors and terms that help to signal to people whether they should be concerned about the local air:</p>
 
+    <table class="table table-sm ">
+        <thead>
+            <tr bgcolor="#f5f5f5">
+                <th scope="col">PM2.5 Value</th>
+                <th scope="col">Level of Health Concern</th>
+                <th scope="col">Meaning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row" bgcolor="#2DA641">0–12 µg/m³</th>
+                <td>Good</td>
+                <td>Air quality poses little to no risk.</td>
+            </tr>
+            <tr>
+                <th scope="row" bgcolor="#F9DC2E">12–35 µg/m³</th>
+                <td>Moderate</td>
+                <td>Air quality is good but may begin to be of moderate concern to those with unusual sensitivity to air pollution.</td>
+            </tr>
+            <tr>
+                <th scope="row" bgcolor="#F57F22">35–55 µg/m³</th>
+                <td>Unhealthy for Sensitive Groups</td>
+                <td>Sensitive groups may experience negative health effects.</td>
+            </tr>
+            <tr>
+                <th scope="row" bgcolor="#F4001C">55+ µg/m³</th>
+                <td>Unhealthy for All Groups</td>
+                <td>Everyone may begin to experience negative health effects. Sensitive groups especially at risk.</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p>While long term exposure to PM2.5 can affect everyone, children and the elderly are particularly sensitive to the negative health effects caused by air pollution. Children are at an increased risk of asthma and other illnesses after exposure to PM2.5 because their lungs are still developing. Increased respiration during prolonged outdoor activity also contributes to higher PM2.5 intake. The elderly are at high risk for severe aggravation of preexisting chronic respiratory illnesses.</p>
+     
+    <h3>Data collection and Advocacy</h3>
+    <p>Historically, measuring PM2.5 levels required large, expensive, stationary monitoring equipment operated by the EPA, government contractors, or research labs. These sensors and resulting data are often inaccessible to the public, and lack the flexibility to assess local conditions.</p>
+     
+    <p>New handheld particulate monitoring technology is easy to use and generates transparent, publicly-available information. These allow ELPC and our community partners to launch efforts to advocate for cleaner practices and equipment at construction sites, inform traffic management patterns, influence public transportation operations, enforce local anti-idling ordinances, and allow residents to make better-informed decisions to limit their exposure to particulate matter pollution. </p>
+     
+    <h3>Our Partners</h3>
+    <p>Data displayed on Air Quality Chicago is a collaborative effort of ELPC, public health allies, and community organizations. Our partners include:</p>
+   
+    <table class="table table-sm">
+        <tbody>
+            <tr>
+                <td><a href="https://experimentalstation.org/market/" title="61st Street Farmers Market"><img width=150 src="{% static 'dashboard/img/61stStreetFarmersMarket.jpg' %}"></img></a></td>
+                <td><a href="https://www.facebook.com/GreenerSouthLoop/" title="Alliance for a Greener South Loop"><img width=150 src="{% static 'dashboard/img/AGreenerSouthLoop.png' %}"></img></a></td>
+                <td><a href="https://experimentalstation.org/blackstone/" title="Blackstone Bicycle Works"><img width=150 src="{% static 'dashboard/img/BlackstoneBicycleWorks.jpg' %}"></img></a></td>
+                <td><a href="http://cps.edu" title="Chicago Public Schools"><img width=150 src="{% static 'dashboard/img/ChicagoPublicSchools.jpg' %}"></img></a></td>
+            </tr>
+            <tr>
+                <td><a href="http://cutcatscourier.com/ title="Cut Cats Courier"><img width=150 src="{% static 'dashboard/img/CutCatsCourier.png' %}"></img></a></td>
+                <td><a href="https://delta-institute.org/" title="Delta Institute"><img width=150 src="{% static 'dashboard/img/DeltaInstitute.jpg' %}"></img></a></td>
+                <td><a href="https://experimentalstation.org/" title="Experimental Station"><img width=150 src="{% static 'dashboard/img/ExperimentalStation.jpg' %}"></img></a></td>
+                <td><a href="https://www.fieldmuseum.org/at-the-field/programs/chicago-green-ambassadors-program" title="Field Museum’s Green Ambassadors"><img width=150 src="{% static 'dashboard/img/FieldMuseum.jpg' %}"></img></a></td> 
+            </tr>
+            <tr>
+                <td><a href="http://justdesigncoop.org/" title="JustDesign Cooperative, LLC"><img width=150 src="{% static 'dashboard/img/JustDesign.png' %}"></img></a></td>
+                <td><a href="https://www.fieldmuseum.org/science/research/area/keller-science-action-center" title="Keller Science Action Center"><img width=150 src="{% static 'dashboard/img/FieldMuseum.jpg' %}"></img></a></td>
+                <td><a href="https://experimentalstation.org/linkup-overview/" title="LINK Up Illinois"><img width=150 src="{% static 'dashboard/img/LinkUpIllinois.jpg' %}"></img></a></td>
+                <td><a href="https://www.mapscorps.org/" title="MAPSCorps"><img width=150 src="{% static 'dashboard/img/MapsCorps.jpg' %}"></img></a></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><a href="http://setaskforce.org/" title="Southeast Environmental Task Force"><img width=150 src="{% static 'dashboard/img/SETaskForce.jpg' %}"></img></a></td>
+                <td><a href="http://plantchicago.org/" title="Plant Chicago"><img width=150 src="{% static 'dashboard/img/PlantChicago.png' %}"></img></a></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h3>Our Coverage</h3>
+
+    
+
+    <p>If you notice a lack of monitoring coverage in your area and would like to know more about or get involved in the Air Quality Chicago Monitoring Program, please email twerner@elpc.org</p>
+
+
+
+{% endblock %}
 
