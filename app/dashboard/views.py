@@ -20,12 +20,8 @@ from operator import or_
 
 import json
 
-class IndexView(generic.ListView):
+class IndexView(generic.TemplateView):
 	template_name = 'dashboard/index.html'
-	context_object_name = 'latest_session_list'
-	
-	def get_queryset(self):
-		return Sessions.objects.order_by('-updated_at')[:5]
 
 #class SessionView(generic.DetailView):
 #	template_name = 'dashboard/session.html'
@@ -36,7 +32,7 @@ class IndexView(generic.ListView):
 #	form_class = MapForm
 #	success_url = '/dashboard/'
 
-class AboutView(generic.ListView):
+class AboutView(generic.TemplateView):
 	template_name = 'dashboard/about.html'
 
 class MobileSessionsView(generic.FormView):
