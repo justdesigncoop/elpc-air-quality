@@ -17,7 +17,7 @@ apt upgrade
 2. Install the following software packages:
 
 ```
-apt install git curl software-properties-common build-essential nano
+apt install git curl software-properties-common build-essential nano run-one
 ```
 
 3. Install [MariaDB 10.2](https://downloads.mariadb.org/mariadb/repositories):
@@ -132,3 +132,11 @@ rm /etc/localtime
 ln -s /usr/share/zoneinfo/America/Chicago /etc/localtime
 w
 ```
+
+10. Create a crontab entry for the database scripts (e.g. runs every morning at 2 am):
+
+```
+crontab -e
+0 2 * * * run-one /home/elpcjd/elpc-air-quality/db/cron_script.sh
+```
+

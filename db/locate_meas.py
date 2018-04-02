@@ -6,15 +6,26 @@ import shapely.wkt
 
 DEFAULT_LOC = 0
 
-def locate_meas(im, rm, p, name, geo, engine):
+def locate_meas(im, rm, p, prev, name, geo, engine):
     # check to see if already located
     if pd.isnull(rm[name]):
-        # iterate through geo boundaries
-        found = False
+        # check previuos (most likely to be in the same boundary)
+        if p.within(geo.loc[prev]['g']):
+            try:
+                pd.read_sql_query('UPDATE measurements SET %s = %d WHERE id = %d and stream_id = %d' % (name, prev, im, rm['stream_id']), engine)
+            except sa.exc.ResourceClosedError as e:
+                #logging.warning(e)
+                pass
+            except sa.exc.SQLAlchemyError as e:
+                logging.error(e)
+                sys.exit(1)
+            # return geo boundary
+            return prev
+    
+        # iterate through all geo boundaries
         for ig, rg in geo.iterrows(): 
-            # update measurement and break if within boundary
+            # update measurement and return if within boundary
             if p.within(rg['g']):
-                found = True
                 try:
                     pd.read_sql_query('UPDATE measurements SET %s = %d WHERE id = %d and stream_id = %d' % (name, ig, im, rm['stream_id']), engine)
                 except sa.exc.ResourceClosedError as e:
@@ -23,18 +34,21 @@ def locate_meas(im, rm, p, name, geo, engine):
                 except sa.exc.SQLAlchemyError as e:
                     logging.error(e)
                     sys.exit(1)
-                break
+                # return geo boundary
+                return ig
         
         # if not found, set to default
-        if not found:
-            try:
-                pd.read_sql_query('UPDATE measurements SET %s = %d WHERE id = %d and stream_id = %d' % (name, DEFAULT_LOC, im, rm['stream_id']), engine)
-            except sa.exc.ResourceClosedError as e:
-                #logging.warning(e)
-                pass
-            except sa.exc.SQLAlchemyError as e:
-                logging.error(e)
-                sys.exit(1)
+        try:
+            pd.read_sql_query('UPDATE measurements SET %s = %d WHERE id = %d and stream_id = %d' % (name, DEFAULT_LOC, im, rm['stream_id']), engine)
+        except sa.exc.ResourceClosedError as e:
+            #logging.warning(e)
+            pass
+        except sa.exc.SQLAlchemyError as e:
+            logging.error(e)
+            sys.exit(1)
+    
+    # return default lox
+    return DEFAULT_LOC
 
 if __name__ == '__main__':
     # generate error log
@@ -53,66 +67,41 @@ if __name__ == '__main__':
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
-    
-    # get census
-    try:
-        census = pd.read_sql_query('SELECT * FROM census', engine, index_col='tract')
-    except sa.exc.SQLAlchemyError as e:
-        logging.error(e)
-        sys.exit(1)
 
-    # get neighborhoods
-    try:
-        neighborhoods = pd.read_sql_query('SELECT * FROM neighborhoods', engine, index_col='id')
-    except sa.exc.SQLAlchemyError as e:
-        logging.error(e)
-        sys.exit(1)
-
-    # get wards
-    try:
-        wards = pd.read_sql_query('SELECT * FROM wards', engine, index_col='ward')
-    except sa.exc.SQLAlchemyError as e:
-        logging.error(e)
-        sys.exit(1)
-
-    # create shape objects
-    census['g'] = census['geo'].apply(shapely.wkt.loads)
-    neighborhoods['g'] = neighborhoods['geo'].apply(shapely.wkt.loads)
-    wards['g'] = wards['geo'].apply(shapely.wkt.loads)
+    # array of database tables
+    tables = [
+        {'table': 'census', 'index': 'tract', 'column': 'tract'},
+        {'table': 'neighborhoods', 'index': 'id', 'column': 'neighborhood'},
+        {'table': 'wards', 'index': 'ward', 'column': 'ward'},
+    ]
     
-    # get reaining measurements
-    try:
-        measurements = pd.read_sql_query('SELECT * FROM measurements WHERE (tract IS NULL OR neighborhood IS NULL OR ward IS NULL)', engine, index_col='id')
-    except sa.exc.SQLAlchemyError as e:
-        logging.error(e)
-        sys.exit(1)
-    
-    # iterate through measurements
-    logging.info('found %d measurements to locate' % len(measurements))
-    for im, rm in measurements.iterrows():
-        #p = shapely.geometry.Point(-87.61, 41.81)
-        p = shapely.geometry.Point(rm['longitude'], rm['latitude'])
-        #print rm
-                
-        # check census
-        locate_meas(im, rm, p, 'tract', census, engine)
+    # iterate through array of tables
+    for t in tables:
+        # get geo boundaries
+        try:
+            geo = pd.read_sql_query('SELECT * FROM %s' % (t['table']), engine, index_col=t['index'])
+        except sa.exc.SQLAlchemyError as e:
+            logging.error(e)
+            sys.exit(1)
         
-        # check neighborhoods
-        locate_meas(im, rm, p, 'neighborhood', neighborhoods, engine)
+        # create shape objects
+        geo['g'] = geo['geo'].apply(shapely.wkt.loads)
         
-        # check wards
-        locate_meas(im, rm, p, 'ward', wards, engine)
-    
-    '''
-    # delete rows that have no valid neighborhood, tract, or census
-    try:
-        pd.read_sql_query('DELETE FROM measurements WHERE (tract IS NULL AND neighborhood IS NULL AND ward IS NULL)', engine, index_col='id')
-    except sa.exc.ResourceClosedError as e:
-        #logging.warning(e)
-        pass
-    except sa.exc.SQLAlchemyError as e:
-        logging.error(e)
-        sys.exit(1)
-    '''
+        # get reaining measurements
+        try:
+            measurements = pd.read_sql_query('SELECT * FROM measurements WHERE %s IS NULL ORDER BY stream_id, id' % (t['column']), engine, index_col='id')
+        except sa.exc.SQLAlchemyError as e:
+            logging.error(e)
+            sys.exit(1)
+            
+        # iterate through measurements
+        logging.info('found %d measurements to locate in %s' % (len(measurements), t['table']))
+        prev = DEFAULT_LOC
+        for im, rm in measurements.iterrows():
+            # create point
+            p = shapely.geometry.Point(rm['longitude'], rm['latitude'])
+                    
+            # locate point, store previous location for next loop
+            prev = locate_meas(im, rm, p, prev, t['column'], geo, engine)
     
     logging.info('locate meas finished')
