@@ -36,6 +36,9 @@ class IndexView(generic.ListView):
 #	form_class = MapForm
 #	success_url = '/dashboard/'
 
+class AboutView(generic.ListView):
+	template_name = 'dashboard/about.html'
+
 class MobileSessionsView(generic.FormView):
 	template_name = 'dashboard/mobile_sessions.html'
 	form_class = MobileSessionsForm

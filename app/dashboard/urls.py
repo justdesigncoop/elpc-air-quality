@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^data_values/$', views.DataValuesView.as_view(), name='data_values'),
     url(r'^data_averages/$', views.DataAveragesView.as_view(), name='data_averages'),
     url(r'^coverage/$', views.CoverageView.as_view(), name='coverage'),
+    url(r'^about/$', views.AboutView.as_view(), name='about'),
     url(r'^ajax/get_users/$', views.get_users, name='get_users'),
     url(r'^ajax/get_sessions/$', views.get_sessions, name='get_sessions'),
     url(r'^ajax/get_streams/$', views.get_streams, name='get_streams'),
