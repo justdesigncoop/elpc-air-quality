@@ -4,6 +4,36 @@ import logging
 import sys
 import shapely.wkt
 
+def locate_meas(im, rm, p, name, geo, engine):
+    # check to see if already located
+    if pd.isnull(rm[name]):
+        # iterate through geo boundaries
+        found = False
+        for ig, rg in geo.iterrows(): 
+            # update measurement and break if within boundary
+            if p.within(rg['g']):
+                found = True
+                try:
+                    pd.read_sql_query('UPDATE measurements SET %s = %d WHERE id = %d and stream_id = %d' % (name, ig, im, rm['stream_id']), engine)
+                except sa.exc.ResourceClosedError as e:
+                    #logging.warning(e)
+                    pass
+                except sa.exc.SQLAlchemyError as e:
+                    logging.error(e)
+                    sys.exit(1)
+                break
+        
+        # if not found, set to 0
+        if not found:
+            try:
+                pd.read_sql_query('UPDATE measurements SET %s = %d WHERE id = %d and stream_id = %d' % (name, 0, im, rm['stream_id']), engine)
+            except sa.exc.ResourceClosedError as e:
+                #logging.warning(e)
+                pass
+            except sa.exc.SQLAlchemyError as e:
+                logging.error(e)
+                sys.exit(1)
+
 if __name__ == '__main__':
     # generate error log
     logging.basicConfig(
@@ -50,7 +80,7 @@ if __name__ == '__main__':
     
     # get reaining measurements
     try:
-        measurements = pd.read_sql_query('SELECT * FROM measurements WHERE (tract IS NULL AND neighborhood IS NULL AND ward IS NULL)', engine, index_col='id')
+        measurements = pd.read_sql_query('SELECT * FROM measurements WHERE (tract IS NULL OR neighborhood IS NULL OR ward IS NULL)', engine, index_col='id')
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
@@ -61,51 +91,17 @@ if __name__ == '__main__':
         #p = shapely.geometry.Point(-87.61, 41.81)
         p = shapely.geometry.Point(rm['longitude'], rm['latitude'])
         #print rm
-        
-        # TODO make a locate_meas function instead of enumerating geo features
-        
+                
         # check census
-        if pd.isnull(rm['tract']):
-            for ig, rg in census.iterrows():      
-                if p.within(rg['g']):
-                    try:
-                        pd.read_sql_query('UPDATE measurements SET tract = %d WHERE id = %d and stream_id = %d' % (ig, im, rm['stream_id']), engine)
-                    except sa.exc.ResourceClosedError as e:
-                        #logging.warning(e)
-                        pass
-                    except sa.exc.SQLAlchemyError as e:
-                        logging.error(e)
-                        sys.exit(1)
-                    break
+        locate_meas(im, rm, p, 'tract', census, engine)
         
         # check neighborhoods
-        if pd.isnull(rm['neighborhood']):
-            for ig, rg in neighborhoods.iterrows():      
-                if p.within(rg['g']):
-                    try:
-                        pd.read_sql_query('UPDATE measurements SET neighborhood = %d WHERE id = %d and stream_id = %d' % (ig, im, rm['stream_id']), engine)
-                    except sa.exc.ResourceClosedError as e:
-                        #logging.warning(e)
-                        pass
-                    except sa.exc.SQLAlchemyError as e:
-                        logging.error(e)
-                        sys.exit(1)
-                    break
+        locate_meas(im, rm, p, 'neighborhood', neighborhoods, engine)
         
         # check wards
-        if pd.isnull(rm['ward']):
-            for ig, rg in wards.iterrows():      
-                if p.within(rg['g']):
-                    try:
-                        pd.read_sql_query('UPDATE measurements SET ward = %d WHERE id = %d and stream_id = %d' % (ig, im, rm['stream_id']), engine)
-                    except sa.exc.ResourceClosedError as e:
-                        #logging.warning(e)
-                        pass
-                    except sa.exc.SQLAlchemyError as e:
-                        logging.error(e)
-                        sys.exit(1)
-                    break
+        locate_meas(im, rm, p, 'ward', wards, engine)
     
+    '''
     # delete rows that have no valid neighborhood, tract, or census
     try:
         pd.read_sql_query('DELETE FROM measurements WHERE (tract IS NULL AND neighborhood IS NULL AND ward IS NULL)', engine, index_col='id')
@@ -115,5 +111,6 @@ if __name__ == '__main__':
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
+    '''
     
     logging.info('locate meas finished')

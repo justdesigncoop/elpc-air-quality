@@ -19,7 +19,7 @@ class DataValuesForm(forms.Form):
     all_users = forms.BooleanField(required=False)
     #start_time = forms.DateTimeField(required=False)
     #end_time = forms.DateTimeField(required=False)
-    #pm_level = forms.MultipleChoiceField(choices=[], required=False)
+    pm_level = forms.MultipleChoiceField(choices=[], required=False)
     geo_type = forms.ChoiceField(required=False)
     geo_boundaries = forms.MultipleChoiceField(choices=[], required=False)
     
