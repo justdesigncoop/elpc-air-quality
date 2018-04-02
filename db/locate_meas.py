@@ -4,6 +4,8 @@ import logging
 import sys
 import shapely.wkt
 
+DEFAULT_LOC = 0
+
 def locate_meas(im, rm, p, name, geo, engine):
     # check to see if already located
     if pd.isnull(rm[name]):
@@ -23,10 +25,10 @@ def locate_meas(im, rm, p, name, geo, engine):
                     sys.exit(1)
                 break
         
-        # if not found, set to 0
+        # if not found, set to default
         if not found:
             try:
-                pd.read_sql_query('UPDATE measurements SET %s = %d WHERE id = %d and stream_id = %d' % (name, 0, im, rm['stream_id']), engine)
+                pd.read_sql_query('UPDATE measurements SET %s = %d WHERE id = %d and stream_id = %d' % (name, DEFAULT_LOC, im, rm['stream_id']), engine)
             except sa.exc.ResourceClosedError as e:
                 #logging.warning(e)
                 pass
