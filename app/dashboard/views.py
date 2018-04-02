@@ -107,7 +107,7 @@ def get_measurements(request):
     sample_size = json.loads(request.GET.get('sample_size', '[]'))
     
     if sample_size:
-        measurements = Measurements.objects.raw('SELECT * FROM measurements where RAND() <= %f' % (sample_size))
+        measurements = Measurements.objects.raw('SELECT * FROM measurements where RAND() <= %f' % (float(sample_size)/float(Measurements.objects.count())))
     else:
         measurements = Measurements.objects.all()
     
