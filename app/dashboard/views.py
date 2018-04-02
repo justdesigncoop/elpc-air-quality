@@ -105,6 +105,8 @@ def get_measurements(request):
     geo_type = json.loads(request.GET.get('geo_type', '[]'))
     geo_boundaries = json.loads(request.GET.get('geo_boundaries', '[]'))
     sample_size = json.loads(request.GET.get('sample_size', '[]'))
+    min_value = json.loads(request.GET.get('min_value', '[]'))
+    max_value = json.loads(request.GET.get('max_value', '[]'))
     
     if sample_size:
         measurements = Measurements.objects.raw('SELECT * FROM measurements where RAND() <= %f' % (float(sample_size)/float(Measurements.objects.count())))
@@ -120,6 +122,12 @@ def get_measurements(request):
         measurements = measurements.filter(neighborhood__in=geo_boundaries)
     elif geo_type == 'Wards':
         measurements = measurements.filter(ward__in=geo_boundaries)
+        
+    if min_value:
+        measurements = measurements.filter(value__gte=min_value)
+
+    if max_value:
+        measurements = measurements.filter(value__lt=max_value)
         
     data = {
         'measurements': serializers.serialize("json", measurements)

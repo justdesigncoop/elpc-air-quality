@@ -402,12 +402,12 @@
                     radius: 5
                 });
                 
-                // popup text
-                popup = "<table> \
-                    <tr><td>date</td><td>" + measurements[i]['fields']['time'] + "</td></tr> \
-                    <tr><td>value</td><td>" + measurements[i]['fields']['value'] + "</td></tr> \
-                    <tr><td>latitude</td><td>" + measurements[i]['fields']['latitude'] + "</td></tr> \
-                    <tr><td>longitude</td><td>" + measurements[i]['fields']['longitude'] + "</td></tr> \
+                // popup text  bgcolor=\"" + color + "\"
+                popup = "<table class=\"table table-bordered table-striped\"> \
+                    <tr><th>Date</th><td>" + measurements[i]['fields']['time'] + "</td></tr> \
+                    <tr><th>Value</th><td>" + measurements[i]['fields']['value'].toFixed(2) + "</td></tr> \
+                    <tr><th>Lat</th><td>" + measurements[i]['fields']['latitude'].toFixed(5) + "</td></tr> \
+                    <tr><th>Lng</th><td>" + measurements[i]['fields']['longitude'].toFixed(5) + "</td></tr> \
                     </table>"
                 
                 // add to marker list

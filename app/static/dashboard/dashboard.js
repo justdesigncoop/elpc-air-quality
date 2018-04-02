@@ -16,6 +16,8 @@ var geoTypes = {
    }
 };
 
+var defaultLoc = 0;
+
 // https://coolors.co/2da641-f9dc2e-f57f22-f4001c-1616e5
 var coverageColor = '#1616E5';
 
@@ -78,6 +80,8 @@ function getMeasurements(data, callback) {
     var geo_type = JSON.stringify(data['geo_type']);
     var geo_boundaries = JSON.stringify(data['geo_boundaries']);
     var sample_size = JSON.stringify(data['sample_size']);
+    var min_value = JSON.stringify(data['min_value']);
+    var max_value = JSON.stringify(data['max_value']);
     //console.log(stream_ids);
     
     // execute ajax call
@@ -88,6 +92,8 @@ function getMeasurements(data, callback) {
             'geo_type': geo_type,
             'geo_boundaries': geo_boundaries,
             'sample_size': sample_size,
+            'min_value': min_value,
+            'max_value': max_value,
         },
         dataType: 'json',
         success: callback,
