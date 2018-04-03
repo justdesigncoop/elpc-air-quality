@@ -11,7 +11,7 @@ if __name__ == '__main__':
         filemode='w',
         format = '%(asctime)s %(levelname)s: %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
-        level=logging.DEBUG)
+        level=logging.INFO)
     
     logging.info('db test started')
     
@@ -31,13 +31,12 @@ if __name__ == '__main__':
         
     # iterate through usernames
     for ui, ur in users.iterrows():
-        # check for user's last session (so we don't double process)
-        last_session = 0
+        # check for user's previous sessions (so we don't double process)
+        prev_sessions = pd.Series()       
         if pd.notnull(ui):
             # get latest session id from db
-            last_session = pd.read_sql_query('SELECT MAX(id) as last_session FROM sessions WHERE user_id = %d' % (int(ui)), engine).values[0, 0]
-            logging.info('starting user %s at session %d' % (ur['username'], last_session))
-    
+            prev_sessions = pd.read_sql_query('SELECT id FROM sessions WHERE user_id = %d' % (int(ui)), engine)
+
         # api quiery for session list
         params = (('q[usernames]', ur['username']),)
         try:
@@ -46,10 +45,13 @@ if __name__ == '__main__':
         except requests.exceptions.RequestException as e:
             logging.error(e)
             sys.exit(1)
+            
+        # [s for s in sessions['id'] if s not in prev_sessions]
         
         # sessions dataframe, remove old sessions before processing
         sessions = pd.DataFrame(response.json())
-        sessions = sessions[sessions['id'] > last_session]
+        sessions = sessions[~sessions['id'].isin(prev_sessions)]
+        logging.info('adding %d sessions for user %s' % (len(sessions), ur['username']))
         
         # streams and measurements processing
         for si, sr in sessions.iterrows():
