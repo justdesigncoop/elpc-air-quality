@@ -44,8 +44,8 @@ DROP TABLE IF EXISTS sessions;
 --
 CREATE TABLE sessions (
   id INT(11) NOT NULL,
-  created_at DATE,
-  updated_at DATE,
+  created_at DATETIME,
+  updated_at DATETIME,
   user_id INT,
   uuid VARCHAR(40),
   url_token VARCHAR(40),
@@ -58,17 +58,17 @@ CREATE TABLE sessions (
   phone_model VARCHAR(40),
   os_version VARCHAR(40),
   offset_60_db VARCHAR(40),
-  start_time DATE,
-  end_time DATE,
+  start_time DATETIME,
+  end_time DATETIME,
   measurements_count INT,
   timezone_offset INT,
-  start_time_local DATE,
-  end_time_local DATE,
+  start_time_local DATETIME,
+  end_time_local DATETIME,
   type VARCHAR(40) NOT NULL,
   is_indoor BOOLEAN,
   latitude DOUBLE,
   longitude DOUBLE,
-  last_measurement_at DATE,
+  last_measurement_at DATETIME,
   PRIMARY KEY (id),
   INDEX index_sessions_on_contribute (contribute),
   INDEX index_sessions_on_end_time (end_time),
@@ -97,9 +97,9 @@ DROP TABLE IF EXISTS notes;
 --
 CREATE TABLE notes (
   id INT(11) NOT NULL,
-  created_at DATE,
-  updated_at DATE,
-  date DATE,
+  created_at DATETIME,
+  updated_at DATETIME,
+  date DATETIME,
   text TEXT,
   latitude DOUBLE,
   longitude DOUBLE,
@@ -107,7 +107,7 @@ CREATE TABLE notes (
   photo_file_name VARCHAR(40),
   photo_content_type VARCHAR(40),
   photo_file_size INT(11),
-  photo_updated_at DATE,
+  photo_updated_at DATETIME,
   number INT(11),
   photo TEXT,
   photo_thumbnail TEXT,
@@ -184,6 +184,11 @@ COLLATE utf8_general_ci
 ROW_FORMAT = DYNAMIC;
 
 --
+-- Insert default ward
+--
+INSERT INTO wards (ward, geo) VALUES (0, 'MULTIPOLYGON EMPTY');
+
+--
 -- Drop table "neighborhoods"
 --
 DROP TABLE IF EXISTS neighborhoods;
@@ -204,6 +209,11 @@ COLLATE utf8_general_ci
 ROW_FORMAT = DYNAMIC;
 
 --
+-- Insert default neighborhood
+--
+INSERT INTO neighborhoods (id, neighborhood, geo) VALUES (0, 'None', 'MULTIPOLYGON EMPTY');
+
+--
 -- Drop table "census"
 --
 DROP TABLE IF EXISTS census;
@@ -222,6 +232,11 @@ COLLATE utf8_general_ci
 ROW_FORMAT = DYNAMIC;
 
 --
+-- Insert default tract
+--
+INSERT INTO census (tract, geo) VALUES (0, 'MULTIPOLYGON EMPTY');
+
+--
 -- Drop table "measurements"
 --
 DROP TABLE IF EXISTS measurements;
@@ -234,12 +249,12 @@ CREATE TABLE measurements (
   value FLOAT,
   latitude DOUBLE,
   longitude DOUBLE,
-  time DATE,
+  time DATETIME,
   timezone_offset INT(11),
   stream_id INT(11),
   milliseconds INT(11) DEFAULT 0,
   measured_value FLOAT,
-  created_at DATE,
+  created_at DATETIME,
   ward INT(11),
   neighborhood INT(11),
   tract BIGINT(11),
