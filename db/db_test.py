@@ -32,10 +32,10 @@ if __name__ == '__main__':
     # iterate through usernames
     for ui, ur in users.iterrows():
         # check for user's previous sessions (so we don't double process)
-        prev_sessions = pd.Series()       
+        prev_sessions = pd.Series()      
         if pd.notnull(ui):
             # get latest session id from db
-            prev_sessions = pd.read_sql_query('SELECT id FROM sessions WHERE user_id = %d' % (int(ui)), engine)
+            prev_sessions = pd.read_sql_query('SELECT id FROM sessions WHERE user_id = %d' % (int(ui)), engine)['id']
 
         # api quiery for session list
         params = (('q[usernames]', ur['username']),)
