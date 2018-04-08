@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block content %}
-    <form role="form" id="id_request" class="form-horizontal""> <!!! method="post" !!!>
+    <form role="form" id="id_request" class="form-horizontal p-3"> <!!! method="post" !!!>
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}
         {% buttons %}

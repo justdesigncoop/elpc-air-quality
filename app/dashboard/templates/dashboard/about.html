@@ -11,14 +11,24 @@
 {% block title %}About{% endblock %}
 
 {% block content %}
-    <h3>Background</h3>
-    <p>The <a href="http://elpc.org/" rel="noopener noreferrer" target="_blank">Environmental Law & Policy Center</a> (ELPC) and <a href="#partners">community partners</a> have long been interested in air pollution-related public health issues and their disproportionate effects across Chicago’s neighborhoods. Our goal is improving air quality in the areas most threatened by PM2.5 pollution.</p>
+    <div class="position-relative overflow-hidden text-center header-image" style="background-image: url({% static 'dashboard/img/BusGradient.png' %});">
+        <div>
+            <h1 class="font-weight-normal text-white">Background</h1>
+        </div>
+    </div>
+    
+    <p>The <a href="http://elpc.org/" rel="noopener noreferrer" target="_blank">Environmental Law & Policy Center</a> (ELPC) and <a href="{% url 'partners' %}">community partners</a> have long been interested in air pollution-related public health issues and their disproportionate effects across Chicago’s neighborhoods. Our goal is improving air quality in the areas most threatened by PM2.5 pollution.</p>
      
     <p>Chicago is a major transportation and economic hub with high concentrations of trains, trucks, and heavy construction equipment. Many of these vehicles pollute the air with harmful particulates (PM2.5) within and around the highways, corridors, rail yards, intermodal facilities, and construction sites where they operate.</p>
      
     <p>Chicago also has very high children’s asthma rates, with some neighborhoods seeing one in every three children affected. Asthma hospitalization rates in Chicago are twice the national rate. COPD and other respiratory illnesses and heart problems are also rampant.<sup><a href="http://www.cityofchicago.org/content/dam/city/depts/cdph/CDPH/CDPHComHlthStatMiniDataFINAL4172015.pdf" title="Hospital Discharge Data, Illinois Department of Public Health, 2011. Web. 21 June 2017." rel="noopener noreferrer" target="_blank">[1]</a></sup></p>
      
-    <h3>Understanding PM2.5</h3>
+    <div class="position-relative overflow-hidden text-center header-image" style="background-image: url({% static 'dashboard/img/SmokestackGradient.png' %});">
+        <div>
+            <h1 class="font-weight-normal text-white">Understanding PM2.5</h1>
+        </div>
+    </div>
+    
     <p>Particulate matter 2.5 (PM2.5) is a highly toxic air contaminant, composed of a mixture of fine carbon soot particles and gases from a variety of sources such as power plants, idling motor vehicles, construction sites, airplanes, wood burning, fires, and dust.</p>
      
     <p>PM2.5 can affect multiple systems in the human body because it penetrates the body’s natural defenses, and can become lodged in the lungs or enter the bloodstream. This can lead to a wide variety of health problems including: coughs, headaches, lightheadedness, nausea, aggravated allergies, asthma, chronic obstructive pulmonary disease (COPD), and other serious illnesses.<sup><a href="https://oehha.ca.gov/air/health-effects-diesel-exhaust" title="Monserrat, Laurie. &quot;Health Effects of Diesel Exhaust.&quot; OEHHA. N.p., 21 June 2016. 14 July 2017." rel="noopener noreferrer" target="_blank">[2]</a></sup></p>
@@ -59,7 +69,12 @@
     
     <p>While long term exposure to PM2.5 can affect everyone, children and the elderly are particularly sensitive to the negative health effects caused by air pollution. Children are at an increased risk of asthma and other illnesses after exposure to PM2.5 because their lungs are still developing. Increased respiration during prolonged outdoor activity also contributes to higher PM2.5 intake. The elderly are at high risk for severe aggravation of preexisting chronic respiratory illnesses.</p>
      
-    <h3>Data collection and Advocacy</h3>
+    <div class="position-relative overflow-hidden text-center header-image" style="background-image: url({% static 'dashboard/img/MetersGradient.png' %});">
+        <div>
+            <h1 class="font-weight-normal text-white">Data Collection & Advocacy</h1>
+        </div>
+    </div>
+    
     <p>Historically, measuring PM2.5 levels required large, expensive, stationary monitoring equipment operated by the EPA, government contractors, or research labs. These sensors and resulting data are often inaccessible to the public, and lack the flexibility to assess local conditions.</p>
      
     <p>New <a href="http://www.takingspace.org/aircasting/airbeam/" rel="noopener noreferrer" target="_blank">handheld particulate monitoring</a> technology is easy to use and generates transparent, <a href="http://aircasting.org/map" rel="noopener noreferrer" target="_blank">publicly-available</a> information. These allow ELPC and our community partners to launch efforts to advocate for cleaner practices and equipment at construction sites, inform traffic management patterns, influence public transportation operations, enforce local anti-idling ordinances, and allow residents to make better-informed decisions to limit their exposure to particulate matter pollution.</p>
