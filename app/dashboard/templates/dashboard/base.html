@@ -14,22 +14,28 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'about' %}">About</a>
+                {% url 'about' as about_url %}
+                <li class="nav-item {% if request.path == about_url %} active {% endif %}">
+                    <a class="nav-link " href="{% url 'about' %}">About</a>
                 </li>
-                <li class="nav-item">
+                {% url 'partners' as partners_url %}
+                <li class="nav-item {% if request.path == partners_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'partners' %}">Our Partners & Coverage</a>
                 </li>
-                <li class="nav-item">
+                {% url 'mobile_sessions' as mobile_sessions_url %}
+                <li class="nav-item {% if request.path == mobile_sessions_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'mobile_sessions' %}">Mobile Sessions</a>
                 </li>
-                <li class="nav-item">
+                {% url 'data_values' as data_values_url %}
+                <li class="nav-item {% if request.path == data_values_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'data_values' %}">Data Values</a>
                 </li>
-                <li class="nav-item">
+                {% url 'data_averages' as data_averages_url %}
+                <li class="nav-item {% if request.path == data_averages_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'data_averages' %}">Data Averages</a>
                 </li>
-                <li class="nav-item">
+                {% url 'coverage' as coverage_url %}
+                <li class="nav-item {% if request.path == coverage_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'coverage' %}">Coverage</a>
                 </li>
             </ul>
