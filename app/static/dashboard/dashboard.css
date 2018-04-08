@@ -84,16 +84,17 @@ body > .container {
 }
 
 .header-image {
-    min-height: 320px; 
+    display: table;
+    height: 320px;
+    width: 100%;
     background-size: cover;
     background-position: center;
 }
 
 .header-image > div {
     padding: 20px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
     width:100%;
+    display: table-cell;
+    vertical-align: middle;
 }
 
