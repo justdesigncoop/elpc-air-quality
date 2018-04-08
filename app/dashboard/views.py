@@ -20,6 +20,10 @@ from operator import or_
 
 import json
 
+class FaviconView(generic.RedirectView):
+    url='/static/dashboard/favicon.ico'
+    permanent=True
+
 class IndexView(generic.TemplateView):
 	template_name = 'dashboard/index.html'
 
