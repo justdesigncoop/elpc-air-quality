@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
 {% endblock %}
 
+{% block title %}Data Averages{% endblock %}
+
 {% block content %}
     <form role="form" id="id_request" class="form-horizontal p-3"> <!!! method="post" !!!>
         {% csrf_token %}
