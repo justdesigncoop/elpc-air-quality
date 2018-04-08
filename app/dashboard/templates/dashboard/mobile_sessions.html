@@ -17,6 +17,13 @@
 {% block title %}Mobile Sessions -{% endblock %}
 
 {% block content %}
+    <div class="alert text-white" style="background-color: #31C0AA;" role="alert">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <p>View PM2.5 data from mobile monitoring sessions by selecting a username from the “Users” window. Multiple usernames can be selected at once (using shift or ctrl keys). Once a username is selected the sessions associated with it will appear in the “Sessions” window. A “Keyword”, such as a monitoring participant’s name, can be entered to narrow down the session shown. Multiple sessions can be viewed at once.</p>
+ 
+        <p>Once Users and Sessions are selected press “Map” and wait for the data to appear. Map data can be downloaded using the “Download” button. Map views can also be saved using the arrow key on the map.</p>
+    </div>
+
     <form role="form" id="id_request" class="form-horizontal p-3"> <!!! method="post" !!!>
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}

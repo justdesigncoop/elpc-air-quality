@@ -17,6 +17,13 @@
 {% block title %}Data Averages -{% endblock %}
 
 {% block content %}
+    <div class="alert text-white" style="background-color: #31C0AA;" role="alert">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <p>Select a geographic boundary to view averages of PM2.5 data by location.</p>
+ 
+        <p>Once boundary type is selected, press “Map” and wait for the data to appear. Map data can be downloaded using the “Download” button. Map views can also be saved using the arrow key on the map.</p>
+    </div>
+    
     <form role="form" id="id_request" class="form-horizontal p-3"> <!!! method="post" !!!>
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}
