@@ -181,7 +181,7 @@
             
             // populate user select
             for (i = 0; i < users.length; ++i) {
-                $("#id_users").append($("<option />").val(users[i]['fields']['id']).text(users[i]['pk']));
+                $("#id_users").append($("<option />").val(users[i]['id']).text(users[i]['username']));
             }
         }
         
@@ -289,7 +289,7 @@
             
             // populate user select
             for (i = 0; i < sessions.length; ++i) {
-                $("#id_sessions").append($("<option />").val(sessions[i]['pk']).text(sessions[i]['fields']['title']));
+                $("#id_sessions").append($("<option />").val(sessions[i]['id']).text(sessions[i]['title']));
             }
         }
         
@@ -366,8 +366,8 @@
             var stream_ids = [];
             for (i = 0; i < streams.length; ++i) {
                 // check for air quality sensor
-                if(streams[i]['fields']['sensor_name'] == 'AirBeam-PM') {
-                    stream_ids.push(streams[i]['pk']);
+                if(streams[i]['sensor_name'] == 'AirBeam-PM') {
+                    stream_ids.push(streams[i]['id']);
                 }
             }
             //console.log(stream_ids);
@@ -385,22 +385,23 @@
          *----------------------------------------------------------------------------*/
         function measurementsCallback(data) {
             var measurements = JSON.parse(data['measurements']);
-            //console.log(measurements);
+            console.log(measurements);
             
             // iterate through measurements, maps
             for (i = 0; i < measurements.length; ++i) {
                 // circle properties
-                var latlng = [measurements[i]['fields']['latitude'], measurements[i]['fields']['longitude']];
-                //var intensity = measurements[i]['fields']['value']/150.0;
-                var color = colorMap(measurements[i]['fields']['value']);
+                var latlng = [measurements[i]['latitude'], measurements[i]['longitude']];
+                //var intensity = measurements[i]['value']/150.0;
+                var color = colorMap(measurements[i]['value']);
                 
                 // add to csv data
                 csvData.push({
-                    'id': measurements[i]['pk'],
-                    'time': measurements[i]['fields']['time'],
-                    'value': measurements[i]['fields']['value'],
-                    'lat': measurements[i]['fields']['latitude'],
-                    'lng': measurements[i]['fields']['longitude'],
+                    'id': measurements[i]['id'],
+                    'stream_id': measurements[i]['stream_id'],
+                    'time': measurements[i]['time'],
+                    'value': measurements[i]['value'],
+                    'lat': measurements[i]['latitude'],
+                    'lng': measurements[i]['longitude'],
                     });
                 
                 // draw markers
@@ -413,10 +414,10 @@
                 
                 // popup text  bgcolor=\"" + color + "\"
                 popup = "<table class=\"table table-bordered table-striped\"> \
-                    <tr><th>Date</th><td>" + measurements[i]['fields']['time'] + "</td></tr> \
-                    <tr><th>Value</th><td>" + measurements[i]['fields']['value'].toFixed(2) + "</td></tr> \
-                    <tr><th>Lat</th><td>" + measurements[i]['fields']['latitude'].toFixed(5) + "</td></tr> \
-                    <tr><th>Lng</th><td>" + measurements[i]['fields']['longitude'].toFixed(5) + "</td></tr> \
+                    <tr><th>Date</th><td>" + measurements[i]['time'] + "</td></tr> \
+                    <tr><th>Value</th><td>" + measurements[i]['value'].toFixed(2) + "</td></tr> \
+                    <tr><th>Lat</th><td>" + measurements[i]['latitude'].toFixed(5) + "</td></tr> \
+                    <tr><th>Lng</th><td>" + measurements[i]['longitude'].toFixed(5) + "</td></tr> \
                     </table>"
                 
                 // add to marker list

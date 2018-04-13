@@ -13,9 +13,9 @@ class Measurements(models.Model):
     milliseconds = models.IntegerField(blank=True, null=True)
     measured_value = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
-    ward = models.ForeignKey('Wards', models.DO_NOTHING, db_column='ward', blank=True, null=True)
-    neighborhood = models.ForeignKey('Neighborhoods', models.DO_NOTHING, db_column='neighborhood', blank=True, null=True)
-    tract = models.ForeignKey('Census', models.DO_NOTHING, db_column='tract', blank=True, null=True)
+    ward = models.ForeignKey('Wards', models.DO_NOTHING, blank=True, null=True)
+    neighborhood = models.ForeignKey('Neighborhoods', models.DO_NOTHING, blank=True, null=True)
+    tract = models.ForeignKey('Census', models.DO_NOTHING, blank=True, null=True)
     
     class Meta:
         managed = False

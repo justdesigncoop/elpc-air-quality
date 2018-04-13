@@ -167,7 +167,7 @@
             
             // populate user select
             for (i = 0; i < users.length; ++i) {
-                $("#id_users").append($("<option />").val(users[i]['fields']['id']).text(users[i]['pk']));
+                $("#id_users").append($("<option />").val(users[i]['id']).text(users[i]['username']));
             }
         }
         
@@ -245,7 +245,7 @@
             // iterate through sessions, get session ids
             var session_ids = [];
             for(i = 0; i < sessions.length; ++i) {
-                session_ids.push(sessions[i]['pk']);
+                session_ids.push(sessions[i]['id']);
             }
             
             // get streams with session ids       
@@ -265,8 +265,8 @@
             var stream_ids = [];
             for(i = 0; i < streams.length; ++i) {
                 // check for air quality sensor
-                if(streams[i]['fields']['sensor_name'] == 'AirBeam-PM') {
-                    stream_ids.push(streams[i]['pk']);
+                if(streams[i]['sensor_name'] == 'AirBeam-PM') {
+                    stream_ids.push(streams[i]['id']);
                 }
             }
             //console.log(stream_ids);
@@ -286,7 +286,7 @@
          *----------------------------------------------------------------------------*/
         function countsCallback(data) {
             counts = JSON.parse(data['counts']);
-            //console.log(counts);
+            console.log(counts);
             
             // geo type callback
             var cb = geoTypes.properties[geoType].cb
@@ -302,11 +302,9 @@
             // check geo type
             var ret = geoTypes.properties[geoType].ret;
             var geo_data = JSON.parse(data[ret]);
-            //console.log(geo_data);
+            console.log(geo_data);
             
             geo.clearLayers();
-                        
-            //console.log(geo);
             
             // get max count
             var data = Object.keys(counts).map(function(key) { return counts[key]; });
@@ -316,7 +314,7 @@
             // add to list, draw neighborhoods
             for (i = 0; i < geo_data.length; ++i) {
                 // check averages
-                var pk = geo_data[i]['pk'];
+                var pk = geo_data[i][geoTypes.properties[geoType].pk];
                 var value = counts[pk];
                 
                 // fill color
@@ -335,7 +333,7 @@
                     continue;
                 }
                 
-                var multi_polygon = omnivore.wkt.parse(geo_data[i]['fields']['geo']);
+                var multi_polygon = omnivore.wkt.parse(geo_data[i]['geo']);
                 
                 multi_polygon.setStyle({
                     fillColor: color,

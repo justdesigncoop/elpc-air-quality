@@ -9,10 +9,10 @@ var geoTypes = {
     NEIGHBORHOODS: 2,
     WARDS: 3,
     properties: {
-        0: {value: 0, name: '', column: '', ret: '', cb: null},
-        1: {value: 1, name: 'Census', column: 'tract', ret: 'census', cb: getCensus},
-        2: {value: 2, name: 'Neighborhoods', column: 'neighborhood', ret: 'neighborhoods', cb: getNeighborhoods},
-        3: {value: 3, name: 'Wards', column: 'ward', ret: 'wards', cb: getWards},
+        0: {value: 0, name: '', column: '', pk: '', ret: '', cb: null},
+        1: {value: 1, name: 'Census', column: 'tract', pk: 'tract', ret: 'census', cb: getCensus},
+        2: {value: 2, name: 'Neighborhoods', column: 'neighborhood', pk: 'id', ret: 'neighborhoods', cb: getNeighborhoods},
+        3: {value: 3, name: 'Wards', column: 'ward', pk: 'ward', ret: 'wards', cb: getWards},
    }
 };
 

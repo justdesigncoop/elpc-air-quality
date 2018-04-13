@@ -219,8 +219,8 @@
             var stream_ids = [];
             for(i = 0; i < streams.length; ++i) {
                 // check for air quality sensor
-                if(streams[i]['fields']['sensor_name'] == 'AirBeam-PM') {
-                    stream_ids.push(streams[i]['pk']);
+                if(streams[i]['sensor_name'] == 'AirBeam-PM') {
+                    stream_ids.push(streams[i]['id']);
                 }
             }
             
@@ -261,13 +261,11 @@
             //console.log(geo_data);
             
             geo.clearLayers();
-                        
-            //console.log(geo);
             
             // add to list, draw neighborhoods
             for (i = 0; i < geo_data.length; ++i) {
                 // check averages
-                var pk = geo_data[i]['pk'];
+                var pk = geo_data[i][geoTypes.properties[geoType].pk];
                 var value = averages[pk];
                 
                 // fill color
@@ -286,7 +284,7 @@
                     continue;
                 }   
                 
-                var multi_polygon = omnivore.wkt.parse(geo_data[i]['fields']['geo']);
+                var multi_polygon = omnivore.wkt.parse(geo_data[i]['geo']);
                 
                 multi_polygon.setStyle({
                     fillColor: color,

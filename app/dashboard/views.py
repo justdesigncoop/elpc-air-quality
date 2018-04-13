@@ -20,6 +20,8 @@ from operator import or_
 
 import json
 
+#from timeit import default_timer as timer
+
 class FaviconView(generic.RedirectView):
     url='/static/dashboard/favicon.ico'
     permanent=True
@@ -65,13 +67,13 @@ class CoverageView(generic.FormView):
 def get_users(request):
     user_ids = json.loads(request.GET.get('user_ids', '[]'))
     
-    users = Users.objects.all()
+    users = Users.objects
     
     if user_ids:
         users = users.filter(id__in=user_ids)
 
     data = {
-        'users': serializers.serialize("json", Users.objects.filter())
+        'users': json.dumps(list(users.values('id', 'username')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
@@ -79,7 +81,7 @@ def get_sessions(request):
     user_ids = json.loads(request.GET.get('user_ids', '[]'))
     keywords = json.loads(request.GET.get('keywords', '[]'))
     
-    sessions = Sessions.objects.filter()
+    sessions = Sessions.objects
     
     if user_ids:
         sessions = sessions.filter(user_id__in=user_ids)
@@ -89,24 +91,25 @@ def get_sessions(request):
         sessions = sessions.filter(reduce(or_, keywords_query))
     
     data = {
-        'sessions': serializers.serialize("json", sessions)
+        'sessions': json.dumps(list(sessions.values('id', 'title')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
 def get_streams(request):
     session_ids = json.loads(request.GET.get('session_ids', '[]'))
     
-    streams = Streams.objects.all()
+    streams = Streams.objects
     
     if session_ids:
         streams = streams.filter(session__in=session_ids)
     
     data = {
-        'streams': serializers.serialize("json", streams)
+        'streams': json.dumps(list(streams.values('id', 'sensor_name')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
 def get_measurements(request):
+    #start = timer()
     stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
     geo_type = json.loads(request.GET.get('geo_type', '[]'))
     geo_boundaries = json.loads(request.GET.get('geo_boundaries', '[]'))
@@ -114,10 +117,12 @@ def get_measurements(request):
     min_value = json.loads(request.GET.get('min_value', '[]'))
     max_value = json.loads(request.GET.get('max_value', '[]'))
     
+    print stream_ids
+    
     if sample_size:
         measurements = Measurements.objects.raw('SELECT * FROM measurements where RAND() <= %f' % (float(sample_size)/float(Measurements.objects.count())))
     else:
-        measurements = Measurements.objects.all()
+        measurements = Measurements.objects
     
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
@@ -134,48 +139,49 @@ def get_measurements(request):
 
     if max_value:
         measurements = measurements.filter(value__lt=max_value)
-        
+    
     data = {
-        'measurements': serializers.serialize("json", measurements)
-    }
+        'measurements': json.dumps(list(measurements.values('id', 'stream_id', 'value', 'latitude', 'longitude', 'time')), cls=serializers.json.DjangoJSONEncoder)
+    } 
+    #print timer() - start
     return JsonResponse(data)
 
 def get_neighborhoods(request):
     neighborhood_ids = json.loads(request.GET.get('neighborhood_ids', '[]'))
     
-    neighborhoods = Neighborhoods.objects.all()
+    neighborhoods = Neighborhoods.objects
     
     if neighborhood_ids:
         neighborhoods = neighborhoods.filter(id__in=neighborhood_ids)
     
     data = {
-        'neighborhoods': serializers.serialize("json", neighborhoods)
+        'neighborhoods': json.dumps(list(neighborhoods.values('id', 'neighborhood', 'geo')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
 def get_census(request):
     tract_ids = json.loads(request.GET.get('tracts', '[]'))
     
-    census = Census.objects.all()
+    census = Census.objects
     
     if tract_ids:
         census = census.filter(tract__in=tract_ids)
     
     data = {
-        'census': serializers.serialize("json", census)
+        'census': json.dumps(list(census.values('tract', 'geo')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
 def get_wards(request):
     ward_ids = json.loads(request.GET.get('wards', '[]'))
     
-    wards = Wards.objects.all()
+    wards = Wards.objects
     
     if ward_ids:
         wards = wards.filter(ward__in=ward_ids)
     
     data = {
-        'wards': serializers.serialize("json", wards)
+        'wards': json.dumps(list(wards.values('ward', 'geo')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
@@ -183,7 +189,7 @@ def get_averages(request):
     stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
     geo_type = json.loads(request.GET.get('geo_type', '[]'))
     
-    measurements = Measurements.objects.all()
+    measurements = Measurements.objects
     
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
@@ -217,7 +223,7 @@ def get_counts(request):
     stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
     geo_type = json.loads(request.GET.get('geo_type', '[]'))
     
-    measurements = Measurements.objects.all()
+    measurements = Measurements.objects
     
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
