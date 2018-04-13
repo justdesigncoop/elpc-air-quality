@@ -119,10 +119,16 @@ def get_measurements(request):
     
     print stream_ids
     
+    '''
     if sample_size:
         measurements = Measurements.objects.raw('SELECT * FROM measurements where RAND() <= %f' % (float(sample_size)/float(Measurements.objects.count())))
     else:
         measurements = Measurements.objects
+    '''
+    measurements = Measurements.objects
+    
+    if sample_size:
+        measurements = measurements.all().order_by('?')[:sample_size]
     
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
