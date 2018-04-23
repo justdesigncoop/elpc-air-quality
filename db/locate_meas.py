@@ -70,9 +70,9 @@ if __name__ == '__main__':
 
     # array of database tables
     tables = [
-        {'table': 'census', 'index': 'tract', 'column': 'tract'},
-        {'table': 'neighborhoods', 'index': 'id', 'column': 'neighborhood'},
-        {'table': 'wards', 'index': 'ward', 'column': 'ward'},
+        {'table': 'census', 'index': 'tract', 'column': 'tract_id'},
+        {'table': 'neighborhoods', 'index': 'id', 'column': 'neighborhood_id'},
+        {'table': 'wards', 'index': 'ward', 'column': 'ward_id'},
     ]
     
     # iterate through array of tables
