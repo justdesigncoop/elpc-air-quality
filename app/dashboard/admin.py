@@ -11,8 +11,8 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ['id', 'username', 'display']
 
 class SessionAdmin(admin.ModelAdmin):
-    fields = ['id', 'user_id', 'title']
-    list_display = ['id', 'user_id', 'title']
+    fields = ['id', 'title']
+    list_display = ['id', 'title']
 
 admin.site.register(Users, UserAdmin)
 admin.site.register(Sessions, SessionAdmin)
