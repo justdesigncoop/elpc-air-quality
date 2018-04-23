@@ -15,5 +15,4 @@ class SessionAdmin(admin.ModelAdmin):
     list_display = ['id', 'user_id', 'title']
 
 admin.site.register(Users, UserAdmin)
-
-
+admin.site.register(Sessions, SessionAdmin)
