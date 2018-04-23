@@ -94,7 +94,7 @@
         });
         
         // layer groups
-        var geo = L.layerGroup([]);
+        var geo = L.featureGroup([]);
         
         // map
         var map = L.map('id_map', {
@@ -262,6 +262,9 @@
             
             geo.clearLayers();
             
+            // reset csv data
+            csvData = [];
+            
             // add to list, draw neighborhoods
             for (i = 0; i < geo_data.length; ++i) {
                 // check averages
@@ -297,6 +300,7 @@
                 // popup text
                 if(value != undefined) {
                     var popup = "<table class=\"table table-bordered table-striped\"> \
+                        <tr><th>Boundary</th><td>" + pk + "</td></tr> \
                         <tr><th>PM2.5</th><td>" + value.toFixed(2) + "</td></tr> \
                         </table>"
                     multi_polygon.bindPopup(popup)
@@ -310,6 +314,9 @@
             
             // enable download button
             $("#id_download").prop("disabled", false)
+            
+            // fit map
+            map.fitBounds(geo.getBounds());
         }
     </script>
 {% endblock %}

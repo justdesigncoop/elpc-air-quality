@@ -72,6 +72,8 @@
         resetUserSelect();
         
         var geoType = geoTypes.NONE;
+        var geoBoundaries = [];
+        var geoData = [];
         
         var csvData = [];
         
@@ -95,15 +97,15 @@
         });
         
         // layer groups
-        var markers = L.layerGroup([]);
-        //var geo = L.layerGroup([]);
+        var markers = L.featureGroup([]);
+        var geo = L.featureGroup([]);
         
         // map
         var map = L.map('id_map', {
             center: [41.8781, -87.6298],
             zoom: 13,
             preferCanvas: true,
-            layers: [streets, markers],
+            layers: [streets, markers, geo],
         });
         
         // control layers
@@ -114,6 +116,7 @@
         
         var overlayMaps = {
             "Markers": markers,
+            "Geo": geo,
         };
         
         L.control.layers(baseMaps, overlayMaps).addTo(map);
@@ -193,7 +196,7 @@
             
             // populate user select
             for (i = 0; i < users.length; ++i) {
-                $("#id_users").append($("<option />").val(users[i]['id']).text(users[i]['username']));
+                $("#id_users").append($("<option />").val(users[i]['id']).text(users[i]['display']));
             }
         }
         
@@ -250,15 +253,15 @@
         function geoCallback(data) {
             // check geo type
             var ret = geoTypes.properties[geoType].ret;
-            var geo_data = JSON.parse(data[ret]);
-            //console.log(geo_data);
+            geoData = JSON.parse(data[ret]);
+            //console.log(geoData);
             
             // add to list, draw neighborhoods
-            for (i = 0; i < geo_data.length; ++i) {
-                var text = geo_data[i][geoTypes.properties[geoType].column];
+            for (i = 0; i < geoData.length; ++i) {
+                var text = geoData[i][geoTypes.properties[geoType].column];
                 
                 // add to geo boundaries list
-                $("#id_geo_boundaries").append($("<option />").val(geo_data[i]['id']).text(text));
+                $("#id_geo_boundaries").append($("<option />").val(geoData[i]['id']).text(text));
             }
         }
         
@@ -343,10 +346,10 @@
             markers.clearLayers();
             
             // get geo type and boundaries
-            var geo_type = parseInt($('#id_geo_type').val(), 10);
-            var geo_boundaries = getSelectedOptions("#id_geo_boundaries");
-            //console.log(geoTypes.properties[geo_type].name)
-            //console.log(geo_boundaries);
+            geoType = parseInt($('#id_geo_type').val(), 10);
+            geoBoundaries = getSelectedOptions("#id_geo_boundaries");
+            //console.log(geoTypes.properties[geoType].name)
+            //console.log(geoBoundaries);
             
             // get min and max values from pm level
             var min_value = null;
@@ -362,8 +365,8 @@
             
             getMeasurements({
                 'stream_ids': stream_ids,
-                'geo_type': geoTypes.properties[geo_type].name,
-                'geo_boundaries': geo_boundaries,
+                'geo_type': geoTypes.properties[geoType].name,
+                'geo_boundaries': geoBoundaries,
                 'min_value': min_value,
                 'max_value': max_value,
                 }, measurementsCallback);
@@ -375,6 +378,9 @@
         function measurementsCallback(data) {
             var measurements = JSON.parse(data['measurements']);
             //console.log(measurements);
+            
+            // reset csv data
+            csvData = [];
             
             // iterate through measurements, maps
             for(i = 0; i < measurements.length; ++i) {
@@ -411,12 +417,62 @@
                 // add to marker list
                 markers.addLayer(marker.bindPopup(popup));
             }
-             
+            
+            // geo draw
+            geoDraw(geoBoundaries);
+        }
+        
+        /*----------------------------------------------------------------------------
+          geo draw
+         *----------------------------------------------------------------------------*/
+        function geoDraw(geo_boundaries) {
+            // check geo type
+            var ret = geoTypes.properties[geoType].ret;
+            //console.log(geoData);
+            //console.log(geoBoundaries);
+            
+            geo.clearLayers();
+            
+            // add to list, draw neighborhoods
+            for (i = 0; i < geoData.length; ++i) {
+                // check averages
+                var pk = geoData[i][geoTypes.properties[geoType].pk];
+                
+                // skip default location (empty multipolygon)
+                if(pk == defaultLoc) {
+                    continue;
+                }
+                
+                // check if boundary selected
+                if(geoBoundaries.includes(pk)) {
+                    var multi_polygon = omnivore.wkt.parse(geoData[i]['geo']);
+                    
+                    multi_polygon.setStyle({
+                        fillColor: '#fff',
+                        fillOpacity: 0.0,
+                        color: '#444',
+                        weight: 3,
+                        opacity: 1.0,
+                    });
+                    
+                    // popup text
+                    popup = "<table class=\"table table-bordered table-striped\"> \
+                        <tr><th>Boundary</th><td>" + pk + "</td></tr> \
+                        </table>"
+                    multi_polygon.bindPopup(popup)
+                        
+                    geo.addLayer(multi_polygon);
+                }
+            }
+            
             // stop spin
             map.spin(false);
             
             // enable download button
             $("#id_download").prop("disabled", false)
+            
+            // fit map
+            map.fitBounds(geo.getBounds());
         }
     </script>
 {% endblock %}

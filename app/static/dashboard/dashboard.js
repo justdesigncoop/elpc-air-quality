@@ -9,7 +9,7 @@ var geoTypes = {
     NEIGHBORHOODS: 2,
     WARDS: 3,
     properties: {
-        0: {value: 0, name: '', column: '', pk: '', ret: '', cb: null},
+        0: {value: 0, name: '', column: '', pk: '', ret: '', cb: getNone},
         1: {value: 1, name: 'Census', column: 'tract', pk: 'tract', ret: 'census', cb: getCensus},
         2: {value: 2, name: 'Neighborhoods', column: 'neighborhood', pk: 'id', ret: 'neighborhoods', cb: getNeighborhoods},
         3: {value: 3, name: 'Wards', column: 'ward', pk: 'ward', ret: 'wards', cb: getWards},
@@ -190,6 +190,13 @@ function getWards(data, callback) {
         dataType: 'json',
         success: callback,
     });
+}
+
+/*----------------------------------------------------------------------------
+  get none
+ *----------------------------------------------------------------------------*/
+function getNone(data, callback) {
+    callback([]);
 }
 
 /*----------------------------------------------------------------------------

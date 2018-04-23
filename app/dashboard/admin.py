@@ -7,8 +7,12 @@ from django.contrib import admin
 from .models import Measurements, Notes, Sessions, Streams, Users
 
 class UserAdmin(admin.ModelAdmin):
-    fields = ['id', 'username']
-    list_display = ['id', 'username']
+    fields = ['id', 'username', 'display']
+    list_display = ['id', 'username', 'display']
+
+class SessionAdmin(admin.ModelAdmin):
+    fields = ['id', 'user_id', 'title']
+    list_display = ['id', 'user_id', 'title']
 
 admin.site.register(Users, UserAdmin)
 

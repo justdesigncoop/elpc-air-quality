@@ -73,7 +73,7 @@ def get_users(request):
         users = users.filter(id__in=user_ids)
 
     data = {
-        'users': json.dumps(list(users.values('id', 'username')), cls=serializers.json.DjangoJSONEncoder)
+        'users': json.dumps(list(users.values('id', 'username', 'display')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
@@ -117,8 +117,6 @@ def get_measurements(request):
     min_value = json.loads(request.GET.get('min_value', '[]'))
     max_value = json.loads(request.GET.get('max_value', '[]'))
     
-    print stream_ids
-    
     '''
     if sample_size:
         measurements = Measurements.objects.raw('SELECT * FROM measurements where RAND() <= %f' % (float(sample_size)/float(Measurements.objects.count())))
@@ -128,7 +126,7 @@ def get_measurements(request):
     measurements = Measurements.objects
     
     if sample_size:
-        measurements = measurements.all().order_by('?')[:sample_size]
+        measurements = measurements.order_by('?')[:sample_size]
     
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
@@ -160,8 +158,9 @@ def get_neighborhoods(request):
     if neighborhood_ids:
         neighborhoods = neighborhoods.filter(id__in=neighborhood_ids)
     
+    
     data = {
-        'neighborhoods': json.dumps(list(neighborhoods.values('id', 'neighborhood', 'geo')), cls=serializers.json.DjangoJSONEncoder)
+        'neighborhoods': json.dumps(list(neighborhoods.order_by('neighborhood').values('id', 'neighborhood', 'geo')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 

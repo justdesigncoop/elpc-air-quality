@@ -96,7 +96,7 @@
         });
         
         // marker layer(s)
-        var markers = L.layerGroup([]);
+        var markers = L.featureGroup([]);
         
         // map
         var map = L.map('id_map', {
@@ -181,7 +181,7 @@
             
             // populate user select
             for (i = 0; i < users.length; ++i) {
-                $("#id_users").append($("<option />").val(users[i]['id']).text(users[i]['username']));
+                $("#id_users").append($("<option />").val(users[i]['id']).text(users[i]['display']));
             }
         }
         
@@ -289,7 +289,9 @@
             
             // populate user select
             for (i = 0; i < sessions.length; ++i) {
-                $("#id_sessions").append($("<option />").val(sessions[i]['id']).text(sessions[i]['title']));
+                if(sessions[i]['title']) {
+                    $("#id_sessions").append($("<option />").val(sessions[i]['id']).text(sessions[i]['title']));
+                }
             }
         }
         
@@ -387,6 +389,9 @@
             var measurements = JSON.parse(data['measurements']);
             console.log(measurements);
             
+            // reset csv data
+            csvData = [];
+            
             // iterate through measurements, maps
             for (i = 0; i < measurements.length; ++i) {
                 // circle properties
@@ -429,6 +434,9 @@
              
             // enable download button
             $("#id_download").prop("disabled", false)
+            
+            // fit map
+            map.fitBounds(markers.getBounds());
         }        
     </script>
 {% endblock %}

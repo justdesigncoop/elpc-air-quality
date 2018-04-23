@@ -96,7 +96,7 @@
         });
         
         // layer groups
-        var geo = L.layerGroup([]);
+        var geo = L.featureGroup([]);
         
         // map
         var map = L.map('id_map', {
@@ -124,6 +124,32 @@
       		exportOnly: true,
       		hideControlContainer: true
 		}).addTo(map);
+		
+	    // legend       
+	    var legend = L.control({position: 'bottomright'});
+
+	    legend.onAdd = function(map) {
+		    var div = L.DomUtil.create('div', 'info legend'),
+			    labels = [],
+			    from, to;
+			
+			var coverageLevels = [0.0, 0.2, 0.4, 0.6, 0.8];
+
+		    for (var i = 0; i < coverageLevels.length; i++) {
+			    from = coverageLevels[i];
+			    to = coverageLevels[i + 1];
+			    
+			    labels.push(
+				    '<i style="background:' + coverageColor + '; ' + 
+				    'opacity:' + coverageLevels[i]*maxOpacity +'"></i> ' +
+				    from + (to ? '–' + to : '+'));
+		    }
+
+		    div.innerHTML = labels.join('<br>');
+		    return div;
+	    };
+
+	    legend.addTo(map);
         
         /*----------------------------------------------------------------------------
           document ready callback
@@ -167,7 +193,7 @@
             
             // populate user select
             for (i = 0; i < users.length; ++i) {
-                $("#id_users").append($("<option />").val(users[i]['id']).text(users[i]['username']));
+                $("#id_users").append($("<option />").val(users[i]['id']).text(users[i]['display']));
             }
         }
         
@@ -286,7 +312,7 @@
          *----------------------------------------------------------------------------*/
         function countsCallback(data) {
             counts = JSON.parse(data['counts']);
-            console.log(counts);
+            //console.log(counts);
             
             // geo type callback
             var cb = geoTypes.properties[geoType].cb
@@ -302,9 +328,12 @@
             // check geo type
             var ret = geoTypes.properties[geoType].ret;
             var geo_data = JSON.parse(data[ret]);
-            console.log(geo_data);
+            //console.log(geo_data);
             
             geo.clearLayers();
+            
+            // reset csv data
+            csvData = [];
             
             // get max count
             var data = Object.keys(counts).map(function(key) { return counts[key]; });
@@ -346,6 +375,7 @@
                 // popup text
                 if(value != undefined) {
                     var popup = "<table class=\"table table-bordered table-striped\"> \
+                        <tr><th>Boundary</th><td>" + pk + "</td></tr> \
                         <tr><th>Count</th><td>" + value.toFixed(0) + "</td></tr> \
                         </table>"
                     multi_polygon.bindPopup(popup)
@@ -359,8 +389,10 @@
             
             // enable download button
             $("#id_download").prop("disabled", false)
+            
+            // fit map
+            map.fitBounds(geo.getBounds());
         }
-        
     </script>
 {% endblock %}
 

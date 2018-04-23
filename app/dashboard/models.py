@@ -111,6 +111,7 @@ class Streams(models.Model):
 class Users(models.Model):
     id = models.IntegerField(blank=True, null=True)
     username = models.CharField(primary_key=True, max_length=40)
+    display = models.CharField(max_length=40)
 
     class Meta:
         managed = False
