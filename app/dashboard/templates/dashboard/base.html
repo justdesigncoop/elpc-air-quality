@@ -38,6 +38,10 @@
                 <li class="nav-item {% if request.path == coverage_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'coverage' %}">Coverage</a>
                 </li>
+                {% url 'references' as references_url %}
+                <li class="nav-item {% if request.path == references_url %} active {% endif %}">
+                    <a class="nav-link" href="{% url 'references' %}">References</a>
+                </li>
             </ul>
         </div>
     </nav>

@@ -44,6 +44,9 @@ class AboutView(generic.TemplateView):
 class PartnersView(generic.TemplateView):
 	template_name = 'dashboard/partners.html'
 	
+class ReferencesView(generic.TemplateView):
+	template_name = 'dashboard/references.html'
+	
 class MobileSessionsView(generic.FormView):
 	template_name = 'dashboard/mobile_sessions.html'
 	form_class = MobileSessionsForm

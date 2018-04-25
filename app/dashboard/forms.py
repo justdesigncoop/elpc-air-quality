@@ -10,7 +10,7 @@ class MobileSessionsForm(forms.Form):
     all_users = forms.BooleanField(required=False)
     keywords = forms.CharField(required=False)
     sessions = forms.MultipleChoiceField(choices=[], required=True)
-    all_sessions = forms.BooleanField(required=False)
+    #all_sessions = forms.BooleanField(required=False)
     #start_time = forms.DateTimeField(required=False)
     #end_time = forms.DateTimeField(required=False)
     
