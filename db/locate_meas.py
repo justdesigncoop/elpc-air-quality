@@ -7,6 +7,7 @@ import shapely.wkt
 from memory_profiler import profile
 
 DEFAULT_LOC = 0
+CHUNKSIZE = 1000
 
 @profile
 def locate_meas(im, rm, p, prev, name, geo, engine):
@@ -90,21 +91,30 @@ if __name__ == '__main__':
         # create shape objects
         geo['g'] = geo['geo'].apply(shapely.wkt.loads)
         
-        # get reaining measurements
-        try:
-            measurements = pd.read_sql_query('SELECT * FROM measurements WHERE %s IS NULL ORDER BY stream_id, id' % (t['column']), engine, index_col='id')
-        except sa.exc.SQLAlchemyError as e:
-            logging.error(e)
-            sys.exit(1)
-            
-        # iterate through measurements
-        logging.info('found %d measurements to locate in %s' % (len(measurements), t['table']))
-        prev = DEFAULT_LOC
-        for im, rm in measurements.iterrows():
-            # create point
-            p = shapely.geometry.Point(rm['longitude'], rm['latitude'])
-                    
-            # locate point, store previous location for next loop
-            prev = locate_meas(im, rm, p, prev, t['column'], geo, engine)
+        while True:
+			num = 0
+			
+			# get reaining measurements (chunksize limit)
+			try:
+				measurements = pd.read_sql_query('SELECT * FROM measurements WHERE %s IS NULL ORDER BY stream_id, id LIMIT %d' % (t['column'], CHUNKSIZE), engine, index_col='id')
+			except sa.exc.SQLAlchemyError as e:
+				logging.error(e)
+				sys.exit(1)
+			
+			# check for any remaining measurements
+			if len(measurements):
+				num += len(measurements)
+				# iterate through measurements
+				prev = DEFAULT_LOC
+				for im, rm in measurements.iterrows():
+					# create point
+					p = shapely.geometry.Point(rm['longitude'], rm['latitude'])
+							
+					# locate point, store previous location for next loop
+					prev = locate_meas(im, rm, p, prev, t['column'], geo, engine)
+			# otherwise exit
+			else:
+				logging.info('found %d measurements to locate in %s' % (num, t['table']))
+				break
     
     logging.info('locate meas finished')
