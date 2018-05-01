@@ -4,8 +4,11 @@ import logging
 import sys
 import shapely.wkt
 
+from memory_profiler import profile
+
 DEFAULT_LOC = 0
 
+@profile
 def locate_meas(im, rm, p, prev, name, geo, engine):
     # check to see if already located
     if pd.isnull(rm[name]):
