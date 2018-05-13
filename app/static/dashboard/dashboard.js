@@ -5,14 +5,14 @@ var pmLevels = [0.0, 12.0, 35.0, 55.0];
 
 var geoTypes = {
     NONE: 0,
-    CENSUS: 1,
-    NEIGHBORHOODS: 2,
+    NEIGHBORHOODS: 1,
+    TRACTS: 2,
     WARDS: 3,
     properties: {
-        0: {value: 0, name: '', column: '', pk: '', ret: '', cb: getNone},
-        1: {value: 1, name: 'Census', column: 'tract', pk: 'tract', ret: 'census', cb: getCensus},
-        2: {value: 2, name: 'Neighborhoods', column: 'neighborhood', pk: 'id', ret: 'neighborhoods', cb: getNeighborhoods},
-        3: {value: 3, name: 'Wards', column: 'ward', pk: 'ward', ret: 'wards', cb: getWards},
+        0: {value: 0, name: '', column: '', table: '', cb: getNone},
+        1: {value: 1, name: 'Neighborhood', column: 'neighborhood', table: 'neighborhoods', cb: getNeighborhoods},
+        2: {value: 2, name: 'Census', column: 'tract',  table: 'tracts', cb: getTracts},
+        3: {value: 3, name: 'Ward', column: 'ward', table: 'wards', cb: getWards},
    }
 };
 
@@ -157,17 +157,17 @@ function getNeighborhoods(data, callback) {
 }
 
 /*----------------------------------------------------------------------------
-  get census
+  get tracts
  *----------------------------------------------------------------------------*/
-function getCensus(data, callback) {
-    var tracts = JSON.stringify(data['tracts']);
-    //console.log(tracts);
+function getTracts(data, callback) {
+    var tracts = JSON.stringify(data['tract_ids']);
+    //console.log(tract_ids);
     
     // execute ajax call
     $.ajax({
-        url: '/dashboard/ajax/get_census/',
+        url: '/dashboard/ajax/get_tracts/',
         data: {
-            'tracts': tracts,
+            'tract_ids': tracts,
         },
         dataType: 'json',
         success: callback,
@@ -178,14 +178,14 @@ function getCensus(data, callback) {
   get wards
  *----------------------------------------------------------------------------*/
 function getWards(data, callback) {
-    var wards = JSON.stringify(data['wards']);
-    //console.log(wards);
+    var wards = JSON.stringify(data['ward_ids']);
+    //console.log(ward_ids);
     
     // execute ajax call
     $.ajax({
         url: '/dashboard/ajax/get_wards/',
         data: {
-            'wards': wards,
+            'ward_ids': wards,
         },
         dataType: 'json',
         success: callback,

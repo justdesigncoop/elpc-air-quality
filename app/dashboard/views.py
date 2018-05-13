@@ -11,7 +11,7 @@ from django.views import generic
 from django.core import serializers
 from django.db.models import Q, Avg, Count
 
-from .models import Users, Sessions, Streams, Measurements, Neighborhoods, Census, Wards
+from .models import Users, Sessions, Streams, Measurements, Neighborhoods, Tracts, Wards
 
 from .forms import MobileSessionsForm, DataValuesForm, DataAveragesForm, CoverageForm
 
@@ -134,11 +134,11 @@ def get_measurements(request):
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
     
-    if geo_type == 'Census':
+    if geo_type == 'tract':
         measurements = measurements.filter(tract__in=geo_boundaries)
-    elif geo_type == 'Neighborhoods':
+    elif geo_type == 'neighborhood':
         measurements = measurements.filter(neighborhood__in=geo_boundaries)
-    elif geo_type == 'Wards':
+    elif geo_type == 'ward':
         measurements = measurements.filter(ward__in=geo_boundaries)
         
     if min_value:
@@ -163,33 +163,33 @@ def get_neighborhoods(request):
     
     
     data = {
-        'neighborhoods': json.dumps(list(neighborhoods.order_by('neighborhood').values('id', 'neighborhood', 'geo')), cls=serializers.json.DjangoJSONEncoder)
+        'neighborhoods': json.dumps(list(neighborhoods.order_by('display').values('id', 'display', 'geo')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
-def get_census(request):
-    tract_ids = json.loads(request.GET.get('tracts', '[]'))
+def get_tracts(request):
+    tract_ids = json.loads(request.GET.get('tract_ids', '[]'))
     
-    census = Census.objects
+    tracts = Tracts.objects
     
     if tract_ids:
-        census = census.filter(tract__in=tract_ids)
+        tracts = tracts.filter(id__in=tract_ids)
     
     data = {
-        'census': json.dumps(list(census.values('tract', 'geo')), cls=serializers.json.DjangoJSONEncoder)
+        'tracts': json.dumps(list(tracts.values('id', 'display', 'geo')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
 def get_wards(request):
-    ward_ids = json.loads(request.GET.get('wards', '[]'))
+    ward_ids = json.loads(request.GET.get('ward_ids', '[]'))
     
     wards = Wards.objects
     
     if ward_ids:
-        wards = wards.filter(ward__in=ward_ids)
+        wards = wards.filter(id__in=ward_ids)
     
     data = {
-        'wards': json.dumps(list(wards.values('ward', 'geo')), cls=serializers.json.DjangoJSONEncoder)
+        'wards': json.dumps(list(wards.values('id', 'display', 'geo')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
@@ -204,12 +204,8 @@ def get_averages(request):
     
     averages = None
     
-    if geo_type == 'Census':
-        averages = parse_averages('tract', measurements)
-    elif geo_type == 'Neighborhoods':
-        averages = parse_averages('neighborhood', measurements)
-    elif geo_type == 'Wards':
-        averages = parse_averages('ward', measurements)
+    if geo_type:
+        averages = parse_averages(geo_type, measurements)
     
     data = {
         'averages': json.dumps(averages, cls=serializers.json.DjangoJSONEncoder)
@@ -238,12 +234,8 @@ def get_counts(request):
     
     counts = None
     
-    if geo_type == 'Census':
-        counts = parse_counts('tract', measurements)
-    elif geo_type == 'Neighborhoods':
-        counts = parse_counts('neighborhood', measurements)
-    elif geo_type == 'Wards':
-        counts = parse_counts('ward', measurements)
+    if geo_type:
+        counts = parse_counts(geo_type, measurements)
     
     data = {
         'counts': json.dumps(counts, cls=serializers.json.DjangoJSONEncoder)
