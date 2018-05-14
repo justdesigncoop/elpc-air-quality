@@ -305,7 +305,7 @@
             // get counts
             getCounts({
                 'stream_ids': stream_ids,
-                'geo_type': geoTypes.properties[geoType].name,
+                'geo_type': geoTypes.properties[geoType].column,
                 }, countsCallback);
         }
         
@@ -328,8 +328,8 @@
          *----------------------------------------------------------------------------*/
         function geoCallback(data) {
             // check geo type
-            var ret = geoTypes.properties[geoType].ret;
-            var geo_data = JSON.parse(data[ret]);
+            var table = geoTypes.properties[geoType].table;
+            var geo_data = JSON.parse(data[table]);
             //console.log(geo_data);
             
             geo.clearLayers();
@@ -345,7 +345,8 @@
             // add to list, draw neighborhoods
             for (i = 0; i < geo_data.length; ++i) {
                 // check averages
-                var pk = geo_data[i][geoTypes.properties[geoType].pk];
+                var pk = geo_data[i]['id'];
+                var display = geo_data[i]['display'];
                 var value = counts[pk];
                 
                 // fill color
@@ -356,7 +357,7 @@
                     opacity = minOpacity + (maxOpacity - minOpacity)*value/max_count;
                     
                     // add to csv data
-                    csvData.push({'id': pk, 'value': value});
+                    csvData.push({'id': pk, 'boundary': display, 'value': value});
                 }
                 
                 // skip default location (empty multipolygon)
@@ -377,7 +378,7 @@
                 // popup text
                 if(value != undefined) {
                     var popup = "<table class=\"table table-bordered table-striped\"> \
-                        <tr><th>Boundary</th><td>" + pk + "</td></tr> \
+                        <tr><th>Boundary</th><td>" + display + "</td></tr> \
                         <tr><th>Count</th><td>" + value.toFixed(0) + "</td></tr> \
                         </table>"
                     multi_polygon.bindPopup(popup)

@@ -251,17 +251,18 @@
           geo data callback
          *----------------------------------------------------------------------------*/
         function geoCallback(data) {
+			//console.log(data);
             // check geo type
-            var ret = geoTypes.properties[geoType].ret;
-            geoData = JSON.parse(data[ret]);
+            var table = geoTypes.properties[geoType].table;
+            geoData = JSON.parse(data[table]);
             //console.log(geoData);
             
             // add to list, draw neighborhoods
             for (i = 0; i < geoData.length; ++i) {
-                var text = geoData[i][geoTypes.properties[geoType].column];
+                var display = geoData[i]['display'];
                 
                 // add to geo boundaries list
-                $("#id_geo_boundaries").append($("<option />").val(geoData[i]['id']).text(text));
+                $("#id_geo_boundaries").append($("<option />").val(geoData[i]['id']).text(display));
             }
         }
         
@@ -365,7 +366,7 @@
             
             getMeasurements({
                 'stream_ids': stream_ids,
-                'geo_type': geoTypes.properties[geoType].name,
+                'geo_type': geoTypes.properties[geoType].column,
                 'geo_boundaries': geoBoundaries,
                 'min_value': min_value,
                 'max_value': max_value,
@@ -409,7 +410,7 @@
                 // popup text  bgcolor=\"" + color + "\"
                 popup = "<table class=\"table table-bordered table-striped\"> \
                     <tr><th>Date</th><td>" + measurements[i]['time'] + "</td></tr> \
-                    <tr><th>Value</th><td>" + measurements[i]['value'].toFixed(2) + "</td></tr> \
+                    <tr><th>PM2.5</th><td>" + measurements[i]['value'].toFixed(2) + "</td></tr> \
                     <tr><th>Lat</th><td>" + measurements[i]['latitude'].toFixed(5) + "</td></tr> \
                     <tr><th>Lng</th><td>" + measurements[i]['longitude'].toFixed(5) + "</td></tr> \
                     </table>"
@@ -426,8 +427,6 @@
           geo draw
          *----------------------------------------------------------------------------*/
         function geoDraw(geo_boundaries) {
-            // check geo type
-            var ret = geoTypes.properties[geoType].ret;
             //console.log(geoData);
             //console.log(geoBoundaries);
             
@@ -436,7 +435,8 @@
             // add to list, draw neighborhoods
             for (i = 0; i < geoData.length; ++i) {
                 // check averages
-                var pk = geoData[i][geoTypes.properties[geoType].pk];
+                var pk = geoData[i]['id'];
+				var display = geoData[i]['display'];
                 
                 // skip default location (empty multipolygon)
                 if(pk == defaultLoc) {
@@ -457,7 +457,7 @@
                     
                     // popup text
                     popup = "<table class=\"table table-bordered table-striped\"> \
-                        <tr><th>Boundary</th><td>" + pk + "</td></tr> \
+                        <tr><th>Boundary</th><td>" + display + "</td></tr> \
                         </table>"
                     multi_polygon.bindPopup(popup)
                         

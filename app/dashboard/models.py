@@ -15,7 +15,7 @@ class Measurements(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     ward = models.ForeignKey('Wards', models.DO_NOTHING, blank=True, null=True)
     neighborhood = models.ForeignKey('Neighborhoods', models.DO_NOTHING, blank=True, null=True)
-    tract = models.ForeignKey('Census', models.DO_NOTHING, blank=True, null=True)
+    tract = models.ForeignKey('Tracts', models.DO_NOTHING, blank=True, null=True)
     
     class Meta:
         managed = False
@@ -118,18 +118,19 @@ class Users(models.Model):
         db_table = 'users'
         verbose_name_plural = 'users'
 
-class Census(models.Model):
-    tract = models.BigIntegerField(primary_key=True)
+class Tracts(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    display = models.CharField(max_length=40, blank=True, null=True)
     geo = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'census'
-        verbose_name_plural = 'census'
+        db_table = 'tracts'
+        verbose_name_plural = 'tracts'
 
 class Neighborhoods(models.Model):
     id = models.IntegerField(primary_key=True)
-    neighborhood = models.CharField(max_length=40, blank=True, null=True)
+    display = models.CharField(max_length=40, blank=True, null=True)
     geo = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -138,7 +139,8 @@ class Neighborhoods(models.Model):
         verbose_name_plural = 'neighborhoods'
 
 class Wards(models.Model):
-    ward = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True)
+    display = models.CharField(max_length=40, blank=True, null=True)
     geo = models.TextField(blank=True, null=True)
 
     class Meta:
