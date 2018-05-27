@@ -31,7 +31,8 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '192.168.1.12', '.danwahl.ne
 # Application definition
 
 INSTALLED_APPS = [
-	'bootstrap4',
+	'bootstrap3',
+    'datetimewidget',
 	'dashboard.apps.DashboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',

@@ -1,9 +1,10 @@
 {% extends 'dashboard/base.html' %}
-{% load bootstrap4 %}
+
+{% load bootstrap3 %}
 
 {% load static %}
 
-{% block bootstrap4_extra_head %}        
+{% block bootstrap3_extra_head %}        
     <!-- dashboard css -->
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
 {% endblock %}
@@ -80,7 +81,7 @@
     <p>New <a href="http://www.takingspace.org/aircasting/airbeam/" rel="noopener noreferrer" target="_blank">handheld particulate monitoring</a> technology is easy to use and generates transparent, <a href="http://aircasting.org/map" rel="noopener noreferrer" target="_blank">publicly-available</a> information. These allow ELPC and our community partners to launch efforts to advocate for cleaner practices and equipment at construction sites, inform traffic management patterns, influence public transportation operations, enforce local anti-idling ordinances, and allow residents to make better-informed decisions to limit their exposure to particulate matter pollution. </p>
 {% endblock %}
 
-{% block bootstrap4_extra_script %}
+{% block bootstrap3_extra_script %}
     <script>
         $(document).ready(function(){
             $('[data-toggle="popover"]').popover();   

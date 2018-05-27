@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from django import forms
 
+from datetimewidget.widgets import DateTimeWidget
+
 #from .models import Sessions, Users
 
 class MobileSessionsForm(forms.Form):
@@ -11,8 +13,8 @@ class MobileSessionsForm(forms.Form):
     keywords = forms.CharField(required=False)
     sessions = forms.MultipleChoiceField(choices=[], required=True)
     #all_sessions = forms.BooleanField(required=False)
-    #start_time = forms.DateTimeField(required=False)
-    #end_time = forms.DateTimeField(required=False)
+    start_time = forms.DateTimeField(widget=DateTimeWidget(usel10n=True, bootstrap_version=3))
+    end_time = forms.DateTimeField(widget=DateTimeWidget(usel10n=True, bootstrap_version=3))
     
 class DataValuesForm(forms.Form):
     users = forms.MultipleChoiceField(choices=[], required=True)
