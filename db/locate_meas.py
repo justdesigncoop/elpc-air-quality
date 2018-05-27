@@ -4,12 +4,12 @@ import logging
 import sys
 import shapely.wkt
 
-from memory_profiler import profile
+#from memory_profiler import profile
 
 DEFAULT_LOC = 0
-CHUNKSIZE = 1000
+CHUNKSIZE = 10000
 
-@profile
+#@profile
 def locate_meas(im, rm, p, prev, name, geo, engine):
     # check to see if already located
     if pd.isnull(rm[name]):
@@ -91,9 +91,8 @@ if __name__ == '__main__':
         # create shape objects
         geo['g'] = geo['geo'].apply(shapely.wkt.loads)
         
+        num = 0
         while True:
-			num = 0
-			
 			# get reaining measurements (chunksize limit)
 			try:
 				measurements = pd.read_sql_query('SELECT * FROM measurements WHERE %s IS NULL ORDER BY stream_id, id LIMIT %d' % (t['column'], CHUNKSIZE), engine, index_col='id')
