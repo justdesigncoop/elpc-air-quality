@@ -7,27 +7,31 @@ from datetimewidget.widgets import DateTimeWidget
 
 #from .models import Sessions, Users
 
+#dateTimeOptions = {
+#    'format': 'dd/mm/yyyy HH:ii P',
+#    'autoclose': True,
+#    'showMeridian' : True
+#}
+
 class MobileSessionsForm(forms.Form):
     users = forms.MultipleChoiceField(choices=[], required=True)
     all_users = forms.BooleanField(required=False)
     keywords = forms.CharField(required=False)
     sessions = forms.MultipleChoiceField(choices=[], required=True)
     #all_sessions = forms.BooleanField(required=False)
-    start_time = forms.DateTimeField(widget=DateTimeWidget(usel10n=True, bootstrap_version=3))
-    end_time = forms.DateTimeField(widget=DateTimeWidget(usel10n=True, bootstrap_version=3))
     
 class DataValuesForm(forms.Form):
     users = forms.MultipleChoiceField(choices=[], required=True)
     all_users = forms.BooleanField(required=False)
-    #start_time = forms.DateTimeField(required=False)
-    #end_time = forms.DateTimeField(required=False)
+    start_time = forms.DateTimeField(widget=DateTimeWidget(usel10n=True, bootstrap_version=3))
+    end_time = forms.DateTimeField(widget=DateTimeWidget(usel10n=True, bootstrap_version=3))
     pm_level = forms.ChoiceField(choices=[], required=False)
     geo_type = forms.ChoiceField(required=False)
     geo_boundaries = forms.MultipleChoiceField(choices=[], required=False)
     
 class DataAveragesForm(forms.Form):
-    #start_time = forms.DateTimeField(required=False)
-    #end_time = forms.DateTimeField(required=False)
+    start_time = forms.DateTimeField(widget=DateTimeWidget(usel10n=True, bootstrap_version=3))
+    end_time = forms.DateTimeField(widget=DateTimeWidget(usel10n=True, bootstrap_version=3))
     geo_type = forms.ChoiceField(required=True)
 
 class CoverageForm(forms.Form):

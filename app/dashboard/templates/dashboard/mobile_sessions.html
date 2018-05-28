@@ -17,7 +17,7 @@
 {% block title %}Mobile Sessions -{% endblock %}
 
 {% block content %}
-    <div class="alert text-white" style="background-color: #31C0AA;" role="alert">
+    <div class="alert text-white bg-teal" role="alert">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <p>View PM2.5 data from mobile monitoring sessions by selecting a username from the “Users” window. Multiple usernames can be selected at once (using shift or ctrl keys). Once a username is selected the sessions associated with it will appear in the “Sessions” window. A “Keyword”, such as a monitoring participant’s name, can be entered to narrow down the session shown. Multiple sessions can be viewed at once.</p>
  
@@ -420,7 +420,7 @@
                 // popup text  bgcolor=\"" + color + "\"
                 popup = "<table class=\"table table-bordered table-striped\"> \
                     <tr><th>Date</th><td>" + measurements[i]['time'] + "</td></tr> \
-                    <tr><th>PM2.5</th><td>" + measurements[i]['value'].toFixed(2) + "</td></tr> \
+                    <tr><th>Value</th><td>" + measurements[i]['value'].toFixed(2) + "</td></tr> \
                     <tr><th>Lat</th><td>" + measurements[i]['latitude'].toFixed(5) + "</td></tr> \
                     <tr><th>Lng</th><td>" + measurements[i]['longitude'].toFixed(5) + "</td></tr> \
                     </table>"

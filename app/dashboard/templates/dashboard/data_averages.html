@@ -17,7 +17,7 @@
 {% block title %}Data Averages -{% endblock %}
 
 {% block content %}
-    <div class="alert text-white" style="background-color: #31C0AA;" role="alert">
+    <div class="alert text-white bg-teal" role="alert">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <p>Select a geographic boundary to view averages of PM2.5 data by location.</p>
  
@@ -223,11 +223,17 @@
                     stream_ids.push(streams[i]['id']);
                 }
             }
+			
+			// get start and end time
+			var start_time = $("[name='start_time']").val()
+			var end_time = $("[name='end_time']").val()
             
             // get averages
             getAverages({
                 'stream_ids': stream_ids,
                 'geo_type': geoTypes.properties[geoType].column,
+				'start_time': start_time,
+				'end_time': end_time,
                 }, averagesCallback);
         }
         

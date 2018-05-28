@@ -5,15 +5,22 @@
 {% load static %}
 
 {% block bootstrap3_content %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{% url 'index' %}">
-            <img src="{% static 'dashboard/img/Header.png' %}" height="64" alt="Air Quality Chicago">
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+		  <a class="navbar-brand" href="{% url 'index' %}">
+			  <img src="{% static 'dashboard/img/Header.png' %}" height="64" alt="Air Quality Chicago">
+		  </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
                 {% url 'about' as about_url %}
                 <li class="nav-item {% if request.path == about_url %} active {% endif %}">
                     <a class="nav-link " href="{% url 'about' %}">About</a>
@@ -42,8 +49,9 @@
                 <li class="nav-item {% if request.path == references_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'references' %}">References</a>
                 </li>
-            </ul>
-        </div>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
     </nav>
 
     <div class="container">
@@ -52,19 +60,19 @@
         {% block content %}(no content){% endblock %}
     </div>
     
-    <footer class="container mt-0" >
-        <div class="row py-3" style="margin: 0; background: #31C0AA;">
-            <div class="col-6 col-md text-white">
+    <footer class="container" style="margin-top: 0;">
+        <div class="row text-white bg-teal m-0">
+            <div class="col-md-6">
                 <ul class="list-unstyled text-small">
-                    <li style="border-bottom: 1px solid white"><h4 class="font-italic">More Info</h4></li>
+                    <li style="border-bottom: 1px solid white"><h4><em>More Info</em></h4></li>
                     <li>Air Quality Chicago is made in partnership with <a class="text-white text-underline" href="http://elpc.org/">ELPC</a> and <a class="text-white text-underline" href="http://justdesigncoop.org/">JustDesign</a>.</li>
                     <li><a class="text-white text-underline" href="{% url 'about' %}">About</a></li>
                     <li><a class="text-white text-underline" href="{% url 'partners' %}">Our Partners & Coverage</a></li>
                 </ul>
             </div>
-            <div class="col-6 col-md text-white">
+            <div class="col-md-6">
                 <ul class="list-unstyled text-small">
-                    <li style="border-bottom: 1px solid white"><h4 class="font-italic">Contact Us</h4></li>
+                    <li style="border-bottom: 1px solid white"><h4><em>Contact Us</em></h4></li>
                     <li></li>
                     <li>If you notice a lack of monitoring coverage in your area and would like to know more about or get involved in the Air Quality Chicago Monitoring Program, please contact <a class="text-white text-underline" href="mailto:twerner@elpc.org?Subject=Air%20Quality%20Chicago" target="_top">Tiffany Werner</a>.</li>
                 </ul>

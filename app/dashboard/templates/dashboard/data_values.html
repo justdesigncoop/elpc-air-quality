@@ -17,7 +17,7 @@
 {% block title %}Data Values -{% endblock %}
 
 {% block content %}
-    <div class="alert text-white" style="background-color: #31C0AA;" role="alert">
+    <div class="alert text-white bg-teal" role="alert">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <p>View and filter PM2.5 data by selecting a username from the “Users” window. Multiple usernames can be selected at once (using shift or ctrl keys). The data can be filtered by PM2.5 level and Geographic Boundary.</p>
  
@@ -363,6 +363,10 @@
             }
             //console.log(min_value);
             //console.log(max_value);
+			
+			// get start and end time
+			var start_time = $("[name='start_time']").val()
+			var end_time = $("[name='end_time']").val()
             
             getMeasurements({
                 'stream_ids': stream_ids,
@@ -370,6 +374,8 @@
                 'geo_boundaries': geoBoundaries,
                 'min_value': min_value,
                 'max_value': max_value,
+				'start_time': start_time,
+				'end_time': end_time,
                 }, measurementsCallback);
         }
         

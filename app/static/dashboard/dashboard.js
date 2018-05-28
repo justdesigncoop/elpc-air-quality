@@ -82,6 +82,8 @@ function getMeasurements(data, callback) {
     var sample_size = JSON.stringify(data['sample_size']);
     var min_value = JSON.stringify(data['min_value']);
     var max_value = JSON.stringify(data['max_value']);
+	var start_time = JSON.stringify(data['start_time']);
+	var end_time = JSON.stringify(data['end_time']);
     //console.log(stream_ids);
     
     // execute ajax call
@@ -94,6 +96,8 @@ function getMeasurements(data, callback) {
             'sample_size': sample_size,
             'min_value': min_value,
             'max_value': max_value,
+			'start_time': start_time,
+			'end_time': end_time,
         },
         dataType: 'json',
         success: callback,
@@ -205,6 +209,8 @@ function getNone(data, callback) {
 function getAverages(data, callback) {
     var stream_ids = JSON.stringify(data['stream_ids']);
     var geo_type = JSON.stringify(data['geo_type']);
+	var start_time = JSON.stringify(data['start_time']);
+	var end_time = JSON.stringify(data['end_time']);
     
     // execute ajax call
     $.ajax({
@@ -212,6 +218,8 @@ function getAverages(data, callback) {
         data: {
             'stream_ids': stream_ids,
             'geo_type': geo_type,
+			'start_time': start_time,
+			'end_time': end_time,
         },
         dataType: 'json',
         success: callback,

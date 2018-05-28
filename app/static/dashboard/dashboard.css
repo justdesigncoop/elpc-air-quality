@@ -1,3 +1,45 @@
+ .navbar {
+  min-height: 80px;
+}
+
+.navbar-brand {
+  padding: 0 15px;
+  height: 80px;
+  line-height: 80px;
+}
+
+.navbar-toggle {
+  /* (80px - button height 34px) / 2 = 23px */
+  margin-top: 23px;
+  padding: 9px 10px !important;
+}
+
+@media (min-width: 768px) {
+  .navbar-nav > li > a {
+    /* (80px - line-height of 27px) / 2 = 26.5px */
+    padding-top: 26.5px;
+    padding-bottom: 26.5px;
+    line-height: 27px;
+  }
+}
+
+.text-white {
+  color: white;
+}
+
+.bg-teal {
+  background: #31C0AA;
+}
+
+.m-0 {
+  margin: 0;
+}
+
+footer {
+  margin-top: 0;
+  max-width: 960px;
+}
+
 /*----------------------------------------------------------------------------
   map styles
  *----------------------------------------------------------------------------*/ 
@@ -43,14 +85,6 @@ html {
 body {
   margin-bottom: 80px;
 }
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 60px;
-  line-height: 60px;
-  background: #31C0AA;
-}
 
 /*----------------------------------------------------------------------------
   page css
@@ -61,6 +95,7 @@ body {
 
 body > .container {
   margin-top: 20px;
+  max-width: 960px;
 }
 
 .text-underline {
@@ -97,4 +132,3 @@ body > .container {
     display: table-cell;
     vertical-align: middle;
 }
-

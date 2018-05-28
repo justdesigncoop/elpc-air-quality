@@ -20,6 +20,8 @@ from operator import or_
 
 import json
 
+import datetime
+
 #from timeit import default_timer as timer
 
 class FaviconView(generic.RedirectView):
@@ -119,6 +121,8 @@ def get_measurements(request):
     sample_size = json.loads(request.GET.get('sample_size', '[]'))
     min_value = json.loads(request.GET.get('min_value', '[]'))
     max_value = json.loads(request.GET.get('max_value', '[]'))
+    start_time = json.loads(request.GET.get('start_time', '[]'))
+    end_time = json.loads(request.GET.get('end_time', '[]'))
     
     '''
     if sample_size:
@@ -146,6 +150,12 @@ def get_measurements(request):
 
     if max_value:
         measurements = measurements.filter(value__lt=max_value)
+    
+    if start_time:
+        measurements = measurements.filter(time__gt=datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S"))
+    
+    if end_time:
+        measurements = measurements.filter(time__lt=datetime.datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S"))
     
     data = {
         'measurements': json.dumps(list(measurements.values('id', 'stream_id', 'value', 'latitude', 'longitude', 'time')), cls=serializers.json.DjangoJSONEncoder)
@@ -196,11 +206,20 @@ def get_wards(request):
 def get_averages(request):
     stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
     geo_type = json.loads(request.GET.get('geo_type', '[]'))
+    start_time = json.loads(request.GET.get('start_time', '[]'))
+    end_time = json.loads(request.GET.get('end_time', '[]'))
     
     measurements = Measurements.objects
     
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
+        
+    if start_time:
+        measurements = measurements.filter(time__gt=datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S"))
+    
+    if end_time:
+        measurements = measurements.filter(time__lt=datetime.datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S"))
+    
     
     averages = None
     
