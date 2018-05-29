@@ -28,9 +28,11 @@
         {% csrf_token %}
         {% bootstrap_form form layout="horizontal" %}
         {% buttons %}
-            <button type="submit" id="id_submit" class="btn btn-primary">Map</button>
-            <button type="reset" id="id_reset" class="btn btn-primary">Clear</button>
-            <button type="button" id="id_download" class="btn btn-primary">Download</button>
+			<div style="padding-left:15px;">
+				<button type="submit" id="id_submit" class="btn btn-primary">Map</button>
+				<button type="reset" id="id_reset" class="btn btn-primary">Clear</button>
+				<button type="button" id="id_download" class="btn btn-primary">Download</button>
+			</div>
         {% endbuttons %}
     </form>
 
@@ -416,10 +418,15 @@
                     fillOpacity: 0.5,
                     radius: 5
                 });
+				
+				// process date and time
+				var dt = measurements[i]['time'].split("T");
+				dt[1] = dt[1].replace("Z", "");
                 
                 // popup text  bgcolor=\"" + color + "\"
                 popup = "<table class=\"table table-bordered table-striped\"> \
-                    <tr><th>Date</th><td>" + measurements[i]['time'] + "</td></tr> \
+                    <tr><th>Date</th><td>" + dt[0] + "</td></tr> \
+					<tr><th>Time</th><td>" + dt[1] + "</td></tr> \
                     <tr><th>Value</th><td>" + measurements[i]['value'].toFixed(2) + "</td></tr> \
                     <tr><th>Lat</th><td>" + measurements[i]['latitude'].toFixed(5) + "</td></tr> \
                     <tr><th>Lng</th><td>" + measurements[i]['longitude'].toFixed(5) + "</td></tr> \
@@ -433,7 +440,7 @@
              map.spin(false);
              
             // enable download button
-            $("#id_download").prop("disabled", false)
+            $("#id_download").prop("disabled", false);
             
             // fit map
             map.fitBounds(markers.getBounds());
