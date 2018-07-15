@@ -29,7 +29,7 @@ var sensorNames = [
 /*----------------------------------------------------------------------------
   check sensor name
  *----------------------------------------------------------------------------*/
-function checkSensorName(sensor) {
+function checkSensor(sensor) {
   return sensorNames.includes(sensor);
 }
 
