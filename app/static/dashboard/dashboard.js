@@ -21,8 +21,9 @@ var defaultLoc = 0;
 // https://coolors.co/2da641-f9dc2e-f57f22-f4001c-1616e5
 var coverageColor = '#1616E5';
 
-var sensorTypes = [
+var sensorNames = [
   'AirBeam-PM',
+  'AirBeam2-PM2.5',
 ];
 
 /*----------------------------------------------------------------------------
