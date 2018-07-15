@@ -23,7 +23,7 @@ var coverageColor = '#1616E5';
 
 var sensorNames = [
   'AirBeam-PM',
-  'AirBeam2-PM2.5',
+  'AirBeam2-PM2.5'
 ];
 
 /*----------------------------------------------------------------------------
