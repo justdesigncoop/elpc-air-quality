@@ -295,7 +295,8 @@
             var stream_ids = [];
             for(i = 0; i < streams.length; ++i) {
                 // check for air quality sensor
-                if(streams[i]['sensor_name'] == 'AirBeam-PM') {
+                //if(streams[i]['sensor_name'] == 'AirBeam-PM') {
+              	if(checkSensorName(streams[i]['sensor_name'])) {
                     stream_ids.push(streams[i]['id']);
                 }
             }
@@ -400,4 +401,3 @@
         }
     </script>
 {% endblock %}
-
