@@ -26,6 +26,8 @@ var sensorNames = [
   'AirBeam2-PM2.5'
 ];
 
+var sampleSize = 5000;
+
 /*----------------------------------------------------------------------------
   check sensor name
  *----------------------------------------------------------------------------*/
@@ -71,13 +73,16 @@ function getSessions(data, callback) {
  *----------------------------------------------------------------------------*/
 function getStreams(data, callback) {
     var session_ids = JSON.stringify(data['session_ids']);
-    //console.log(sessions);
+    var sensor_names = JSON.stringify(data['sensor_names']);
+    var sample_size = JSON.stringify(data['sample_size']);
     
     // execute ajax call
     $.ajax({
         url: '/dashboard/ajax/get_streams/',
         data: {
             'session_ids': session_ids,
+            'sensor_names': sensor_names,
+            'sample_size': sample_size,
         },
         dataType: 'json',
         success: callback,
@@ -94,6 +99,9 @@ function getMeasurements(data, callback) {
     var sample_size = JSON.stringify(data['sample_size']);
     var min_value = JSON.stringify(data['min_value']);
     var max_value = JSON.stringify(data['max_value']);
+    var week_day = JSON.stringify(data['week_day']);
+	var start_date = JSON.stringify(data['start_date']);
+	var end_date = JSON.stringify(data['end_date']);
 	var start_time = JSON.stringify(data['start_time']);
 	var end_time = JSON.stringify(data['end_time']);
     //console.log(stream_ids);
@@ -108,6 +116,9 @@ function getMeasurements(data, callback) {
             'sample_size': sample_size,
             'min_value': min_value,
             'max_value': max_value,
+            'week_day': week_day,
+			'start_date': start_date,
+			'end_date': end_date,
 			'start_time': start_time,
 			'end_time': end_time,
         },
@@ -221,17 +232,25 @@ function getNone(data, callback) {
 function getAverages(data, callback) {
     var stream_ids = JSON.stringify(data['stream_ids']);
     var geo_type = JSON.stringify(data['geo_type']);
+    var week_day = JSON.stringify(data['week_day']);
+	var start_date = JSON.stringify(data['start_date']);
+	var end_date = JSON.stringify(data['end_date']);
 	var start_time = JSON.stringify(data['start_time']);
 	var end_time = JSON.stringify(data['end_time']);
-    
+    var sample_size = JSON.stringify(data['sample_size']);
+     
     // execute ajax call
     $.ajax({
         url: '/dashboard/ajax/get_averages/',
         data: {
             'stream_ids': stream_ids,
             'geo_type': geo_type,
+            'week_day': week_day,
+			'start_date': start_date,
+			'end_date': end_date,
 			'start_time': start_time,
 			'end_time': end_time,
+			'sample_size': sample_size,
         },
         dataType: 'json',
         success: callback,

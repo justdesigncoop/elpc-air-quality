@@ -19,10 +19,10 @@ from functools import reduce
 from operator import or_
 
 import json
-
 import datetime
+import random
 
-#from timeit import default_timer as timer
+from timeit import default_timer as timer
 
 class FaviconView(generic.RedirectView):
     url='/static/dashboard/favicon.ico'
@@ -102,25 +102,38 @@ def get_sessions(request):
 
 def get_streams(request):
     session_ids = json.loads(request.GET.get('session_ids', '[]'))
+    sensor_names = json.loads(request.GET.get('sensor_names', '[]'))
+    sample_size = json.loads(request.GET.get('sample_size', '[]'))
     
     streams = Streams.objects
     
     if session_ids:
         streams = streams.filter(session__in=session_ids)
+
+    if sensor_names:
+        streams = streams.filter(sensor_name__in=sensor_names)   
+        
+    if sample_size:
+        streams = streams.order_by('?')[:sample_size]
+    
+    print "len(streams) = " + str(len(streams))
     
     data = {
-        'streams': json.dumps(list(streams.values('id', 'sensor_name')), cls=serializers.json.DjangoJSONEncoder)
+        'streams': json.dumps(list(streams.values('id')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
 
 def get_measurements(request):
-    #start = timer()
+    start = timer()
     stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
     geo_type = json.loads(request.GET.get('geo_type', '[]'))
     geo_boundaries = json.loads(request.GET.get('geo_boundaries', '[]'))
     sample_size = json.loads(request.GET.get('sample_size', '[]'))
     min_value = json.loads(request.GET.get('min_value', '[]'))
     max_value = json.loads(request.GET.get('max_value', '[]'))
+    week_day = json.loads(request.GET.get('week_day', '[]'))
+    start_date = json.loads(request.GET.get('start_date', '[]'))
+    end_date = json.loads(request.GET.get('end_date', '[]'))
     start_time = json.loads(request.GET.get('start_time', '[]'))
     end_time = json.loads(request.GET.get('end_time', '[]'))
     
@@ -150,17 +163,29 @@ def get_measurements(request):
 
     if max_value:
         measurements = measurements.filter(value__lt=max_value)
+
+    if week_day:
+        measurements = measurements.filter(time__week_day__in=week_day)
+    
+    if start_date:
+        measurements = measurements.filter(time__date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d").date())
+    
+    if end_date:
+        measurements = measurements.filter(time__date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d").date())
     
     if start_time:
-        measurements = measurements.filter(time__gt=datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S"))
+        measurements = measurements.filter(time__time__gte=datetime.datetime.strptime(start_time, "%H:%M:%S").time())
     
     if end_time:
-        measurements = measurements.filter(time__lt=datetime.datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S"))
+        measurements = measurements.filter(time__time__lte=datetime.datetime.strptime(end_time, "%H:%M:%S").time())
+    
+    print "len(measurements) = " + str(measurements.count())
+    print "filters = " + str(timer() - start)
     
     data = {
         'measurements': json.dumps(list(measurements.values('id', 'stream_id', 'value', 'latitude', 'longitude', 'time')), cls=serializers.json.DjangoJSONEncoder)
     } 
-    #print timer() - start
+    print "json = " + str(timer() - start)
     return JsonResponse(data)
 
 def get_neighborhoods(request):
@@ -204,31 +229,55 @@ def get_wards(request):
     return JsonResponse(data)
 
 def get_averages(request):
+    start = timer()
     stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
     geo_type = json.loads(request.GET.get('geo_type', '[]'))
+    week_day = json.loads(request.GET.get('week_day', '[]'))
+    start_date = json.loads(request.GET.get('start_date', '[]'))
+    end_date = json.loads(request.GET.get('end_date', '[]'))
     start_time = json.loads(request.GET.get('start_time', '[]'))
     end_time = json.loads(request.GET.get('end_time', '[]'))
+    sample_size = json.loads(request.GET.get('sample_size', '[]'))
     
     measurements = Measurements.objects
+    
+    if sample_size:
+        pass
+    #    print "sample_size = " + str(sample_size)
+    #    #measurements = measurements.order_by('?')[:sample_size]
     
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
         
+    if week_day:
+        measurements = measurements.filter(time__week_day__in=week_day)
+    
+    if start_date:
+        measurements = measurements.filter(time__date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d").date())
+    
+    if end_date:
+        measurements = measurements.filter(time__date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d").date())
+    
     if start_time:
-        measurements = measurements.filter(time__gt=datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S"))
+        measurements = measurements.filter(time__time__gte=datetime.datetime.strptime(start_time, "%H:%M:%S").time())
     
     if end_time:
-        measurements = measurements.filter(time__lt=datetime.datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S"))
+        measurements = measurements.filter(time__time__lte=datetime.datetime.strptime(end_time, "%H:%M:%S").time())
     
+    print "counts = " + str(measurements.count())
+    print "filters = " + str(timer() - start)
     
     averages = None
-    
+
     if geo_type:
         averages = parse_averages(geo_type, measurements)
+        
+    print "averages = " + str(timer() - start)
     
     data = {
         'averages': json.dumps(averages, cls=serializers.json.DjangoJSONEncoder)
     }
+    print "json = " + str(timer() - start)
     return JsonResponse(data)
 
 def parse_averages(name, measurements):
@@ -243,6 +292,7 @@ def parse_averages(name, measurements):
     return averages
 
 def get_counts(request):
+    start = timer()
     stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
     geo_type = json.loads(request.GET.get('geo_type', '[]'))
     
@@ -251,14 +301,20 @@ def get_counts(request):
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
     
+    print "count = " + str(measurements.count())
+    print "filters = " + str(timer() - start)
+    
     counts = None
     
     if geo_type:
         counts = parse_counts(geo_type, measurements)
     
+    print "counts = " + str(timer() - start)
+    
     data = {
         'counts': json.dumps(counts, cls=serializers.json.DjangoJSONEncoder)
     }
+    print "json = " + str(timer() - start)
     return JsonResponse(data)
 
 def parse_counts(name, measurements):
@@ -271,3 +327,4 @@ def parse_counts(name, measurements):
             counts[n] = d['counts']
 
     return counts
+

@@ -325,6 +325,7 @@
             // get streams with session ids       
             getStreams({
                 'session_ids': session_ids,
+                'sensor_names': sensorNames,
                 }, streamsCallback);
         }
         
@@ -340,9 +341,9 @@
             for(i = 0; i < streams.length; ++i) {
                 // check for air quality sensor
                 //if(streams[i]['sensor_name'] == 'AirBeam-PM') {
-              	if(checkSensorName(streams[i]['sensor_name'])) {
+              	//if(checkSensorName(streams[i]['sensor_name'])) {
                     stream_ids.push(streams[i]['id']);
-                }
+                //}
             }
             //console.log(stream_ids);
             
@@ -367,7 +368,10 @@
             //console.log(min_value);
             //console.log(max_value);
 			
-			// get start and end time
+			// get dates and times
+			var week_day = getSelectedOptions("#id_week_day");
+			var start_date = $("[name='start_date']").val();
+			var end_date = $("[name='end_date']").val();
 			var start_time = $("[name='start_time']").val()
 			var end_time = $("[name='end_time']").val()
             
@@ -377,6 +381,9 @@
                 'geo_boundaries': geoBoundaries,
                 'min_value': min_value,
                 'max_value': max_value,
+                'week_day': week_day,
+                'start_date': start_date,
+				'end_date': end_date,
 				'start_time': start_time,
 				'end_time': end_time,
                 }, measurementsCallback);

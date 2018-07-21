@@ -281,6 +281,7 @@
             // get streams with session ids       
             getStreams({
                 'session_ids': session_ids,
+                'sensor_names': sensorNames,
                 }, streamsCallback);
         }
         
@@ -296,9 +297,9 @@
             for(i = 0; i < streams.length; ++i) {
                 // check for air quality sensor
                 //if(streams[i]['sensor_name'] == 'AirBeam-PM') {
-              	if(checkSensorName(streams[i]['sensor_name'])) {
+              	//if(checkSensorName(streams[i]['sensor_name'])) {
                     stream_ids.push(streams[i]['id']);
-                }
+                //}
             }
             //console.log(stream_ids);
             
