@@ -28,6 +28,10 @@ var sensorNames = [
 
 var sampleSize = 5000;
 
+$.ajaxSetup({
+    headers: { "X-CSRFToken": '{{csrf_token}}' }
+});
+
 /*----------------------------------------------------------------------------
   check sensor name
  *----------------------------------------------------------------------------*/
@@ -41,6 +45,8 @@ function checkSensorName(sensor_name) {
 function getUsers(data, callback) {
     // execute ajax call
     $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
         url: '/dashboard/ajax/get_users/',
         data: data,
         dataType: 'json',
@@ -58,6 +64,8 @@ function getSessions(data, callback) {
     
     // execute ajax call
     $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
         url: '/dashboard/ajax/get_sessions/',
         data: {
             'user_ids': user_ids,
@@ -78,6 +86,8 @@ function getStreams(data, callback) {
     
     // execute ajax call
     $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
         url: '/dashboard/ajax/get_streams/',
         data: {
             'session_ids': session_ids,
@@ -108,6 +118,8 @@ function getMeasurements(data, callback) {
     
     // execute ajax call
     $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
         url: '/dashboard/ajax/get_measurements/',
         data: {
             'stream_ids': stream_ids,
@@ -174,6 +186,8 @@ function getNeighborhoods(data, callback) {
     
     // execute ajax call
     $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
         url: '/dashboard/ajax/get_neighborhoods/',
         data: {
             'neighborhood_ids': neighborhood_ids,
@@ -192,6 +206,8 @@ function getTracts(data, callback) {
     
     // execute ajax call
     $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
         url: '/dashboard/ajax/get_tracts/',
         data: {
             'tract_ids': tracts,
@@ -210,6 +226,8 @@ function getWards(data, callback) {
     
     // execute ajax call
     $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
         url: '/dashboard/ajax/get_wards/',
         data: {
             'ward_ids': wards,
@@ -241,6 +259,8 @@ function getAverages(data, callback) {
      
     // execute ajax call
     $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
         url: '/dashboard/ajax/get_averages/',
         data: {
             'stream_ids': stream_ids,
@@ -266,6 +286,8 @@ function getCounts(data, callback) {
     
     // execute ajax call
     $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
         url: '/dashboard/ajax/get_counts/',
         data: {
             'stream_ids': stream_ids,

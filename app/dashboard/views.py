@@ -70,7 +70,7 @@ class CoverageView(generic.FormView):
 	success_url = '/dashboard/'
 
 def get_users(request):
-    user_ids = json.loads(request.GET.get('user_ids', '[]'))
+    user_ids = json.loads(request.POST.get('user_ids', '[]'))
     
     users = Users.objects
     
@@ -83,8 +83,11 @@ def get_users(request):
     return JsonResponse(data)
 
 def get_sessions(request):
-    user_ids = json.loads(request.GET.get('user_ids', '[]'))
-    keywords = json.loads(request.GET.get('keywords', '[]'))
+    user_ids = json.loads(request.POST.get('user_ids', '[]'))
+    keywords = json.loads(request.POST.get('keywords', '[]'))
+    
+    print user_ids
+    print keywords
     
     sessions = Sessions.objects
     
@@ -101,9 +104,9 @@ def get_sessions(request):
     return JsonResponse(data)
 
 def get_streams(request):
-    session_ids = json.loads(request.GET.get('session_ids', '[]'))
-    sensor_names = json.loads(request.GET.get('sensor_names', '[]'))
-    sample_size = json.loads(request.GET.get('sample_size', '[]'))
+    session_ids = json.loads(request.POST.get('session_ids', '[]'))
+    sensor_names = json.loads(request.POST.get('sensor_names', '[]'))
+    sample_size = json.loads(request.POST.get('sample_size', '[]'))
     
     streams = Streams.objects
     
@@ -125,17 +128,17 @@ def get_streams(request):
 
 def get_measurements(request):
     start = timer()
-    stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
-    geo_type = json.loads(request.GET.get('geo_type', '[]'))
-    geo_boundaries = json.loads(request.GET.get('geo_boundaries', '[]'))
-    sample_size = json.loads(request.GET.get('sample_size', '[]'))
-    min_value = json.loads(request.GET.get('min_value', '[]'))
-    max_value = json.loads(request.GET.get('max_value', '[]'))
-    week_day = json.loads(request.GET.get('week_day', '[]'))
-    start_date = json.loads(request.GET.get('start_date', '[]'))
-    end_date = json.loads(request.GET.get('end_date', '[]'))
-    start_time = json.loads(request.GET.get('start_time', '[]'))
-    end_time = json.loads(request.GET.get('end_time', '[]'))
+    stream_ids = json.loads(request.POST.get('stream_ids', '[]'))
+    geo_type = json.loads(request.POST.get('geo_type', '[]'))
+    geo_boundaries = json.loads(request.POST.get('geo_boundaries', '[]'))
+    sample_size = json.loads(request.POST.get('sample_size', '[]'))
+    min_value = json.loads(request.POST.get('min_value', '[]'))
+    max_value = json.loads(request.POST.get('max_value', '[]'))
+    week_day = json.loads(request.POST.get('week_day', '[]'))
+    start_date = json.loads(request.POST.get('start_date', '[]'))
+    end_date = json.loads(request.POST.get('end_date', '[]'))
+    start_time = json.loads(request.POST.get('start_time', '[]'))
+    end_time = json.loads(request.POST.get('end_time', '[]'))
     
     '''
     if sample_size:
@@ -189,7 +192,7 @@ def get_measurements(request):
     return JsonResponse(data)
 
 def get_neighborhoods(request):
-    neighborhood_ids = json.loads(request.GET.get('neighborhood_ids', '[]'))
+    neighborhood_ids = json.loads(request.POST.get('neighborhood_ids', '[]'))
     
     neighborhoods = Neighborhoods.objects
     
@@ -203,7 +206,7 @@ def get_neighborhoods(request):
     return JsonResponse(data)
 
 def get_tracts(request):
-    tract_ids = json.loads(request.GET.get('tract_ids', '[]'))
+    tract_ids = json.loads(request.POST.get('tract_ids', '[]'))
     
     tracts = Tracts.objects
     
@@ -216,7 +219,7 @@ def get_tracts(request):
     return JsonResponse(data)
 
 def get_wards(request):
-    ward_ids = json.loads(request.GET.get('ward_ids', '[]'))
+    ward_ids = json.loads(request.POST.get('ward_ids', '[]'))
     
     wards = Wards.objects
     
@@ -230,14 +233,14 @@ def get_wards(request):
 
 def get_averages(request):
     start = timer()
-    stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
-    geo_type = json.loads(request.GET.get('geo_type', '[]'))
-    week_day = json.loads(request.GET.get('week_day', '[]'))
-    start_date = json.loads(request.GET.get('start_date', '[]'))
-    end_date = json.loads(request.GET.get('end_date', '[]'))
-    start_time = json.loads(request.GET.get('start_time', '[]'))
-    end_time = json.loads(request.GET.get('end_time', '[]'))
-    sample_size = json.loads(request.GET.get('sample_size', '[]'))
+    stream_ids = json.loads(request.POST.get('stream_ids', '[]'))
+    geo_type = json.loads(request.POST.get('geo_type', '[]'))
+    week_day = json.loads(request.POST.get('week_day', '[]'))
+    start_date = json.loads(request.POST.get('start_date', '[]'))
+    end_date = json.loads(request.POST.get('end_date', '[]'))
+    start_time = json.loads(request.POST.get('start_time', '[]'))
+    end_time = json.loads(request.POST.get('end_time', '[]'))
+    sample_size = json.loads(request.POST.get('sample_size', '[]'))
     
     measurements = Measurements.objects
     
@@ -293,8 +296,8 @@ def parse_averages(name, measurements):
 
 def get_counts(request):
     start = timer()
-    stream_ids = json.loads(request.GET.get('stream_ids', '[]'))
-    geo_type = json.loads(request.GET.get('geo_type', '[]'))
+    stream_ids = json.loads(request.POST.get('stream_ids', '[]'))
+    geo_type = json.loads(request.POST.get('geo_type', '[]'))
     
     measurements = Measurements.objects
     
