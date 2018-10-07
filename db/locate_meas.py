@@ -57,7 +57,7 @@ def locate_meas(im, rm, p, prev, name, geo, engine):
 if __name__ == '__main__':
     # generate error log
     logging.basicConfig(
-        filename='locate_meas_%s.log' % (pd.Timestamp.now().strftime('%Y%m%d%H%M%S')),
+        filename='logs/locate_meas_%s.log' % (pd.Timestamp.now().strftime('%Y%m%d%H%M%S')),
         filemode='w',
         format = '%(asctime)s %(levelname)s: %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',

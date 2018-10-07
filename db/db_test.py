@@ -7,7 +7,7 @@ import sys
 if __name__ == '__main__':
     # generate error log
     logging.basicConfig(
-        filename='db_test_%s.log' % (pd.Timestamp.now().strftime('%Y%m%d%H%M%S')),
+        filename='logs/db_test_%s.log' % (pd.Timestamp.now().strftime('%Y%m%d%H%M%S')),
         filemode='w',
         format = '%(asctime)s %(levelname)s: %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',

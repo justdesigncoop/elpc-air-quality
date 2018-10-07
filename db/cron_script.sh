@@ -16,6 +16,6 @@ cd $SCRIPT_HOME
 # run scripts
 python db_test.py
 python locate_meas.py
-
+python backup.py
 # deactivate workspace
 deactivate
