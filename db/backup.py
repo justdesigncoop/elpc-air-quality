@@ -29,19 +29,26 @@ if __name__ == '__main__':
     # tables to back up
     tables = ['users', 'sessions', 'streams', 'notes', 'measurements', 'neighborhoods', 'tracts', 'wards']
     
-    # back up each table, beaking breaking into multiple files as necessary
-    for table in tables:     
-        try:
-            gen = pd.read_sql_query('SELECT * FROM %s' % (table), engine, chunksize=CHUNKSIZE)
-        except sa.exc.SQLAlchemyError as e:
-            logging.error(e)
-            sys.exit(1)
-        
+    # back up each table
+    for table in tables: 
+        logging.info('geting data from table %s' % table)
         i = 0
         files = []
-        for df in gen:
+        while True:
+            try:
+                df = pd.read_sql_query('SELECT * FROM %s ORDER BY id ASC LIMIT %d OFFSET %d' % (table, CHUNKSIZE, i*CHUNKSIZE), engine)
+            except sa.exc.SQLAlchemyError as e:
+                logging.error(e)
+                sys.exit(1)
+            
+            # check for empty df
+            if df.size == 0:
+                break
+            
+            # break into multiple files as necessary
             try:
                 name = 'backups/tables/%s_%d.csv'% (table, i)
+                logging.info('creating file %s' % name)
                 header = False if i else True
                 df.to_csv(name, index=False, header=header, encoding='utf-8')   
             except:
@@ -61,7 +68,8 @@ if __name__ == '__main__':
             pass
         
         # combine files
-        try:            
+        try:
+            logging.info('combining files into %s' % destination)
             for f in files:
                 os.system('cat %s >> %s' % (f, destination))
                 os.remove(f)
@@ -73,6 +81,7 @@ if __name__ == '__main__':
     # create zip file
     try:
         name = 'backups/backup_%s' % (pd.Timestamp.now().strftime('%Y%m%d%H%M%S'))
+        logging.info('creating archive %s' % name)
         shutil.make_archive(name, 'zip', 'backups/tables')
     except:
         e = sys.exc_info()
@@ -80,6 +89,7 @@ if __name__ == '__main__':
         sys.exit(1)
     
     # remove old zip files
+    logging.info('removing old archives')
     try:
         files = glob.glob('backups/*.zip')
         files.remove(name + '.zip')
