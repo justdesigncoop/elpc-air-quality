@@ -7,6 +7,7 @@ TRACTS_FILE = 'CensusTractsTIGER2010.csv'
 NEIGHBORHOODS_FILE = 'Neighborhoods_2012b.csv'
 WARDS_FILE = 'WARDS_2015.csv'
 HEXAGONS_FILE = 'hex.csv'
+ZIPCODES_FILE = 'Zip_Codes.csv'
 
 DEFAULT_LOC = 0
 
@@ -16,7 +17,7 @@ DEFAULT_LOC = 0
 if __name__ == '__main__':
     # generate error log
     logging.basicConfig(
-        filename='import_geo_%s.log' % (pd.Timestamp.now().strftime('%Y%m%d%H%M%S')),
+        filename='logs/import_geo_%s.log' % (pd.Timestamp.now().strftime('%Y%m%d%H%M%S')),
         filemode='w',
         format = '%(asctime)s %(levelname)s: %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
@@ -26,7 +27,7 @@ if __name__ == '__main__':
     
     # create engine
     try:
-        engine = sa.create_engine('mysql+mysqlconnector://elpcjd:Elpc1234@home.danwahl.net/elpc_air_quality')
+        engine = sa.create_engine('mysql+mysqlconnector://elpcjd:Elpc1234@127.0.0.1/elpc_air_quality')
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
@@ -99,6 +100,7 @@ if __name__ == '__main__':
     
     print hexagons
     
+    '''
     # insert into sql
     try:
         hexagons.to_sql('hexagons', engine, index=False, if_exists='append')
@@ -108,6 +110,27 @@ if __name__ == '__main__':
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
+    '''
+	
+    # process zipcodes file
+    zipcodes = pd.read_csv(ZIPCODES_FILE, usecols=['ZIP', 'the_geom'])
+    zipcodes.rename(index=str, columns={'ZIP': 'id', 'the_geom': 'geo'}, inplace=True)
+    zipcodes['display'] = zipcodes['id'].astype(str)
+    zipcodes = zipcodes.append(pd.Series({'id': DEFAULT_LOC, 'display': 'None', 'geo': 'MULTIPOLYGON EMPTY'}), ignore_index=True)
+    
+    print zipcodes
+    
+    '''
+    # insert into sql
+    try:
+        zipcodes.to_sql('zipcodes', engine, index=False, if_exists='append')
+    # duplicate entry
+    except sa.exc.IntegrityError as e:
+        logging.warning(e)
+    except sa.exc.SQLAlchemyError as e:
+        logging.error(e)
+        sys.exit(1)
+    '''
 	
     logging.info('import geo finished')
     
