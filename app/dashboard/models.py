@@ -16,7 +16,9 @@ class Measurements(models.Model):
     ward = models.ForeignKey('Wards', models.DO_NOTHING, blank=True, null=True)
     neighborhood = models.ForeignKey('Neighborhoods', models.DO_NOTHING, blank=True, null=True)
     tract = models.ForeignKey('Tracts', models.DO_NOTHING, blank=True, null=True)
-    
+    hexagon = models.ForeignKey('Hexagons', models.DO_NOTHING, blank=True, null=True)
+    zipcode = models.ForeignKey('Zipcodes', models.DO_NOTHING, blank=True, null=True)
+	
     class Meta:
         managed = False
         db_table = 'measurements'
@@ -148,3 +150,22 @@ class Wards(models.Model):
         db_table = 'wards'
         verbose_name_plural = 'wards'
 
+class Hexagons(models.Model):
+    id = models.IntegerField(primary_key=True)
+    display = models.CharField(max_length=40, blank=True, null=True)
+    geo = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'hexagons'
+        verbose_name_plural = 'hexagons'
+
+class Zipcodes(models.Model):
+    id = models.IntegerField(primary_key=True)
+    display = models.CharField(max_length=40, blank=True, null=True)
+    geo = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'zipcodes'
+        verbose_name_plural = 'zipcodes'
