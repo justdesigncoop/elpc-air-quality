@@ -8,11 +8,15 @@ var geoTypes = {
     NEIGHBORHOODS: 1,
     TRACTS: 2,
     WARDS: 3,
+    HEXAGONS: 4,
+    ZIPCODES: 5,
     properties: {
         0: {value: 0, name: '', column: '', table: '', cb: getNone},
         1: {value: 1, name: 'Neighborhood', column: 'neighborhood', table: 'neighborhoods', cb: getNeighborhoods},
         2: {value: 2, name: 'Census', column: 'tract',  table: 'tracts', cb: getTracts},
         3: {value: 3, name: 'Ward', column: 'ward', table: 'wards', cb: getWards},
+        4: {value: 4, name: 'Hexagon', column: 'hexagon', table: 'hexagons', cb: getHexagons},
+        5: {value: 5, name: 'Zip Code', column: 'zipcode', table: 'zipcodes', cb: getZipcodes},
    }
 };
 
@@ -27,6 +31,9 @@ var sensorNames = [
 ];
 
 var sampleSize = 5000;
+
+var maxOpacity = 0.7;
+var minOpacity = 0.15;
 
 $.ajaxSetup({
     headers: { "X-CSRFToken": '{{csrf_token}}' }
@@ -201,7 +208,7 @@ function getNeighborhoods(data, callback) {
   get tracts
  *----------------------------------------------------------------------------*/
 function getTracts(data, callback) {
-    var tracts = JSON.stringify(data['tract_ids']);
+    var tract_ids = JSON.stringify(data['tract_ids']);
     //console.log(tract_ids);
     
     // execute ajax call
@@ -210,7 +217,7 @@ function getTracts(data, callback) {
         type: 'POST',
         url: '/dashboard/ajax/get_tracts/',
         data: {
-            'tract_ids': tracts,
+            'tract_ids': tract_ids,
         },
         dataType: 'json',
         success: callback,
@@ -221,7 +228,7 @@ function getTracts(data, callback) {
   get wards
  *----------------------------------------------------------------------------*/
 function getWards(data, callback) {
-    var wards = JSON.stringify(data['ward_ids']);
+    var ward_ids = JSON.stringify(data['ward_ids']);
     //console.log(ward_ids);
     
     // execute ajax call
@@ -230,7 +237,47 @@ function getWards(data, callback) {
         type: 'POST',
         url: '/dashboard/ajax/get_wards/',
         data: {
-            'ward_ids': wards,
+            'ward_ids': ward_ids,
+        },
+        dataType: 'json',
+        success: callback,
+    });
+}
+
+/*----------------------------------------------------------------------------
+  get hexagons
+ *----------------------------------------------------------------------------*/
+function getHexagons(data, callback) {
+    var hexagon_ids = JSON.stringify(data['hexagon_ids']);
+    //console.log(hexagon_ids);
+    
+    // execute ajax call
+    $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
+        url: '/dashboard/ajax/get_hexagons/',
+        data: {
+            'hexagon_ids': hexagon_ids,
+        },
+        dataType: 'json',
+        success: callback,
+    });
+}
+
+/*----------------------------------------------------------------------------
+  get zipcodes
+ *----------------------------------------------------------------------------*/
+function getZipcodes(data, callback) {
+    var zipcode_ids = JSON.stringify(data['zipcode_ids']);
+    //console.log(zipcode_ids);
+    
+    // execute ajax call
+    $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
+        url: '/dashboard/ajax/get_zipcodes/',
+        data: {
+            'zipcode_ids': zipcode_ids,
         },
         dataType: 'json',
         success: callback,

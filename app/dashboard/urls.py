@@ -21,6 +21,8 @@ urlpatterns = [
     url(r'^ajax/get_neighborhoods/$', views.get_neighborhoods, name='get_neighborhoods'),
     url(r'^ajax/get_tracts/$', views.get_tracts, name='get_tracts'),
     url(r'^ajax/get_wards/$', views.get_wards, name='get_wards'),
+    url(r'^ajax/get_hexagons/$', views.get_hexagons, name='get_hexagons'),
+    url(r'^ajax/get_zipcodes/$', views.get_zipcodes, name='get_zipcodes'),
     url(r'^ajax/get_averages/$', views.get_averages, name='get_averages'),
     url(r'^ajax/get_counts/$', views.get_counts, name='get_counts')
 ]

@@ -11,7 +11,7 @@
         crossorigin=""/>
     
     <!-- dashboard css -->
-    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}"/>
 {% endblock %}
 
 {% block title %}Coverage -{% endblock %}
@@ -76,8 +76,6 @@
         var geoType = geoTypes.NONE;
             
         var counts = [];
-        var maxOpacity = 0.7;
-        var minOpacity = 0.15;
         
         var csvData = [];
         
@@ -172,7 +170,7 @@
             
             // populate geo types
             for(var key in geoTypes.properties) {
-                if(key == geoTypes.NONE) {
+                if((key == geoTypes.NONE) || (key == geoTypes.HEXAGON)) {
                     continue;
                 }
                 else {
@@ -349,7 +347,7 @@
             var max_count = Math.max.apply(Math, data);
             //console.log(max_count);
             
-            // add to list, draw neighborhoods
+            // add to list, draw boundaries
             for (i = 0; i < geo_data.length; ++i) {
                 // check averages
                 var pk = geo_data[i]['id'];

@@ -11,7 +11,7 @@
         crossorigin=""/>
 
     <!-- dashboard css -->
-    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}"/>
 {% endblock %}
 
 {% block title %}Data Averages -{% endblock %}
@@ -160,7 +160,7 @@
             
             // populate geo types select
             for(var key in geoTypes.properties) {
-                if(key == geoTypes.NONE) {
+                if((key == geoTypes.NONE) || (key == geoTypes.HEXAGONS)) {
                     continue;
                 }
                 else {
@@ -259,7 +259,7 @@
             //console.log(averages);
             
             // geo type callback
-            var cb = geoTypes.properties[geoType].cb
+            var cb = geoTypes.properties[geoType].cb;
             if(cb) {
                 cb([], geoCallback);
             }

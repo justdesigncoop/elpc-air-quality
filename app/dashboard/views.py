@@ -11,7 +11,7 @@ from django.views import generic
 from django.core import serializers
 from django.db.models import Q, Avg, Count
 
-from .models import Users, Sessions, Streams, Measurements, Neighborhoods, Tracts, Wards
+from .models import Users, Sessions, Streams, Measurements, Neighborhoods, Tracts, Wards, Hexagons, Zipcodes
 
 from .forms import MobileSessionsForm, DataValuesForm, DataAveragesForm, CoverageForm
 
@@ -230,6 +230,32 @@ def get_wards(request):
         'wards': json.dumps(list(wards.values('id', 'display', 'geo')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
+    
+def get_hexagons(request):
+    hexagon_ids = json.loads(request.POST.get('hexagon_ids', '[]'))
+    
+    hexagons = Hexagons.objects
+    
+    if hexagon_ids:
+        hexagons = hexagons.filter(id__in=hexagon_ids)
+    
+    data = {
+        'hexagons': json.dumps(list(hexagons.values('id', 'display', 'geo')), cls=serializers.json.DjangoJSONEncoder)
+    }
+    return JsonResponse(data)
+    
+def get_zipcodes(request):
+    zipcode_ids = json.loads(request.POST.get('zipcode_ids', '[]'))
+    
+    zipcodes = Zipcodes.objects
+    
+    if zipcode_ids:
+        zipcodes = zipcodes.filter(id__in=zipcode_ids)
+    
+    data = {
+        'zipcodes': json.dumps(list(zipcodes.values('id', 'display', 'geo')), cls=serializers.json.DjangoJSONEncoder)
+    }
+    return JsonResponse(data)
 
 def get_averages(request):
     start = timer()
@@ -317,7 +343,7 @@ def get_counts(request):
     data = {
         'counts': json.dumps(counts, cls=serializers.json.DjangoJSONEncoder)
     }
-    print "json = " + str(timer() - start)
+    print "json = " + str(timer() - start)    
     return JsonResponse(data)
 
 def parse_counts(name, measurements):
