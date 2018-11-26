@@ -33,9 +33,7 @@ if __name__ == '__main__':
         logging.error(e)
         sys.exit(1)
     
-    averages.to_json('../app/static/dashboard/averages.json');
-    
-    # get averages
+    # get counts
     try:
         counts = pd.read_sql_query('SELECT hexagon_id, COUNT(value) AS counts FROM measurements WHERE stream_id in (SELECT id FROM streams WHERE sensor_name IN (%s)) AND hexagon_id IS NOT NULL GROUP BY hexagon_id' % \
             sensors, engine, index_col=['hexagon_id'])
@@ -43,6 +41,15 @@ if __name__ == '__main__':
         logging.error(e)
         sys.exit(1)
     
-    counts.to_json('../app/static/dashboard/counts.json');
+    # get hexagons
+    try:
+        hexagons = pd.read_sql_query('SELECT id, geo FROM hexagons', engine, index_col=['id'])
+    except sa.exc.SQLAlchemyError as e:
+        logging.error(e)
+        sys.exit(1)
+    
+    data = pd.concat([hexagons, averages, counts], axis=1, join='inner')
+    
+    data.to_json('../app/static/dashboard/data.json');
     
     logging.info('update data finished')

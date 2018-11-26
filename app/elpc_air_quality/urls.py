@@ -19,8 +19,19 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.contrib.auth.views import login, logout
+
+from django.views.generic.base import RedirectView
+
 urlpatterns = [
     url(r'', include('dashboard.urls')),
     url(r'^dashboard/', include('dashboard.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^accounts/login/$', login, {'template_name': 'admin/login.html'}, name='login'),
+    url(r'^accounts/logout/$', logout, {'next_page': '/'}, name='logout'),
+    url(r'^accounts/profile/$', RedirectView.as_view(url='/')),
+    url(r'^accounts/$', RedirectView.as_view(url='/')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+

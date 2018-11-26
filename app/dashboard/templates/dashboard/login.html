@@ -1,0 +1,25 @@
+{% extends 'dashboard/base.html' %}
+
+{% load bootstrap3 %}
+
+{% load static %}
+
+{% block bootstrap3_extra_head %}
+    <!-- dashboard css -->
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}"/>
+{% endblock %}
+
+{% block title %}Login -{% endblock %}
+
+{% block content %}
+    <form role="form" id="id_request" class="form-horizontal p-3" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form layout="horizontal" %}
+        {% buttons %}
+			<div style="padding-left:15px;">
+				<button type="submit" id="id_submit" class="btn btn-primary">Login</button>
+			</div>
+        {% endbuttons %}
+    </form>
+{% endblock %}
+

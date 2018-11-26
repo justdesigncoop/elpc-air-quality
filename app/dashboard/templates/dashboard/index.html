@@ -59,9 +59,29 @@
         /*----------------------------------------------------------------------------
           global vars setup
          *----------------------------------------------------------------------------*/    
-        var geoType = geoTypes.HEXAGONS;
-        
-        var averages = [];
+        pmLevels = [6.0, 12.0, 22.0, 35.0];
+
+	    /*----------------------------------------------------------------------------
+          color map
+         *----------------------------------------------------------------------------*/
+        function colorMap(value) {            
+            // color mapping from color brewer
+            if(value < pmLevels[0]) {
+                return '#feebe2';
+            }
+            else if(value < pmLevels[1]) {
+                return '#fbb4b9';
+            }
+            else if(value < pmLevels[2]) {
+                return '#f768a1';
+            }
+            else if(value < pmLevels[3]) {
+                return '#c51b8a';
+            }
+            else {
+                return '#7a0177';
+            }
+        }
         
         /*----------------------------------------------------------------------------
           map setup
@@ -92,7 +112,7 @@
             maxZoom: 17,
             minZoom: 11,
             preferCanvas: true,
-            layers: [streets, geo],
+            layers: [light, geo],
         });
         
         // control layers
@@ -121,6 +141,13 @@
 		    var div = L.DomUtil.create('div', 'info legend'),
 			    labels = [],
 			    from, to;
+			    
+			labels.push(
+		        'PM2.5 (µg/m³)');
+
+	        labels.push(
+		        '<i style="background:' + colorMap(0) + '"></i> ' +
+		        '<' + pmLevels[0]);
 
 		    for (var i = 0; i < pmLevels.length; i++) {
 			    from = pmLevels[i];
@@ -136,6 +163,7 @@
 	    };
 
 	    legend.addTo(map);
+        
         /*----------------------------------------------------------------------------
           document ready callback
          *----------------------------------------------------------------------------*/   
@@ -143,58 +171,43 @@
             //console.log("ready");
             
             // get averages
-            $.getJSON("{% static 'dashboard/averages.json' %}", averagesCallback);
+            $.getJSON("{% static 'dashboard/data.json' %}", geoCallback);
             
             // start spin
             map.spin(true);
         });
         
         /*----------------------------------------------------------------------------
-          averages data callback
-         *----------------------------------------------------------------------------*/
-        function averagesCallback(data) {
-            averages = data['averages'];
-            //console.log(averages);
-            
-            // geo type callback
-            var cb = geoTypes.properties[geoType].cb;
-            if(cb) {
-                cb([], geoCallback);
-            }
-        }
-        
-        /*----------------------------------------------------------------------------
           geo data callback
          *----------------------------------------------------------------------------*/
         function geoCallback(data) {
-            // check geo type
-            var table = geoTypes.properties[geoType].table;
-            var geo_data = JSON.parse(data[table]);
+            var geo_data = data['geo'];
             //console.log(geo_data);
+            
+            var averages = data['averages']
+            //console.log(averages);
             
             geo.clearLayers();
             
-            // add to list, draw neighborhoods
-            for (i = 0; i < geo_data.length; ++i) {
+            // draw geo
+            for (var id in geo_data) {
                 // check averages
-                var pk = geo_data[i]['id'];
-				var display = geo_data[i]['display'];
-                var value = averages[pk];
+                var value = averages[id];
                 
                 // fill color
                 var color = '#fff';
                 var opacity = 0.0;
                 if(value != undefined) {
                     color = colorMap(value);
-                    opacity = 0.7;
+                    opacity = maxOpacity;
                 }
                 
                 // skip default location (empty multipolygon)
-                if(pk == defaultLoc) {
+                if(id == defaultLoc) {
                     continue;
                 }   
                 
-                var multi_polygon = omnivore.wkt.parse(geo_data[i]['geo']);
+                var multi_polygon = omnivore.wkt.parse(geo_data[id]);
                 
                 multi_polygon.setStyle({
                     fillColor: color,
@@ -207,7 +220,7 @@
                 // popup text
                 if(value != undefined) {
                     var popup = "<table class=\"table table-bordered table-striped\"> \
-                        <tr><th>Boundary</th><td>" + display + "</td></tr> \
+                        <tr><th>Boundary</th><td>" + id + "</td></tr> \
                         <tr><th>PM2.5</th><td>" + value.toFixed(2) + "</td></tr> \
                         </table>"
                     multi_polygon.bindPopup(popup)

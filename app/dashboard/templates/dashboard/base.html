@@ -29,26 +29,38 @@
                 <li class="nav-item {% if request.path == partners_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'partners' %}">Our Partners & Coverage</a>
                 </li>
-                {% url 'mobile_sessions' as mobile_sessions_url %}
-                <li class="nav-item {% if request.path == mobile_sessions_url %} active {% endif %}">
-                    <a class="nav-link" href="{% url 'mobile_sessions' %}">Mobile Sessions</a>
-                </li>
-                {% url 'data_values' as data_values_url %}
-                <li class="nav-item {% if request.path == data_values_url %} active {% endif %}">
-                    <a class="nav-link" href="{% url 'data_values' %}">Data Values</a>
-                </li>
-                {% url 'data_averages' as data_averages_url %}
-                <li class="nav-item {% if request.path == data_averages_url %} active {% endif %}">
-                    <a class="nav-link" href="{% url 'data_averages' %}">Data Averages</a>
-                </li>
-                {% url 'coverage' as coverage_url %}
-                <li class="nav-item {% if request.path == coverage_url %} active {% endif %}">
-                    <a class="nav-link" href="{% url 'coverage' %}">Coverage</a>
-                </li>
+                {% if user.is_authenticated %}
+                    {% url 'mobile_sessions' as mobile_sessions_url %}
+                    <li class="nav-item {% if request.path == mobile_sessions_url %} active {% endif %}">
+                        <a class="nav-link" href="{% url 'mobile_sessions' %}">Mobile Sessions</a>
+                    </li>
+                    {% url 'data_values' as data_values_url %}
+                    <li class="nav-item {% if request.path == data_values_url %} active {% endif %}">
+                        <a class="nav-link" href="{% url 'data_values' %}">Data Values</a>
+                    </li>
+                    {% url 'data_averages' as data_averages_url %}
+                    <li class="nav-item {% if request.path == data_averages_url %} active {% endif %}">
+                        <a class="nav-link" href="{% url 'data_averages' %}">Data Averages</a>
+                    </li>
+                    {% url 'coverage' as coverage_url %}
+                    <li class="nav-item {% if request.path == coverage_url %} active {% endif %}">
+                        <a class="nav-link" href="{% url 'coverage' %}">Coverage</a>
+                    </li>
+                {% endif %}
                 {% url 'references' as references_url %}
                 <li class="nav-item {% if request.path == references_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'references' %}">References</a>
                 </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                    </li>
+                {% else %} 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                    </li>
+                {% endif %}
+                
           </ul>
         </div><!--/.nav-collapse -->
       </div>
