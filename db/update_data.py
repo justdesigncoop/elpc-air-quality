@@ -1,8 +1,13 @@
 import sqlalchemy as sa
 import pandas as pd
 import logging
+import sys
 
 sensor_names = ['AirBeam-PM', 'AirBeam2-PM2.5']
+
+harmful_level = 35.0
+
+good_level = 12.0
 
 if __name__ == '__main__':
     # generate error log
@@ -25,6 +30,13 @@ if __name__ == '__main__':
     # get sensors    
     sensors = ','.join(['\'' + sensor + '\'' for sensor in sensor_names])
     
+    # get hexagons
+    try:
+        hexagons = pd.read_sql_query('SELECT id, geo FROM hexagons', engine, index_col=['id'])
+    except sa.exc.SQLAlchemyError as e:
+        logging.error(e)
+        sys.exit(1)
+        
     # get averages
     try:
         averages = pd.read_sql_query('SELECT hexagon_id, AVG(value) AS averages FROM measurements WHERE stream_id in (SELECT id FROM streams WHERE sensor_name IN (%s)) AND hexagon_id IS NOT NULL GROUP BY hexagon_id' % \
@@ -40,15 +52,28 @@ if __name__ == '__main__':
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
-    
-    # get hexagons
+        
+    # get harmful
     try:
-        hexagons = pd.read_sql_query('SELECT id, geo FROM hexagons', engine, index_col=['id'])
+        harmful = pd.read_sql_query('SELECT hexagon_id, COUNT(value) AS harmful FROM measurements WHERE value >= %f AND stream_id in (SELECT id FROM streams WHERE sensor_name IN (%s)) AND hexagon_id IS NOT NULL GROUP BY hexagon_id' % \
+            (harmful_level, sensors), engine, index_col=['hexagon_id'])
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
     
-    data = pd.concat([hexagons, averages, counts], axis=1, join='inner')
+    harmful = harmful.reindex(counts.index).fillna(0)
+        
+    # get good
+    try:
+        good = pd.read_sql_query('SELECT hexagon_id, COUNT(value) AS good FROM measurements WHERE value <= %f AND stream_id in (SELECT id FROM streams WHERE sensor_name IN (%s)) AND hexagon_id IS NOT NULL GROUP BY hexagon_id' % \
+            (good_level, sensors), engine, index_col=['hexagon_id'])
+    except sa.exc.SQLAlchemyError as e:
+        logging.error(e)
+        sys.exit(1)  
+          
+    good = good.reindex(counts.index).fillna(0)
+      
+    data = pd.concat([hexagons, averages, counts, harmful, good], axis=1, join='inner')
     
     data.to_json('../app/static/dashboard/data.json');
     
