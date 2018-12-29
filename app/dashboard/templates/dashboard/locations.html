@@ -1,0 +1,232 @@
+{% extends 'dashboard/base.html' %}
+
+{% load bootstrap3 %}
+
+{% load static %}
+
+{% block bootstrap3_extra_head %}    
+    <!-- leaflet css -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+        integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+        crossorigin=""/>
+    
+    <!-- dashboard css -->
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}"/>
+{% endblock %}
+
+{% block title %}Our Partners & Coverage -{% endblock %}
+
+{% block content %}    
+    <h3>Our Coverage</h3>
+    <div class="alert text-white bg-teal" role="alert">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <p>ELPC has been partnerning and collecting data with youth and community groups across the city of Chicago to createa  picture of what air quality looks like, block by block. Explore the map below to view our monitoring coverage to date.</p>
+        
+        <p>Our goal is to continue to fill the in the Chicago air quality picture. If you notice a lack of monitoring coverage in your area and would like to know more about our program or get involved, please contact <a class="text-white text-underline" href="mailto:twerner@elpc.org?Subject=Air%20Quality%20Chicago" target="_top">Tiffany Werner</a>.</p>
+    </div>
+    
+    <div id="id_map">
+    </div>
+{% endblock %}
+
+{% block bootstrap3_extra_script %}
+    <!-- leaflet js -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+       integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+       crossorigin="">
+    </script>
+    
+    <!-- leaflet easyPrint -->
+    <script src=" https://cdn.rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js">
+    </script>
+   
+    <!-- leaflet omnivore -->
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
+    
+    <!-- leaflet spin -->
+    <script src="https://cdn.rawgit.com/makinacorpus/Leaflet.Spin/gh-pages/spin/spin.js" charset="utf-8"></script>
+    <script src="https://cdn.rawgit.com/makinacorpus/Leaflet.Spin/gh-pages/leaflet.spin.min.js" charset="utf-8"></script>
+    
+    <!-- dashboard functions -->
+    <script src="{% static 'dashboard/dashboard.js' %}"  type="text/javascript">
+    </script>
+    
+    <!-- jquery cookie -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+    <script>
+        /*----------------------------------------------------------------------------
+          global vars setup
+         *----------------------------------------------------------------------------*/    
+        var countLevels = [100, 500, 2500];
+        
+	    /*----------------------------------------------------------------------------
+          color map
+         *----------------------------------------------------------------------------*/
+        function colorMap(value) {            
+            // color mapping from color brewer
+            if(value < countLevels[0]) {
+                return '#f6eff7';
+            }
+            else if(value < countLevels[1]) {
+                return '#bdc9e1';
+            }
+            else if(value < countLevels[2]) {
+                return '#67a9cf';
+            }
+            else {
+                return '#02818a';
+            }
+        }
+        
+        /*----------------------------------------------------------------------------
+          map setup
+         *----------------------------------------------------------------------------*/
+        var attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
+        var accessToken = 'pk.eyJ1IjoiZHJ3YWhsIiwiYSI6ImNqOG9zN25nYTA3dG8ycXJzNGpqbmE3cTgifQ.mNd1sk4ymlt8lvZTwKADOA';
+        
+        // tile layers
+        var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: attribution,
+            id: 'mapbox.streets',
+            accessToken: accessToken,
+        });
+        
+        var light = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: attribution,
+            id: 'mapbox.light',
+            accessToken: accessToken,
+        });
+        
+        // layer groups
+        var geo = L.layerGroup([]);
+        
+        // map
+        var map = L.map('id_map', {
+            center: [41.8781, -87.6298],
+            zoom: 13,
+            maxZoom: 17,
+            minZoom: 11,
+            preferCanvas: true,
+            layers: [light, geo],
+        });
+        
+        // control layers
+        var baseMaps = {
+            "Streets": streets,
+            "Light": light,
+        };
+        
+        var overlayMaps = {
+            "Geo": geo,
+        };
+        
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
+        
+        var printPlugin = L.easyPrint({
+      		sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
+      		filename: 'map',
+      		exportOnly: true,
+      		hideControlContainer: true
+		}).addTo(map);
+		
+	    // legend       
+	    var legend = L.control({position: 'bottomright'});
+
+	    legend.onAdd = function(map) {
+		    var div = L.DomUtil.create('div', 'info legend'),
+			    labels = [],
+			    from, to;
+			    
+			labels.push(
+		        'Measurements');
+
+	        labels.push(
+		        '<i style="background:' + colorMap(0) + '"></i> ' +
+		        '<' + countLevels[0])
+		    
+		    for (var i = 0; i < countLevels.length; i++) {
+			    from = countLevels[i];
+			    to = countLevels[i + 1];
+			    
+			    labels.push(
+				    '<i style="background:' + colorMap(from + 1) + '"></i> ' +
+				    from + (to ? '–' + to : '+'));
+		    }
+
+		    div.innerHTML = labels.join('<br>');
+		    return div;
+	    };
+
+	    legend.addTo(map);
+	    
+        /*----------------------------------------------------------------------------
+          document ready callback
+         *----------------------------------------------------------------------------*/   
+        $(document).ready(function() {
+            //console.log("ready");
+            
+            // get averages
+            $.getJSON("{% static 'dashboard/data.json' %}", geoCallback);
+            
+            // start spin
+            map.spin(true);
+        });
+        
+        /*----------------------------------------------------------------------------
+          geo data callback
+         *----------------------------------------------------------------------------*/
+        function geoCallback(data) {
+            var geo_data = data['geo'];
+            //console.log(geo_data);
+            
+            var counts = data['counts']
+            //console.log(counts);
+            
+            geo.clearLayers();
+            
+            // draw geo
+            for (var id in geo_data) {
+                // check averages
+                var value = counts[id];
+                
+                // fill color
+                var color = '#fff';
+                var opacity = 0.0;
+                if(value != undefined) {
+                    color = colorMap(value);
+                    opacity = maxOpacity;
+                }
+                
+                // skip default location (empty multipolygon)
+                if(id == defaultLoc) {
+                    continue;
+                }   
+                
+                var multi_polygon = omnivore.wkt.parse(geo_data[id]);
+                
+                multi_polygon.setStyle({
+                    fillColor: color,
+                    fillOpacity: opacity,
+                    color: '#444',
+                    weight: 0,
+                    opacity: 1.0,
+                });
+                
+                // popup text
+                if(value != undefined) {
+                    var popup = "<table class=\"table table-bordered table-striped\"> \
+                        <tr><th>Boundary</th><td>" + id + "</td></tr> \
+                        <tr><th>PM2.5</th><td>" + value.toFixed(2) + "</td></tr> \
+                        </table>"
+                    multi_polygon.bindPopup(popup)
+                }
+                
+                geo.addLayer(multi_polygon);
+            }
+            
+            // stop spin
+            map.spin(false);
+        }
+    </script>
+{% endblock %}

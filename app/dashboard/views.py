@@ -43,6 +43,12 @@ class IndexView(generic.TemplateView):
 class AboutView(generic.TemplateView):
 	template_name = 'dashboard/about.html'
 
+class LocationsView(generic.TemplateView):
+	template_name = 'dashboard/locations.html'
+	
+class ResultsView(generic.TemplateView):
+	template_name = 'dashboard/results.html'
+
 class PartnersView(generic.TemplateView):
 	template_name = 'dashboard/partners.html'
 	

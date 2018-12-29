@@ -25,9 +25,17 @@
                 <li class="nav-item {% if request.path == about_url %} active {% endif %}">
                     <a class="nav-link " href="{% url 'about' %}">About</a>
                 </li>
+                {% url 'locations' as locations_url %}
+                <li class="nav-item {% if request.path == results_url %} active {% endif %}">
+                    <a class="nav-link " href="{% url 'locations' %}">Where We Monitor</a>
+                </li>
+                {% url 'results' as results_url %}
+                <li class="nav-item {% if request.path == results_url %} active {% endif %}">
+                    <a class="nav-link " href="{% url 'results' %}">Our Results</a>
+                </li>
                 {% url 'partners' as partners_url %}
                 <li class="nav-item {% if request.path == partners_url %} active {% endif %}">
-                    <a class="nav-link" href="{% url 'partners' %}">Our Partners & Coverage</a>
+                    <a class="nav-link" href="{% url 'partners' %}">Our Partners</a>
                 </li>
                 {% if user.is_authenticated %}
                     {% url 'mobile_sessions' as mobile_sessions_url %}
