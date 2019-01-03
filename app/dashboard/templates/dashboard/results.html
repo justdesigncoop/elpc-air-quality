@@ -19,20 +19,20 @@
 {% block content %}
     <div class="alert text-white bg-teal" role="alert">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <p>Our monitoring data has been analyzed on a hexagon grid of the city. Each hexagon is the size of a half city block. Use the tabs to switch between different data views. Use the map key in the bottom right corner of the map to better understand the data. Click a hexagon for more information about that area.</p>
+        <p>Our monitoring data has been analyzed on a hexagon grid of the city. Each hexagon is the length of a half city block. Use the tabs to switch between different data views. Use the map key in the bottom right corner of the map to better understand the data. Click a hexagon for more information about that area.</p>
     </div>
     
     <nav class="navbar navbar-default">
         <div>
             <ul class="nav navbar-nav" id="myTab" role="tablist" style="margin-left: 0; margin-right: 0">
                 <li class="nav-item active">
-                    <a class="nav-link active" id="average-tab" data-toggle="tab" href="#average" role="tab" aria-controls="background" aria-selected="true">Average Levels</a>
+                    <a class="nav-link active" id="harmful-tab" data-toggle="tab" href="#harmful" role="tab" aria-controls="background" aria-selected="false">High Levels</a>
                 </li>
-                <li class="nav-item ">
-                    <a class="nav-link " id="harmful-tab" data-toggle="tab" href="#harmful" role="tab" aria-controls="background" aria-selected="false">High Levels</a>
+                <li class="nav-item">
+                    <a class="nav-link" id="good-tab" data-toggle="tab" href="#good" role="tab" aria-controls="background" aria-selected="false">Low Levels</a>
                 </li>
-                <li class="nav-item ">
-                    <a class="nav-link " id="good-tab" data-toggle="tab" href="#good" role="tab" aria-controls="background" aria-selected="false">Low Levels</a>
+                <li class="nav-item">
+                    <a class="nav-link" id="average-tab" data-toggle="tab" href="#average" role="tab" aria-controls="background" aria-selected="true">Average Levels</a>
                 </li>
                 <!--
                 <li class="nav-item ">
@@ -44,17 +44,18 @@
     </nav>
     
     <div class="tab-content" id="myTabContent" style="padding-bottom: 1em">
-        <div class="tab-pane fade active in" id="average" role="tabpanel" aria-labelledby="average-tab">
-            <h3>Average PM2.5 Levels</h3>
-            <p>This map shows the average concentration of all PM2.5 data points within each hexagon. The darker the hexagon's color, the less healthy the average air quality reading in that area is.</p>
-        </div>
+
         <div class="tab-pane fade" id="harmful" role="tabpanel" aria-labelledby="harmful-tab">
             <h3>Prevalence of High PM2.5 Levels</h3>
-            <p>This map shows the percent of PM2.5 readings 35 µg/m³ (micrograms per cubic meter) and above with each hexagon. Readings of 35 µg/m³ and above are considered unhealthy, and can pose great risk to those with respiratory illnesss and the general population (US EPA standard).</p>
+            <p>This map shows the percent of PM2.5 readings 35 µg/m³ (micrograms per cubic meter) and above within each hexagon. Readings of 35 µg/m³ and above are considered unhealthy, and can pose great risk to those with respiratory illnesss and the general population (US EPA standard).</p>
         </div>
-        <div class="tab-pane fade" id="good" role="tabpanel" aria-labelledby="good-tab">
+        <div class="tab-pane fade active in" id="good" role="tabpanel" aria-labelledby="good-tab">
             <h3>Prevalence of Low PM2.5 Levels</h3>
-            <p>This map shows the percent of PM3.5 readings 12 µg/m³ (micrograms per cubic meter) and below within each hexagon. Readings of 12 µg/m³ and below pose little to no risk to the general population (US EPA standard).</p>
+            <p>This map shows the percent of PM2.5 readings 12 µg/m³ (micrograms per cubic meter) and below within each hexagon. Readings of 12 µg/m³ and below pose little to no risk to the general population (US EPA standard).</p>
+        </div>
+        <div class="tab-pane fade" id="average" role="tabpanel" aria-labelledby="average-tab">
+            <h3>Average PM2.5 Levels</h3>
+            <p>This map shows the average concentration of all PM2.5 data points within each hexagon. The darker the hexagon's color, the less healthy the average air quality reading in that area is.</p>
         </div>
         <!--
         <div class="tab-pane fade" id="bivariate" role="tabpanel" aria-labelledby="bivariate-tab">
@@ -427,7 +428,7 @@
                 var popup = "<table class=\"table table-bordered table-striped\"> \
                     <tr><th>Boundary</th><td>" + id + "</td></tr> \
                     <tr><th>Average</th><td>" + average.toFixed(2) + "</td></tr> \
-                    <tr><th>Counts</th><td>" + count.toFixed(0) + "</td></tr> \
+                    <tr><th>Count</th><td>" + count.toFixed(0) + "</td></tr> \
                     <tr><th>Harmful</th><td>" + harmful.toFixed(1) + "%</td></tr> \
                     <tr><th>Good</th><td>" + good.toFixed(1) + "%</td></tr> \
                     </table>"
