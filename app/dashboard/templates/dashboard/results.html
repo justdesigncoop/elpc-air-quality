@@ -45,11 +45,11 @@
     
     <div class="tab-content" id="myTabContent" style="padding-bottom: 1em">
 
-        <div class="tab-pane fade" id="harmful" role="tabpanel" aria-labelledby="harmful-tab">
+        <div class="tab-pane fade active in" id="harmful" role="tabpanel" aria-labelledby="harmful-tab">
             <h3>Prevalence of High PM2.5 Levels</h3>
             <p>This map shows the percent of PM2.5 readings 35 µg/m³ (micrograms per cubic meter) and above within each hexagon. Readings of 35 µg/m³ and above are considered unhealthy, and can pose great risk to those with respiratory illnesss and the general population (US EPA standard).</p>
         </div>
-        <div class="tab-pane fade active in" id="good" role="tabpanel" aria-labelledby="good-tab">
+        <div class="tab-pane fade" id="good" role="tabpanel" aria-labelledby="good-tab">
             <h3>Prevalence of Low PM2.5 Levels</h3>
             <p>This map shows the percent of PM2.5 readings 12 µg/m³ (micrograms per cubic meter) and below within each hexagon. Readings of 12 µg/m³ and below pose little to no risk to the general population (US EPA standard).</p>
         </div>
@@ -109,7 +109,7 @@
         
         var mapModes = ['average', 'harmful', 'good']
         
-        var mapMode = 'average';
+        var mapMode = 'harmful';
 
 	    /*----------------------------------------------------------------------------
           average color
@@ -230,7 +230,7 @@
             maxZoom: 17,
             minZoom: 11,
             preferCanvas: true,
-            layers: [light, layerGroups['average']],
+            layers: [light, layerGroups[mapMode]],
         });
         
         // control layers
@@ -335,7 +335,7 @@
 		    return div;
 	    };
 
-	    legendControls['average'].addTo(map);
+	    legendControls[mapMode].addTo(map);
         
         /*----------------------------------------------------------------------------
           document ready callback
