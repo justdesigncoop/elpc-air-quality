@@ -111,8 +111,8 @@
         
         // control layers
         var baseMaps = {
-            "Streets": streets,
-            "Light": light,
+            "Color": streets,
+            "Greyscale": light,
         };
         
         var overlayMaps = {
@@ -132,20 +132,10 @@
 	    var legend = L.control({position: 'bottomright'});
 
 	    legend.onAdd = function(map) {
-		    var div = L.DomUtil.create('div', 'info legend'),
-			    labels = [],
-			    from, to;
-
-		    for (var i = 0; i < pmLevels.length; i++) {
-			    from = pmLevels[i];
-			    to = pmLevels[i + 1];
-
-			    labels.push(
-				    '<i style="background:' + colorMap(from + 1) + '"></i> ' +
-				    from + (to ? '–' + to : '+'));
-		    }
-
-		    div.innerHTML = labels.join('<br>');
+		    var div = L.DomUtil.create('div', 'info legend');
+		    
+		    div.innerHTML = getLegend("PM2.5", pmLevels, colorMap);
+		    
 		    return div;
 	    };
 

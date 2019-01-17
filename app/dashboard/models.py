@@ -154,6 +154,11 @@ class Hexagons(models.Model):
     id = models.IntegerField(primary_key=True)
     display = models.CharField(max_length=40, blank=True, null=True)
     geo = models.TextField(blank=True, null=True)
+    counts = models.IntegerField(blank=True, null=True)
+    harmful = models.IntegerField(blank=True, null=True)
+    good = models.IntegerField(blank=True, null=True)
+    average = models.FloatField(blank=True, null=True)
+    health_score = models.FloatField(blank=True, null=True)
 
     class Meta:
         managed = False

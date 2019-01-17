@@ -14,11 +14,25 @@
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}"/>
 {% endblock %}
 
-{% block title %}Our Partners & Coverage -{% endblock %}
+{% block title %}Our Partners -{% endblock %}
 
 {% block content %}
+    <h3>Our Funders</h3>
+    <p>Data displayed on Air Quality Chicago is a collaborative effort of ELPC, public health allies, and community organizations. Our funders are:</p>
+   
+    <table class="table table-sm text-center partners">
+        <tbody>
+            <tr>
+                <td><a href="http://www.patagonia.com/" title="Patagonia"><img src="{% static 'dashboard/img/Patagonia.jpg' %}"></img></a></td>
+                <td><a href="http://www.patagonia.com/" title="Patagonia"><img src="{% static 'dashboard/img/Patagonia.jpg' %}"></img></a></td>
+                <td><a href="http://www.patagonia.com/" title="Patagonia"><img src="{% static 'dashboard/img/Patagonia.jpg' %}"></img></a></td>
+                <td><a href="http://www.patagonia.com/" title="Patagonia"><img src="{% static 'dashboard/img/Patagonia.jpg' %}"></img></a></td>
+            </tr>
+        </tbody>
+    </table>
+    
     <h3>Our Partners</h3>
-    <p>Data displayed on Air Quality Chicago is a collaborative effort of ELPC, public health allies, and community organizations. Our partners include:</p>
+    <p>And our partners include:</p>
    
     <table class="table table-sm text-center partners">
         <tbody>
@@ -39,20 +53,17 @@
                 <td><a href="http://justdesign.coop/" title="JustDesign Cooperative, LLC"><img src="{% static 'dashboard/img/JustDesign.png' %}"></img></a></td>
                 <td><a href="https://www.fieldmuseum.org/science/research/area/keller-science-action-center" title="Keller Science Action Center"><img src="{% static 'dashboard/img/FieldMuseum.jpg' %}"></img></a></td>
                 <td><a href="https://experimentalstation.org/linkup-overview/" title="LINK Up Illinois"><img src="{% static 'dashboard/img/LinkUpIllinois.jpg' %}"></img></a></td>
-
             </tr>
             <tr>
                 <td><a href="http://lvejo.org/" title="LVEJO"><img src="{% static 'dashboard/img/LVEJO.PNG' %}"></img></a></td>
                 <td><a href="https://www.mapscorps.org/" title="MAPSCorps"><img src="{% static 'dashboard/img/MapsCorps.jpg' %}"></img></a></td>
                 <td><a href="https://www.msichicago.org/" title="Museum of Science and Industry"><img src="{% static 'dashboard/img/MSIlogo.jpg' %}"></img></a></td>
-                <td><a href="http://www.patagonia.com/" title="Patagonia"><img src="{% static 'dashboard/img/Patagonia.jpg' %}"></img></a></td>
-
+                <td><a href="http://www.peopleforcommunityrecovery.org/" title="People for Community Recovery"><img src="{% static 'dashboard/img/PCR.PNG' %}"></img></a></td>
             </tr>
 			<tr>
-                <td><a href="http://www.peopleforcommunityrecovery.org/" title="People for Community Recovery"><img src="{% static 'dashboard/img/PCR.PNG' %}"></img></a></td>
                 <td><a href="http://plantchicago.org/" title="Plant Chicago"><img src="{% static 'dashboard/img/PlantChicago.png' %}"></img></a></td>
                 <td><a href="http://setaskforce.org/" title="Southeast Environmental Task Force"><img src="{% static 'dashboard/img/SETaskForce.jpg' %}"></img></a></td>
-
+                <td></td>
                 <td></td>
             </tr>
         </tbody>

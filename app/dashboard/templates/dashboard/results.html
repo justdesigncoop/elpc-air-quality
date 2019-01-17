@@ -26,45 +26,44 @@
         <div>
             <ul class="nav navbar-nav" id="myTab" role="tablist" style="margin-left: 0; margin-right: 0">
                 <li class="nav-item active">
-                    <a class="nav-link active" id="harmful-tab" data-toggle="tab" href="#harmful" role="tab" aria-controls="background" aria-selected="false">High Levels</a>
+                    <a class="nav-link active" id="harmful-tab" data-toggle="tab" href="#harmful">Harmful Levels</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="good-tab" data-toggle="tab" href="#good" role="tab" aria-controls="background" aria-selected="false">Low Levels</a>
+                    <a class="nav-link" id="good-tab" data-toggle="tab" href="#good" role="tab">Low Levels</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="average-tab" data-toggle="tab" href="#average" role="tab" aria-controls="background" aria-selected="true">Average Levels</a>
+                    <a class="nav-link" id="average-tab" data-toggle="tab" href="#average" role="tab">Average Levels</a>
                 </li>
-                <!--
                 <li class="nav-item ">
-                    <a class="nav-link " id="bivariate-tab" data-toggle="tab" href="#bivariate" role="tab" aria-controls="background" aria-selected="false">Air and Respiratory Health</a>
+                    <a class="nav-link " id="bivariate-tab" data-toggle="tab" href="#bivariate" role="tab">Air and Respiratory Health</a>
                 </li>
-                -->
             </ul>
         </div>
     </nav>
     
     <div class="tab-content" id="myTabContent" style="padding-bottom: 1em">
 
-        <div class="tab-pane fade active in" id="harmful" role="tabpanel" aria-labelledby="harmful-tab">
+        <div class="tab-pane fade active in" id="harmful" role="tabpanel">
             <h3>Prevalence of High PM2.5 Levels</h3>
             <p>This map shows the percent of PM2.5 readings 35 µg/m³ (micrograms per cubic meter) and above within each hexagon. Readings of 35 µg/m³ and above are considered unhealthy, and can pose great risk to those with respiratory illnesss and the general population (US EPA standard).</p>
         </div>
-        <div class="tab-pane fade" id="good" role="tabpanel" aria-labelledby="good-tab">
+        <div class="tab-pane fade" id="good" role="tabpanel">
             <h3>Prevalence of Low PM2.5 Levels</h3>
             <p>This map shows the percent of PM2.5 readings 12 µg/m³ (micrograms per cubic meter) and below within each hexagon. Readings of 12 µg/m³ and below pose little to no risk to the general population (US EPA standard).</p>
         </div>
-        <div class="tab-pane fade" id="average" role="tabpanel" aria-labelledby="average-tab">
+        <div class="tab-pane fade" id="average" role="tabpanel">
             <h3>Average PM2.5 Levels</h3>
             <p>This map shows the average concentration of all PM2.5 data points within each hexagon. The darker the hexagon's color, the less healthy the average air quality reading in that area is.</p>
         </div>
-        <!--
-        <div class="tab-pane fade" id="bivariate" role="tabpanel" aria-labelledby="bivariate-tab">
+        <div class="tab-pane fade" id="bivariate" role="tabpanel">
             <h3>Comparing Chicago's Air Quality and Respiratory Health</h3>
             <p>This map compares our PM2.5 air quality readings with Center for Disease Control (CDC) asthma and chronic obstructive pulmonary disease (COPD) rate findings. Areas with both poor air quality and high incidents of asthma and COPD are illustrated in dark brown.</p>
         </div>
-        -->
-        
+                
         <div id="id_map">
+        </div>
+        
+        <div id="last_updated">
         </div>
     </div>
 
@@ -88,6 +87,9 @@
     <script src="https://cdn.rawgit.com/makinacorpus/Leaflet.Spin/gh-pages/spin/spin.js" charset="utf-8"></script>
     <script src="https://cdn.rawgit.com/makinacorpus/Leaflet.Spin/gh-pages/leaflet.spin.min.js" charset="utf-8"></script>
     
+    <!-- json2csv -->
+    <script src="https://cdn.rawgit.com/bsusensjackson/json2csv/fc8dad15/json2csv.min.js" charset="utf-8"></script>
+    
     <!-- dashboard functions -->
     <script src="{% static 'dashboard/dashboard.js' %}"  type="text/javascript">
     </script>
@@ -98,56 +100,37 @@
     <script>
         /*----------------------------------------------------------------------------
           global vars setup
-         *----------------------------------------------------------------------------*/    
-        var averageLevels = [6.0, 12.0, 22.0, 35.0];
+         *----------------------------------------------------------------------------*/            
+        var harmfulLevels = [0.0, 1.0, 3.0, 6.0, 14.0];
         
-        var harmfulLevels = [1.0, 3.0, 6.0, 14.0];
+        var goodLevels = [0.0, 2.0, 10.0, 90.0, 98.0];
         
-        var goodLevels = [2.0, 10.0, 90.0, 98.0];
+        var averageLevels = [0.0, 6.0, 12.0, 22.0, 35.0];
         
-        var countLevels = [100, 500, 2500];
+        var bvHarmfulLevels = [0.0, 2.0, 8.0];
         
-        var mapModes = ['average', 'harmful', 'good']
+        var bvHealthScoreLevels = [0.0, 5.0, 8.5]
+        
+        var mapModes = ['average', 'harmful', 'good', 'bivariate']
         
         var mapMode = 'harmful';
-
-	    /*----------------------------------------------------------------------------
-          average color
-         *----------------------------------------------------------------------------*/
-        function averageColor(value) {            
-            // color mapping from color brewer
-            if(value < averageLevels[0]) {
-                return '#feebe2';
-            }
-            else if(value < averageLevels[1]) {
-                return '#fbb4b9';
-            }
-            else if(value < averageLevels[2]) {
-                return '#f768a1';
-            }
-            else if(value < averageLevels[3]) {
-                return '#c51b8a';
-            }
-            else {
-                return '#7a0177';
-            }
-        }
+        
+        var csvData = [];
         
 	    /*----------------------------------------------------------------------------
-          harmful color
+          harmful color from color brewer
          *----------------------------------------------------------------------------*/
-        function harmfulColor(value) {            
-            // color mapping from color brewer
-            if(value < harmfulLevels[0]) {
+        function harmfulColor(value) {
+            if(value < harmfulLevels[1]) {
                 return '#ffffb2';
             }
-            else if(value < harmfulLevels[1]) {
+            else if(value < harmfulLevels[2]) {
                 return '#fecc5c';
             }
-            else if(value < harmfulLevels[2]) {
+            else if(value < harmfulLevels[3]) {
                 return '#fd8d3c';
             }
-            else if(value < harmfulLevels[3]) {
+            else if(value < harmfulLevels[4]) {
                 return '#f03b20';
             }
             else {
@@ -156,20 +139,19 @@
         }
         
 	    /*----------------------------------------------------------------------------
-          good color
+          good color  from color brewer
          *----------------------------------------------------------------------------*/
-        function goodColor(value) {            
-            // color mapping from color brewer
-            if(value < goodLevels[0]) {
+        function goodColor(value) {
+            if(value < goodLevels[1]) {
                 return '#d7191c';
             }
-            else if(value < goodLevels[1]) {
+            else if(value < goodLevels[2]) {
                 return '#fdae61';
             }
-            else if(value < goodLevels[2]) {
+            else if(value < goodLevels[3]) {
                 return '#ffffbf';
             }
-            else if(value < goodLevels[3]) {
+            else if(value < goodLevels[4]) {
                 return '#a6d96a';
             }
             else {
@@ -178,17 +160,76 @@
         }
         
 	    /*----------------------------------------------------------------------------
-          coverage opacity
+          average color from color brewer
          *----------------------------------------------------------------------------*/
-        function coverageOpacity(value) {            
-            // color mapping from color brewer
-            if(value < countLevels[0]) {
+        function averageColor(value) {
+            if(value < averageLevels[1]) {
+                return '#feebe2';
+            }
+            else if(value < averageLevels[2]) {
+                return '#fbb4b9';
+            }
+            else if(value < averageLevels[3]) {
+                return '#f768a1';
+            }
+            else if(value < averageLevels[4]) {
+                return '#c51b8a';
+            }
+            else {
+                return '#7a0177';
+            }
+        }
+        
+	    /*----------------------------------------------------------------------------
+          bivariate color from color brewer
+         *----------------------------------------------------------------------------*/
+        function bivariateColor(health_score, harmful) {
+            if(harmful < bvHarmfulLevels[1]) {
+                if(health_score < bvHealthScoreLevels[1]) {
+                    return '#ebebeb';
+                }
+                else if(health_score < bvHealthScoreLevels[2]) {
+                    return '#d1cedb';
+                }
+                else {
+                    return '#a888bd';
+                }
+            }
+            else if(harmful < bvHarmfulLevels[2]) {
+                if(health_score < bvHealthScoreLevels[1]) {
+                    return '#e8dfb7';
+                }
+                else if(health_score < bvHealthScoreLevels[2]) {
+                    return '#cfb8ae';
+                }
+                else {
+                    return '#a68194';
+                }
+            }
+            else {
+                if(health_score < bvHealthScoreLevels[1]) {
+                    return '#cfbe74';
+                }
+                else if(health_score < bvHealthScoreLevels[2]) {
+                    return '#bda06d';
+                }
+                else {
+                    return '#946854';
+                }
+            }
+        }
+        
+	    /*----------------------------------------------------------------------------
+          coverage opacity from color brewer
+         *----------------------------------------------------------------------------*/
+        function coverageOpacity(value) {
+            if(value < countLevels[1]) {
                 return 0.2;
             }
-            else if(value < countLevels[1]) {
+            else if(value < countLevels[2]) {
                 return 0.4;
             }
-            else if(value < countLevels[2]) {
+            else if(value < countLevels[3]) {
                 return 0.6;
             }
             else {
@@ -217,10 +258,10 @@
         
         // layer groups
         var layerGroups = {
-            'average': L.featureGroup([]),
             'harmful': L.featureGroup([]),
             'good': L.featureGroup([]),
-            //'bivariate': L.featureGroup([])
+            'average': L.featureGroup([]),
+            'bivariate': L.featureGroup([])
         }
         
         // map
@@ -235,15 +276,15 @@
         
         // control layers
         var baseMaps = {
-            "Streets": streets,
-            "Light": light,
+            "Color": streets,
+            "Greyscale": light,
         };
         
         var overlayMaps = {
-            "Average": layerGroups['average'],
             "Harmful": layerGroups['harmful'],
-            "Good": layerGroups['good'],
-            //"Bivariate": layerGroups['bivariate']
+            "Low": layerGroups['good'],
+            "Average": layerGroups['average'],
+            "Bivariate": layerGroups['bivariate']
         };
         
         L.control.layers(baseMaps, overlayMaps).addTo(map);
@@ -258,80 +299,42 @@
 	    // legend controls
 	    var legendControls = {};
 	    
-	    // average legend
-	    legendControls['average'] = L.control({position: 'bottomright'});
-	    legendControls['average'].onAdd = function(map) {
-		    var div = L.DomUtil.create('div', 'info legend'),
-			    labels = [],
-			    from, to;
-			    
-			labels.push('Average');
-
-	        labels.push(
-		        '<i style="background:' + averageColor(0) + '"></i> ' +
-		        '<' + averageLevels[0])
-		    
-		    for (var i = 0; i < averageLevels.length; i++) {
-			    from = averageLevels[i];
-			    to = averageLevels[i + 1];
-			    
-			    labels.push(
-				    '<i style="background:' + averageColor(from + 1) + '"></i> ' +
-				    from + (to ? '–' + to : '+'));
-		    }
-            
-		    div.innerHTML = labels.join('<br />');
-		    return div;
-	    };
-	    
 	    // harmful legend
 	    legendControls['harmful'] = L.control({position: 'bottomright'});
 	    legendControls['harmful'].onAdd = function(map) {
-		    var div = L.DomUtil.create('div', 'info legend'),
-			    labels = [],
-			    from, to;
-			    
-	        labels.push('% Harmful');
-
-	        labels.push(
-		        '<i style="background:' + harmfulColor(0) + '"></i> ' +
-		        '<' + harmfulLevels[0])
+		    var div = L.DomUtil.create('div', 'info legend');
 		    
-		    for (var i = 0; i < harmfulLevels.length; i++) {
-			    from = harmfulLevels[i];
-			    to = harmfulLevels[i + 1];
-			    
-			    labels.push(
-				    '<i style="background:' + harmfulColor(from + 1) + '"></i> ' +
-				    from + (to ? '–' + to : '+'));
-		    }
-		    
-		    div.innerHTML = labels.join('<br />');
+            div.innerHTML = getLegend("% Harmful", harmfulLevels, harmfulColor);
+            
 		    return div;
 	    };
 		
 		// good legend
 	    legendControls['good'] = L.control({position: 'bottomright'});
 	    legendControls['good'].onAdd = function(map) {
-		    var div = L.DomUtil.create('div', 'info legend'),
-			    labels = [],
-			    from, to;
-			labels.push('% Good');
-
-	        labels.push(
-		        '<i style="background:' + goodColor(0) + '"></i> ' +
-		        '<' + goodLevels[0])
+		    var div = L.DomUtil.create('div', 'info legend');
 		    
-		    for (var i = 0; i < goodLevels.length; i++) {
-			    from = goodLevels[i];
-			    to = goodLevels[i + 1];
-			    
-			    labels.push(
-				    '<i style="background:' + goodColor(from + 1) + '"></i> ' +
-				    from + (to ? '–' + to : '+'));
-		    }
+		    div.innerHTML = getLegend("% Low", goodLevels, goodColor);
 		    
-		    div.innerHTML = labels.join('<br />');
+		    return div;
+	    };
+	    
+	    // average legend
+	    legendControls['average'] = L.control({position: 'bottomright'});
+	    legendControls['average'].onAdd = function(map) {
+		    var div = L.DomUtil.create('div', 'info legend');
+            
+		    div.innerHTML = getLegend("Average", averageLevels, averageColor);
+		    
+		    return div;
+	    };
+	    
+	    // bivariate legend
+	    legendControls['bivariate'] = L.control({position: 'bottomright'});
+	    legendControls['bivariate'].onAdd = function(map) {
+		    var div = L.DomUtil.create('div', 'info legend');
+			   
+            
 		    return div;
 	    };
 
@@ -343,8 +346,21 @@
         $(document).ready(function() {
             //console.log("ready");
             
-            // get averages
-            $.getJSON("{% static 'dashboard/data.json' %}", geoCallback);
+            lastUpdated(null, function(data) {
+                //console.log(data);
+                
+                // process date and time
+				var dt = data['last_updated'].split("T");
+				dt[1] = dt[1].replace("Z", "");
+                
+                $('#last_updated').html("<p>The data used to generate this map was last updated on " + dt[0] + " at " + dt[1] + ".</p>");
+            });
+            
+            // get data
+            //$.getJSON("{% static 'dashboard/data.json' %}", geoCallback);
+            getHexagons({
+                'min_counts': 1,
+                }, hexagonsCallback);
             
             // start spin
             map.spin(true);
@@ -376,69 +392,100 @@
         /*----------------------------------------------------------------------------
           geo data callback
          *----------------------------------------------------------------------------*/
-        function geoCallback(data) {        
-            //console.log(data);
-                
+        function hexagonsCallback(data) {        
+            //console.log(data)
+            var hexagons = JSON.parse(data['hexagons']);
+            //console.log(hexagons);
+            
             // clear layer groups
             for (var layer in layerGroups) {
                 layerGroups[layer].clearLayers();
             }
             
-            // draw geo
-            for (var id in data['counts']) {
+            // reset csv data
+            csvData = [];
+            
+            // draw hexagons
+            for (i = 0; i < hexagons.length; ++i) { 
+                var id = hexagons[i]['id'];
+                var geo = hexagons[i]['geo'];
+                var counts = hexagons[i]['counts'];
+                var harmful = 100.0*hexagons[i]['harmful']/counts;
+                var good = 100.0*hexagons[i]['good']/counts; 
+                var average = hexagons[i]['average'];
+                var health_score = hexagons[i]['health_score'];
+                var opacity = coverageOpacity(counts);
+                
                 // skip default location (empty multipolygon)
                 if(id == defaultLoc) {
                     continue;
-                }  
+                }
                 
-                // get data
-                var average = data['averages'][id];
-                var count = data['counts'][id];
-                var harmful = 100.0*data['harmful'][id]/count;
-                var good = 100.0*data['good'][id]/count; 
+                // add to csv data
+                csvData.push({
+                    'id': id,
+                    'geo': geo,
+                    'measurements': counts,
+                    'harmful': harmful,
+                    'low': good,
+                    'average': average,
+                    'health_score': health_score,
+                    });
                 
-                var average_polygon = omnivore.wkt.parse(data['geo'][id]);               
-                average_polygon.setStyle({
-                    fillColor: averageColor(average),
-                    fillOpacity: coverageOpacity(count),
-                    color: '#444',
-                    weight: 0,
-                    opacity: 1.0,
-                });
-                
-                var harmful_polygon = omnivore.wkt.parse(data['geo'][id]);
+                var harmful_polygon = omnivore.wkt.parse(geo);
                 harmful_polygon.setStyle({
                     fillColor: harmfulColor(harmful),
-                    fillOpacity: coverageOpacity(count),
-                    color: '#444',
+                    fillOpacity: opacity,
+                    color: '#000',
                     weight: 0,
-                    opacity: 1.0,
+                    opacity: 0,
                 });
                 
-                var good_polygon = omnivore.wkt.parse(data['geo'][id]);
+                var good_polygon = omnivore.wkt.parse(geo);
                 good_polygon.setStyle({
                     fillColor: goodColor(good),
-                    fillOpacity: coverageOpacity(count),
-                    color: '#444',
+                    fillOpacity: opacity,
+                    color: '#000',
                     weight: 0,
-                    opacity: 1.0,
+                    opacity: 0,
                 });
                 
+                var average_polygon = omnivore.wkt.parse(geo);               
+                average_polygon.setStyle({
+                    fillColor: averageColor(average),
+                    fillOpacity: opacity,
+                    color: '#000',
+                    weight: 0,
+                    opacity: 0,
+                });
+                
+                var bivariate_polygon = omnivore.wkt.parse(geo);
+                bivariate_polygon.setStyle({
+                    fillColor: bivariateColor(health_score, harmful),
+                    fillOpacity: maxOpacity,
+                    color: '#000',
+                    weight: 0,
+                    opacity: 0,
+                });
+                                
                 // popup text
                 var popup = "<table class=\"table table-bordered table-striped\"> \
                     <tr><th>Boundary</th><td>" + id + "</td></tr> \
-                    <tr><th>Average</th><td>" + average.toFixed(2) + "</td></tr> \
-                    <tr><th>Count</th><td>" + count.toFixed(0) + "</td></tr> \
+                    <tr><th>Measurements</th><td>" + counts.toFixed(0) + "</td></tr> \
                     <tr><th>Harmful</th><td>" + harmful.toFixed(1) + "%</td></tr> \
-                    <tr><th>Good</th><td>" + good.toFixed(1) + "%</td></tr> \
+                    <tr><th>Low</th><td>" + good.toFixed(1) + "%</td></tr> \
+                    <tr><th>Average</th><td>" + average.toFixed(2) + "</td></tr> \
+                    <tr><th>Health Score</th><td>" + health_score.toFixed(1) + "%</td></tr> \
                     </table>"
-                average_polygon.bindPopup(popup)
-                harmful_polygon.bindPopup(popup)
-                good_polygon.bindPopup(popup)
+                harmful_polygon.bindPopup(popup);
+                good_polygon.bindPopup(popup);
+                bivariate_polygon.bindPopup(popup);
+                average_polygon.bindPopup(popup);
                 
-                layerGroups['average'].addLayer(average_polygon);
                 layerGroups['harmful'].addLayer(harmful_polygon);
                 layerGroups['good'].addLayer(good_polygon);
+                layerGroups['average'].addLayer(average_polygon);
+                layerGroups['bivariate'].addLayer(bivariate_polygon);
             }
             
             // stop spin

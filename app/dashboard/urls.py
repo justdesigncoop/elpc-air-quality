@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^locations/$', views.LocationsView.as_view(), name='locations'),
     url(r'^partners/$', views.PartnersView.as_view(), name='partners'),
     url(r'^references/$', views.ReferencesView.as_view(), name='references'),
+    url(r'^ajax/last_updated/$', views.last_updated, name='last_updated'),
     url(r'^ajax/get_users/$', views.get_users, name='get_users'),
     url(r'^ajax/get_sessions/$', views.get_sessions, name='get_sessions'),
     url(r'^ajax/get_streams/$', views.get_streams, name='get_streams'),

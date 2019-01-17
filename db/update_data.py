@@ -3,11 +3,11 @@ import pandas as pd
 import logging
 import sys
 
-sensor_names = ['AirBeam-PM', 'AirBeam2-PM2.5']
+SENSOR_NAMES = ['AirBeam-PM', 'AirBeam2-PM2.5']
 
-harmful_level = 35.0
+HARMFUL_LEVEL = 35.0
 
-good_level = 12.0
+GOOD_LEVEL = 12.0
 
 if __name__ == '__main__':
     # generate error log
@@ -28,22 +28,16 @@ if __name__ == '__main__':
         sys.exit(1)
     
     # get sensors    
-    sensors = ','.join(['\'' + sensor + '\'' for sensor in sensor_names])
+    sensors = ','.join(['\'' + sensor + '\'' for sensor in SENSOR_NAMES])
     
+    '''
     # get hexagons
     try:
         hexagons = pd.read_sql_query('SELECT id, geo FROM hexagons', engine, index_col=['id'])
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
-        
-    # get averages
-    try:
-        averages = pd.read_sql_query('SELECT hexagon_id, AVG(value) AS averages FROM measurements WHERE stream_id in (SELECT id FROM streams WHERE sensor_name IN (%s)) AND hexagon_id IS NOT NULL GROUP BY hexagon_id' % \
-            sensors, engine, index_col=['hexagon_id'])
-    except sa.exc.SQLAlchemyError as e:
-        logging.error(e)
-        sys.exit(1)
+    '''
     
     # get counts
     try:
@@ -51,30 +45,61 @@ if __name__ == '__main__':
             sensors, engine, index_col=['hexagon_id'])
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
-        sys.exit(1)
+        sys.exit(1)    
         
     # get harmful
     try:
         harmful = pd.read_sql_query('SELECT hexagon_id, COUNT(value) AS harmful FROM measurements WHERE value >= %f AND stream_id in (SELECT id FROM streams WHERE sensor_name IN (%s)) AND hexagon_id IS NOT NULL GROUP BY hexagon_id' % \
-            (harmful_level, sensors), engine, index_col=['hexagon_id'])
+            (HARMFUL_LEVEL, sensors), engine, index_col=['hexagon_id'])
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)
     
+    # fill na with 0
     harmful = harmful.reindex(counts.index).fillna(0)
         
     # get good
     try:
         good = pd.read_sql_query('SELECT hexagon_id, COUNT(value) AS good FROM measurements WHERE value <= %f AND stream_id in (SELECT id FROM streams WHERE sensor_name IN (%s)) AND hexagon_id IS NOT NULL GROUP BY hexagon_id' % \
-            (good_level, sensors), engine, index_col=['hexagon_id'])
+            (GOOD_LEVEL, sensors), engine, index_col=['hexagon_id'])
     except sa.exc.SQLAlchemyError as e:
         logging.error(e)
         sys.exit(1)  
-          
-    good = good.reindex(counts.index).fillna(0)
-      
-    data = pd.concat([hexagons, averages, counts, harmful, good], axis=1, join='inner')
     
-    data.to_json('../app/static/dashboard/data.json');
+    # fill na with 0   
+    good = good.reindex(counts.index).fillna(0)
+    
+    # get average
+    try:
+        average = pd.read_sql_query('SELECT hexagon_id, AVG(value) AS average FROM measurements WHERE stream_id in (SELECT id FROM streams WHERE sensor_name IN (%s)) AND hexagon_id IS NOT NULL GROUP BY hexagon_id' % \
+            sensors, engine, index_col=['hexagon_id'])
+    except sa.exc.SQLAlchemyError as e:
+        logging.error(e)
+        sys.exit(1)
+    
+    '''
+    # get health score
+    health_score = pd.read_csv('health_score.csv', index_col=['hexagon_id'])
+    
+    # average across duplicate indices
+    health_score = health_score.groupby(health_score.index).mean()
+    
+    data = pd.concat([hexagons, average, counts, harmful, good, health_score], axis=1, join='inner')
+    '''
+    data = pd.concat([counts, harmful, good, average], axis=1, join='inner')
+    
+    # update rows
+    conn = engine.connect()
+    for ind, row in data.iterrows():
+        #query = 'UPDATE hexagons SET counts = %d, average = %f, harmful = %f, good = %f, health_score = %f WHERE id = %d' % (row['counts'], row['average'], row['harmful'], row['good'], row['health_score'], ind)
+        query = 'UPDATE hexagons SET counts = %d, average = %f, harmful = %f, good = %f WHERE id = %d' % (row['counts'], row['average'], row['harmful'], row['good'], ind)
+        try:
+            conn.execute(query)
+        except sa.exc.SQLAlchemyError as e:
+            logging.error(e)
+            sys.exit(1)
+    conn.close()
+    
+    #data.to_json('../app/static/dashboard/data.json');
     
     logging.info('update data finished')

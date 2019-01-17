@@ -26,7 +26,7 @@
                     <a class="nav-link " href="{% url 'about' %}">About</a>
                 </li>
                 {% url 'locations' as locations_url %}
-                <li class="nav-item {% if request.path == results_url %} active {% endif %}">
+                <li class="nav-item {% if request.path == locations_url %} active {% endif %}">
                     <a class="nav-link " href="{% url 'locations' %}">Where We Monitor</a>
                 </li>
                 {% url 'results' as results_url %}
@@ -37,29 +37,35 @@
                 <li class="nav-item {% if request.path == partners_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'partners' %}">Our Partners</a>
                 </li>
-                {% if user.is_authenticated %}
-                    {% url 'mobile_sessions' as mobile_sessions_url %}
-                    <li class="nav-item {% if request.path == mobile_sessions_url %} active {% endif %}">
-                        <a class="nav-link" href="{% url 'mobile_sessions' %}">Mobile Sessions</a>
-                    </li>
-                    {% url 'data_values' as data_values_url %}
-                    <li class="nav-item {% if request.path == data_values_url %} active {% endif %}">
-                        <a class="nav-link" href="{% url 'data_values' %}">Data Values</a>
-                    </li>
-                    {% url 'data_averages' as data_averages_url %}
-                    <li class="nav-item {% if request.path == data_averages_url %} active {% endif %}">
-                        <a class="nav-link" href="{% url 'data_averages' %}">Data Averages</a>
-                    </li>
-                    {% url 'coverage' as coverage_url %}
-                    <li class="nav-item {% if request.path == coverage_url %} active {% endif %}">
-                        <a class="nav-link" href="{% url 'coverage' %}">Coverage</a>
-                    </li>
-                {% endif %}
                 {% url 'references' as references_url %}
                 <li class="nav-item {% if request.path == references_url %} active {% endif %}">
                     <a class="nav-link" href="{% url 'references' %}">References</a>
                 </li>
                 {% if user.is_authenticated %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Advanced <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            {% url 'mobile_sessions' as mobile_sessions_url %}
+                            <li class="nav-item {% if request.path == mobile_sessions_url %} active {% endif %}">
+                                <a class="nav-link" href="{% url 'mobile_sessions' %}">Mobile Sessions</a>
+                            </li>
+                            {% url 'data_values' as data_values_url %}
+                            <li class="nav-item {% if request.path == data_values_url %} active {% endif %}">
+                                <a class="nav-link" href="{% url 'data_values' %}">Data Values</a>
+                            </li>
+                            {% url 'data_averages' as data_averages_url %}
+                            <li class="nav-item {% if request.path == data_averages_url %} active {% endif %}">
+                                <a class="nav-link" href="{% url 'data_averages' %}">Data Averages</a>
+                            </li>
+                            {% url 'coverage' as coverage_url %}
+                            <li class="nav-item {% if request.path == coverage_url %} active {% endif %}">
+                                <a class="nav-link" href="{% url 'coverage' %}">Coverage</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin">Admin</a>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                     </li>
@@ -87,7 +93,7 @@
                     <li style="border-bottom: 1px solid white"><h4><em>More Info</em></h4></li>
                     <li>Air Quality Chicago is made in partnership with <a class="text-white text-underline" href="http://elpc.org/">ELPC</a> and <a class="text-white text-underline" href="http://justdesign.coop/">JustDesign</a>.</li>
                     <li><a class="text-white text-underline" href="{% url 'about' %}">About</a></li>
-                    <li><a class="text-white text-underline" href="{% url 'partners' %}">Our Partners & Coverage</a></li>
+                    <li><a class="text-white text-underline" href="{% url 'partners' %}">Our Partners</a></li>
                 </ul>
             </div>
             <div class="col-md-6">

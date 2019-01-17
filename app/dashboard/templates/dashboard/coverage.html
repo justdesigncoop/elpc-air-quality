@@ -79,6 +79,8 @@
         
         var csvData = [];
         
+        var coverageLevels = [0.0, 0.2, 0.4, 0.6, 0.8];
+        
         /*----------------------------------------------------------------------------
           map setup
          *----------------------------------------------------------------------------*/
@@ -111,8 +113,8 @@
         
         // control layers
         var baseMaps = {
-            "Streets": streets,
-            "Light": light,
+            "Color": streets,
+            "Greyscale": light,
         };
         
         var overlayMaps = {
@@ -136,8 +138,6 @@
 			    labels = [],
 			    from, to;
 			
-			var coverageLevels = [0.0, 0.2, 0.4, 0.6, 0.8];
-
 		    for (var i = 0; i < coverageLevels.length; i++) {
 			    from = coverageLevels[i];
 			    to = coverageLevels[i + 1];

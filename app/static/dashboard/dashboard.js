@@ -3,6 +3,8 @@
  *----------------------------------------------------------------------------*/
 var pmLevels = [0.0, 12.0, 35.0, 55.0];
 
+var countLevels = [0, 100, 500, 2500];
+
 var geoTypes = {
     NONE: 0,
     NEIGHBORHOODS: 1,
@@ -44,6 +46,42 @@ $.ajaxSetup({
  *----------------------------------------------------------------------------*/
 function checkSensorName(sensor_name) {
   return sensorNames.includes(sensor_name);
+}
+
+/*----------------------------------------------------------------------------
+  get legend
+ *----------------------------------------------------------------------------*/
+function getLegend(title, levels, color) { 
+    var labels = [],
+        from, to;
+    
+    labels.push(title);
+
+    for (var i = 0; i < levels.length; i++) {
+        from = levels[i];
+        to = levels[i + 1];
+
+        labels.push(
+            '<i style="background:' + color(from) + '"></i> ' +
+            from + (to ? '–' + to : '+'));
+    }
+    
+    return labels.join('<br />');
+}
+
+/*----------------------------------------------------------------------------
+  last updated
+ *----------------------------------------------------------------------------*/
+function lastUpdated(data, callback) {
+    // execute ajax call
+    $.ajax({
+        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+        type: 'POST',
+        url: '/dashboard/ajax/last_updated/',
+        data: data,
+        dataType: 'json',
+        success: callback,
+    });
 }
 
 /*----------------------------------------------------------------------------
@@ -163,13 +201,9 @@ function getSelectedOptions(id) {
 }
 
 /*----------------------------------------------------------------------------
-  color map
+  color map from AirCasting
  *----------------------------------------------------------------------------*/
 function colorMap(value) {
-    //var hue = ((1.0 - value)*100).toString(10);
-    //return ['hsl(', hue, ', 100%, 50%)'].join('');
-    
-    // color mapping from AirCasting
     if(value < pmLevels[1]) {
         return '#2DA641';
     }
@@ -249,6 +283,7 @@ function getWards(data, callback) {
  *----------------------------------------------------------------------------*/
 function getHexagons(data, callback) {
     var hexagon_ids = JSON.stringify(data['hexagon_ids']);
+    var min_counts = JSON.stringify(data['min_counts']);
     //console.log(hexagon_ids);
     
     // execute ajax call
@@ -258,6 +293,7 @@ function getHexagons(data, callback) {
         url: '/dashboard/ajax/get_hexagons/',
         data: {
             'hexagon_ids': hexagon_ids,
+            'min_counts': min_counts,
         },
         dataType: 'json',
         success: callback,

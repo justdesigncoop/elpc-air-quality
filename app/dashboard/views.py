@@ -75,6 +75,18 @@ class CoverageView(generic.FormView):
 	form_class = CoverageForm
 	success_url = '/dashboard/'
 
+def last_updated(request):
+    measurements = Measurements.objects
+
+    measurement = measurements.latest('time')
+    
+    #print measurement.time
+
+    data = {
+        'last_updated': measurement.time
+    }
+    return JsonResponse(data)
+
 def get_users(request):
     user_ids = json.loads(request.POST.get('user_ids', '[]'))
     
@@ -92,8 +104,8 @@ def get_sessions(request):
     user_ids = json.loads(request.POST.get('user_ids', '[]'))
     keywords = json.loads(request.POST.get('keywords', '[]'))
     
-    print user_ids
-    print keywords
+    #print user_ids
+    #print keywords
     
     sessions = Sessions.objects
     
@@ -125,7 +137,7 @@ def get_streams(request):
     if sample_size:
         streams = streams.order_by('?')[:sample_size]
     
-    print "len(streams) = " + str(len(streams))
+    #print "len(streams) = " + str(len(streams))
     
     data = {
         'streams': json.dumps(list(streams.values('id')), cls=serializers.json.DjangoJSONEncoder)
@@ -188,13 +200,13 @@ def get_measurements(request):
     if end_time:
         measurements = measurements.filter(time__time__lte=datetime.datetime.strptime(end_time, "%H:%M:%S").time())
     
-    print "len(measurements) = " + str(measurements.count())
-    print "filters = " + str(timer() - start)
+    #print "len(measurements) = " + str(measurements.count())
+    #print "filters = " + str(timer() - start)
     
     data = {
         'measurements': json.dumps(list(measurements.values('id', 'stream_id', 'value', 'latitude', 'longitude', 'time')), cls=serializers.json.DjangoJSONEncoder)
     } 
-    print "json = " + str(timer() - start)
+    #print "json = " + str(timer() - start)
     return JsonResponse(data)
 
 def get_neighborhoods(request):
@@ -239,14 +251,18 @@ def get_wards(request):
     
 def get_hexagons(request):
     hexagon_ids = json.loads(request.POST.get('hexagon_ids', '[]'))
+    min_counts = json.loads(request.POST.get('min_counts', '[]'))
     
     hexagons = Hexagons.objects
     
     if hexagon_ids:
         hexagons = hexagons.filter(id__in=hexagon_ids)
     
+    if min_counts:
+        hexagons = hexagons.filter(counts__gte=min_counts)
+    
     data = {
-        'hexagons': json.dumps(list(hexagons.values('id', 'display', 'geo')), cls=serializers.json.DjangoJSONEncoder)
+        'hexagons': json.dumps(list(hexagons.values('id', 'display', 'geo', 'counts', 'harmful', 'good', 'average', 'health_score')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
     
@@ -299,20 +315,20 @@ def get_averages(request):
     if end_time:
         measurements = measurements.filter(time__time__lte=datetime.datetime.strptime(end_time, "%H:%M:%S").time())
     
-    print "counts = " + str(measurements.count())
-    print "filters = " + str(timer() - start)
+    #print "counts = " + str(measurements.count())
+    #print "filters = " + str(timer() - start)
     
     averages = None
 
     if geo_type:
         averages = parse_averages(geo_type, measurements)
         
-    print "averages = " + str(timer() - start)
+    #print "averages = " + str(timer() - start)
     
     data = {
         'averages': json.dumps(averages, cls=serializers.json.DjangoJSONEncoder)
     }
-    print "json = " + str(timer() - start)
+    #print "json = " + str(timer() - start)
     return JsonResponse(data)
 
 def parse_averages(name, measurements):
@@ -336,20 +352,20 @@ def get_counts(request):
     if stream_ids:
         measurements = measurements.filter(stream__in=stream_ids)
     
-    print "count = " + str(measurements.count())
-    print "filters = " + str(timer() - start)
+    #print "count = " + str(measurements.count())
+    #print "filters = " + str(timer() - start)
     
     counts = None
     
     if geo_type:
         counts = parse_counts(geo_type, measurements)
     
-    print "counts = " + str(timer() - start)
+    #print "counts = " + str(timer() - start)
     
     data = {
         'counts': json.dumps(counts, cls=serializers.json.DjangoJSONEncoder)
     }
-    print "json = " + str(timer() - start)    
+    #print "json = " + str(timer() - start)    
     return JsonResponse(data)
 
 def parse_counts(name, measurements):
