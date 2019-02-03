@@ -161,7 +161,7 @@
 				var dt = data['last_updated'].split("T");
 				dt[1] = dt[1].replace("Z", "");
                 
-                $('#last_updated').html("<p>The data used to generate this map was last updated on " + dt[0] + " at " + dt[1] + ".</p>");
+                $('#last_updated').html("<p>This map was last updated on " + dt[0] + " at " + dt[1] + ". Click <a id='id_download' href='javascript:downloadData()'>here</a> to download the data.</p>");
             });
             
             // get data
@@ -231,7 +231,6 @@
                 
                 // popup text
                 var popup = "<table class=\"table table-bordered table-striped\"> \
-                    <tr><th>Boundary</th><td>" + id + "</td></tr> \
                     <tr><th>Measurements</th><td>" + counts.toFixed(0) + "</td></tr> \
                     </table>"
                 multi_polygon.bindPopup(popup)

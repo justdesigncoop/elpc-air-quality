@@ -287,7 +287,7 @@
             "Bivariate": layerGroups['bivariate']
         };
         
-        L.control.layers(baseMaps, overlayMaps).addTo(map);
+        L.control.layers(baseMaps).addTo(map);
         
         var printPlugin = L.easyPrint({
       		sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
@@ -333,7 +333,22 @@
 	    legendControls['bivariate'] = L.control({position: 'bottomright'});
 	    legendControls['bivariate'].onAdd = function(map) {
 		    var div = L.DomUtil.create('div', 'info legend');
-			   
+			
+			div.innerHTML += 'Most Healthy';
+			div.innerHTML += '<br />';
+			div.innerHTML += getLegend("% Harmful", bvHarmfulLevels, function(val) {
+			    return bivariateColor(bvHealthScoreLevels[0], val);
+			});
+			div.innerHTML += '<br />';
+			div.innerHTML += getLegend("% Harmful", bvHarmfulLevels, function(val) {
+			    return bivariateColor(bvHealthScoreLevels[1], val);
+			});
+			div.innerHTML += '<br />';
+			div.innerHTML += getLegend("% Harmful", bvHarmfulLevels, function(val) {
+			    return bivariateColor(bvHealthScoreLevels[2], val);
+			});
+			div.innerHTML += '<br />';
+			div.innerHTML += 'Least Healthy'; 
             
 		    return div;
 	    };
@@ -353,7 +368,7 @@
 				var dt = data['last_updated'].split("T");
 				dt[1] = dt[1].replace("Z", "");
                 
-                $('#last_updated').html("<p>The data used to generate this map was last updated on " + dt[0] + " at " + dt[1] + ".</p>");
+                $('#last_updated').html("<p>This map was last updated on " + dt[0] + " at " + dt[1] + ". Click <a id='id_download' href='javascript:downloadData()'>here</a> to download the data.</p>");
             });
             
             // get data
@@ -374,7 +389,6 @@
             
             // check for valid target
             if ($.inArray(target, mapModes) != -1) {
-            
                 // remove existing map data
                 if ($.inArray(mapMode, mapModes) != -1) {
                     map.removeControl(legendControls[mapMode]);
@@ -388,6 +402,16 @@
                 mapMode = target;
             }
         });
+        
+        /*----------------------------------------------------------------------------
+          download callback
+         *----------------------------------------------------------------------------*/  
+        function downloadData() {    
+            //console.log("download");
+            
+            // convert to csv and download
+            csvConverter.convert(csvData);
+        }
         
         /*----------------------------------------------------------------------------
           geo data callback
@@ -473,7 +497,6 @@
                                 
                 // popup text
                 var popup = "<table class=\"table table-bordered table-striped\"> \
-                    <tr><th>Boundary</th><td>" + id + "</td></tr> \
                     <tr><th>Measurements</th><td>" + counts.toFixed(0) + "</td></tr> \
                     <tr><th>Harmful</th><td>" + harmful.toFixed(1) + "%</td></tr> \
                     <tr><th>Low</th><td>" + good.toFixed(1) + "%</td></tr> \

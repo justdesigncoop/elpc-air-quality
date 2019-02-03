@@ -119,7 +119,7 @@ WSGIPythonPath /home/elpcjd/elpc-air-quality/app
 8. Deploy Django app:
 
 ```
-apt install apache2 libapache2-mod-wsgi phpmyadmin
+apt install apache2 libapache2-mod-wsgi phpmyadmin libspatialindex-dev
 python manage.py collectstatic
 python manage.py createsuperuser
 /etc/init.d/apache2 restart
