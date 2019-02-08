@@ -109,9 +109,9 @@ if __name__ == '__main__':
                             # warn if multiple matches (overlapping geo?)
                             if matches.shape[0] > 1:
                                 logging.warn('found multiple %s for measurement = (%d, %d)' % (t['table'], i[0], i[1]))
-                        # warn if no matches (gaps in geo?)
+                        # set to default loc if no matches
                         else:
-                            logging.warn('found no %s for measurement = (%d, %d)' % (t['table'], i[0], i[1]))
+                            update_loc(t['column'], DEFAULT_LOC, i, engine)
             
             # otherwise exit
             else:
