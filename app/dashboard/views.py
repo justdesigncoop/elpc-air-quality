@@ -11,6 +11,8 @@ from django.views import generic
 from django.core import serializers
 from django.db.models import Q, Avg, Count
 
+from django.views.decorators.csrf import csrf_exempt
+
 from .models import Users, Sessions, Streams, Measurements, Neighborhoods, Tracts, Wards, Hexagons, Zipcodes
 
 from .forms import MobileSessionsForm, DataValuesForm, DataAveragesForm, CoverageForm
@@ -75,6 +77,7 @@ class CoverageView(generic.FormView):
 	form_class = CoverageForm
 	success_url = '/dashboard/'
 
+@csrf_exempt 
 def last_updated(request):
     measurements = Measurements.objects
 
@@ -248,7 +251,8 @@ def get_wards(request):
         'wards': json.dumps(list(wards.values('id', 'display', 'geo')), cls=serializers.json.DjangoJSONEncoder)
     }
     return JsonResponse(data)
-    
+
+@csrf_exempt 
 def get_hexagons(request):
     hexagon_ids = json.loads(request.POST.get('hexagon_ids', '[]'))
     min_counts = json.loads(request.POST.get('min_counts', '[]'))
