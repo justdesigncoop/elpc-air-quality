@@ -456,6 +456,15 @@
                     'health_score': health_score,
                     });
                 
+                // popup text
+                var popup = "<table class=\"table table-bordered table-striped\"> \
+                    <tr><th>Measurements</th><td>" + counts.toFixed(0) + "</td></tr> \
+                    <tr><th>Harmful</th><td>" + harmful.toFixed(1) + "%</td></tr> \
+                    <tr><th>Low</th><td>" + good.toFixed(1) + "%</td></tr> \
+                    <tr><th>Average</th><td>" + average.toFixed(2) + "</td></tr> \
+                    <tr><th>Health Score</th><td>" + (health_score ? health_score.toFixed(1) : "N/A") + "%</td></tr> \
+                    </table>"
+                
                 var harmful_polygon = omnivore.wkt.parse(geo);
                 harmful_polygon.setStyle({
                     fillColor: harmfulColor(harmful),
@@ -464,6 +473,8 @@
                     weight: 0,
                     opacity: 0,
                 });
+                harmful_polygon.bindPopup(popup);
+                layerGroups['harmful'].addLayer(harmful_polygon);
                 
                 var good_polygon = omnivore.wkt.parse(geo);
                 good_polygon.setStyle({
@@ -473,6 +484,8 @@
                     weight: 0,
                     opacity: 0,
                 });
+                good_polygon.bindPopup(popup);
+                layerGroups['good'].addLayer(good_polygon);
                 
                 var average_polygon = omnivore.wkt.parse(geo);               
                 average_polygon.setStyle({
@@ -482,6 +495,8 @@
                     weight: 0,
                     opacity: 0,
                 });
+                average_polygon.bindPopup(popup);
+                layerGroups['average'].addLayer(average_polygon);
                 
                 // check for vaild health score
                 if(health_score) {
@@ -493,27 +508,8 @@
                         weight: 0,
                         opacity: 0,
                     });
-                }
-                                
-                // popup text
-                var popup = "<table class=\"table table-bordered table-striped\"> \
-                    <tr><th>Measurements</th><td>" + counts.toFixed(0) + "</td></tr> \
-                    <tr><th>Harmful</th><td>" + harmful.toFixed(1) + "%</td></tr> \
-                    <tr><th>Low</th><td>" + good.toFixed(1) + "%</td></tr> \
-                    <tr><th>Average</th><td>" + average.toFixed(2) + "</td></tr> \
-                    <tr><th>Health Score</th><td>" + (health_score ? health_score.toFixed(1) : "N/A") + "%</td></tr> \
-                    </table>"
-                harmful_polygon.bindPopup(popup);
-                good_polygon.bindPopup(popup);
-                bivariate_polygon.bindPopup(popup);
-                average_polygon.bindPopup(popup);
-                
-                layerGroups['harmful'].addLayer(harmful_polygon);
-                layerGroups['good'].addLayer(good_polygon);
-                layerGroups['average'].addLayer(average_polygon);
-                // check for vaild health scor
-                if(health_score) {
-                    layerGroups['bivariate'].addLayer(bivariate_polygon);
+                    bivariate_polygon.bindPopup(popup);
+                    layerGroups['bivariate'].addLayer(bivariate_polygon); 
                 }
             }
             
