@@ -11,6 +11,8 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+execfile(os.path.join('/home/elpcjd/elpc-air-quality/app', 'env.py'))
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "elpc_air_quality.settings")
 
 application = get_wsgi_application()
