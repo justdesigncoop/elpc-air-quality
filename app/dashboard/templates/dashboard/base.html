@@ -88,19 +88,17 @@
     
     <footer class="container" style="margin-top: 0;">
         <div class="row text-white bg-teal m-0">
-            <div class="col-md-6">
-                <ul class="list-unstyled text-small">
-                    <li style="border-bottom: 1px solid white"><h4><em>More Info</em></h4></li>
-                    <li>Air Quality Chicago is made in partnership with <a class="text-white text-underline" href="http://elpc.org/">ELPC</a> and <a class="text-white text-underline" href="http://justdesign.coop/">JustDesign</a>.</li>
-                    <li><a class="text-white text-underline" href="{% url 'about' %}">About</a></li>
-                    <li><a class="text-white text-underline" href="{% url 'partners' %}">Our Partners</a></li>
-                </ul>
+            <div class="col-md-6" style="padding: 1em; overflow: auto;">
+                <img src="{% static 'dashboard/img/ELPCWhiteLogo.png' %}" width="100%" alt="ELPC White Logo" style="float: left; max-width: 150px; height: auto; margin-right: 1em;, margin-bottom: 1em">
+                <p>To learn more about what ELPC is doing to advance environmental progress and climate change solutions visit <a class="text-white text-underline" href="http://elpc.org/">elpc.org</a>.</p>
             </div>
             <div class="col-md-6">
                 <ul class="list-unstyled text-small">
                     <li style="border-bottom: 1px solid white"><h4><em>Contact Us</em></h4></li>
                     <li></li>
                     <li>If you notice a lack of monitoring coverage in your area and would like to know more about or get involved in the Air Quality Chicago Monitoring Program, please contact <a class="text-white text-underline" href="mailto:twerner@elpc.org?Subject=Air%20Quality%20Chicago" target="_top">Tiffany Werner</a>.</li>
+                    <li><br /></li>
+                    <li>Air Quality Chicago is made in partnership with <a class="text-white text-underline" href="http://elpc.org/">ELPC</a> and <a class="text-white text-underline" href="http://justdesign.coop/">JustDesign</a>.</li>
                 </ul>
             </div>
         </div>

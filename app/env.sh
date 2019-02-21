@@ -1,6 +1,0 @@
-export RDS_HOSTNAME="elpc-air-quality.cisb7zovhcdj.us-east-2.rds.amazonaws.com"
-export RDS_PORT="3306"
-export RDS_DB_NAME="elpc_air_quality"
-export RDS_USERNAME="elpcjd"
-export RDS_PASSWORD="Elpc1234"
-export DJANGO_DATABASE="dev"

@@ -20,13 +20,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'llr^iaxdvd^q#4=n9&%(5tie1jsa1*#e^#++w#0fnbb7ie22wh'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '192.168.1.12', '.danwahl.net', '205.186.128.119', '.airqualitychicago.org']
+ALLOWED_HOSTS = ['.danwahl.net', '.airqualitychicago.org']
 
+SECURE_SSL_REDIRECT = True
+
+CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 
@@ -79,39 +84,16 @@ WSGI_APPLICATION = 'elpc_air_quality.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-'''
-    'rds': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ['RDS_DB_NAME'],
-        'USER': os.environ['RDS_USERNAME'],
-        'PASSWORD': os.environ['RDS_PASSWORD'],
-        'HOST': os.environ['RDS_HOSTNAME'],
-        'PORT': os.environ['RDS_PORT'],
-    },
-'''
 DATABASES = {
-    'default': {},
-    'mt': {
+    'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'elpc_air_quality',
         'USER': 'elpcjd',
-        'PASSWORD': 'Elpc1234',
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],
         'HOST': '127.0.0.1',
-        'PORT': '3306',
-    },
-    'dev': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'elpc_air_quality',
-        'USER': 'elpcjd',
-        'PASSWORD': 'Elpc1234',
-        'HOST': 'home.danwahl.net',
         'PORT': '3306',
     }
 }
-
-default_database = os.environ.get('DJANGO_DATABASE', 'mt')
-DATABASES['default'] = DATABASES[default_database]
-#DATABASES['default'] = DATABASES['dev']
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
