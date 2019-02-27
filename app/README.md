@@ -54,7 +54,7 @@ mysql -u root -p < create_db.sql
 
 ```
 mysql -u root -p
-CREATE USER 'elpcjd'@'localhost' IDENTIFIED BY 'Elpc1234';
+CREATE USER 'elpcjd'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON elpc_air_quality.* TO 'elpcjd'@'localhost';
 FLUSH PRIVILEGES;
 exit

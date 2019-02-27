@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}"/>
 {% endblock %}
 
-{% block title %}Our Partners & Coverage -{% endblock %}
+{% block title %}Where We Monitor -{% endblock %}
 
 {% block content %}    
     <h3>Our Coverage</h3>
@@ -161,7 +161,7 @@
 				var dt = data['last_updated'].split("T");
 				dt[1] = dt[1].replace("Z", "");
                 
-                $('#last_updated').html("<p>This map was last updated on " + dt[0] + " at " + dt[1] + ". Click <a id='id_download' href='javascript:downloadData()'>here</a> to download the data.</p>");
+                $('#last_updated').html("<p>This map was last updated on " + dt[0] + " at " + dt[1] + ". Click <a id='id_download' href='javascript:void(0)' onclick='csvConverter.convert(csvData)'>here</a> to download the data.</p>");
             });
             
             // get data
@@ -173,16 +173,6 @@
             // start spin
             map.spin(true);
         });
-        
-        /*----------------------------------------------------------------------------
-          download callback
-         *----------------------------------------------------------------------------*/  
-        $("#id_download").on('click', function(e) {            
-            //console.log("download");
-            
-            // convert to csv and download
-            csvConverter.convert(csvData);
-        }); 
         
         /*----------------------------------------------------------------------------
           geo data callback
