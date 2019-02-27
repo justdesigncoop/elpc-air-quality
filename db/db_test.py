@@ -84,6 +84,7 @@ if __name__ == '__main__':
                 session.drop('streams', inplace=True)
                 session.drop('notes', inplace=True)
                 session.drop('measurements_received_count', inplace=True)
+                session.drop('average', inplace=True)
                 
                 # update user id if not in users table
                 if pd.isnull(ui):
@@ -131,7 +132,10 @@ if __name__ == '__main__':
                 # TODO i think this fixes an "empty stream" bug
                 if 'measurements' in streams:
                     streams.drop('measurements', axis=1, inplace=True)
-                streams.drop('size', axis=1, inplace=True)
+                if 'size' in streams:
+                    streams.drop('size', axis=1, inplace=True)
+                streams.drop('start_latitude', axis=1, inplace=True)
+                streams.drop('start_longitude', axis=1, inplace=True)
                 
                 # insert into sql
                 try:
