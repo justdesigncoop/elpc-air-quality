@@ -16,8 +16,10 @@ cd $SCRIPT_HOME
 # run scripts
 python db_test.py
 python locate_meas.py
-#python backup.py
 python update_data.py
 
 # deactivate workspace
 deactivate
+
+# create backup
+source backup_db.sh
