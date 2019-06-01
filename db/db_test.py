@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import logging
 import sys
+import time
 
 if __name__ == '__main__':
     # generate error log
@@ -38,7 +39,7 @@ if __name__ == '__main__':
             prev_sessions = pd.read_sql_query('SELECT id FROM sessions WHERE user_id = %d' % (int(ui)), engine)['id']
 
         # api quiery for session list
-        params = (('q[usernames]', ur['username']),)
+        params = (('q[time_from]', 0), ('q[time_to]', int(time.time())), ('q[usernames]', ur['username']),)
         
         # iterate through pages until no more sessions
         page = 0
