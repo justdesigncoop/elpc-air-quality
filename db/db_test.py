@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 import logging
 import sys
-import time
+import datetime
 
 if __name__ == '__main__':
     # generate error log
@@ -38,8 +38,11 @@ if __name__ == '__main__':
             # get latest session id from db
             prev_sessions = pd.read_sql_query('SELECT id FROM sessions WHERE user_id = %d' % (int(ui)), engine)['id']
 
+        # https://github.com/HabitatMap/AirCasting/issues/242
+        ts = int((datetime.datetime.combine(datetime.date.today(), datetime.time(23, 59, 59)) - datetime.timedelta(days=1) - datetime.datetime(1970, 1, 1)).total_seconds())
+        
         # api quiery for session list
-        params = (('q[time_from]', 0), ('q[time_to]', int(time.time())), ('q[usernames]', ur['username']),)
+        params = (('q[time_from]', 0), ('q[time_to]', ts), ('q[usernames]', ur['username']),)
         
         # iterate through pages until no more sessions
         page = 0
