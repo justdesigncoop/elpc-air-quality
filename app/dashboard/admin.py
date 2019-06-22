@@ -7,8 +7,8 @@ from django.contrib import admin
 from .models import Measurements, Notes, Sessions, Streams, Users
 
 class UserAdmin(admin.ModelAdmin):
-    fields = ['id', 'username', 'display']
-    list_display = ['id', 'username', 'display']
+    fields = ['id', 'username', 'display', 'private']
+    list_display = ['id', 'username', 'display', 'private']
 
 class SessionAdmin(admin.ModelAdmin):
     fields = ['id', 'title']
