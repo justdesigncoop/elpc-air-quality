@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^data_averages/$', views.DataAveragesView.as_view(), name='data_averages'),
     url(r'^coverage/$', views.CoverageView.as_view(), name='coverage'),
     url(r'^about/$', views.AboutView.as_view(), name='about'),
+    url(r'^advocacy/$', views.AdvocacyView.as_view(), name='advocacy'),
     url(r'^results/$', views.ResultsView.as_view(), name='results'),
     url(r'^locations/$', views.LocationsView.as_view(), name='locations'),
     url(r'^partners/$', views.PartnersView.as_view(), name='partners'),

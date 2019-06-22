@@ -44,6 +44,9 @@ class IndexView(generic.TemplateView):
 
 class AboutView(generic.TemplateView):
 	template_name = 'dashboard/about.html'
+	
+class AdvocacyView(generic.TemplateView):
+	template_name = 'dashboard/advocacy.html'
 
 class LocationsView(generic.TemplateView):
 	template_name = 'dashboard/locations.html'
