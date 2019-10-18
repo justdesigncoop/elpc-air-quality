@@ -14,7 +14,7 @@ pytz==2018.3
 requests==2.18.4
 six==1.11.0
 SQLAlchemy==1.2.1
-urllib3==1.22
+urllib3==1.24.2
 shapely==1.6.4.post1
 django-datetime-widget==0.9.3
 geopandas==0.4.0
